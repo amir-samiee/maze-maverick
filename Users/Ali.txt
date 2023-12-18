@@ -1,0 +1,1 @@
+This file was created only to provide the ability to create the folder including it, otherwise it's nothing more than a test file.

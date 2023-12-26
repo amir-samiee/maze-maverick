@@ -11,14 +11,61 @@ const string magenta("\033[0;35m");
 const string reset("\033[0m");
 // FUNCTIONS
 void clearScreen();
-bool isInteger(char c);
+// bool isInteger(char c);
 bool isInteger(string s);
-void menu();
+void getinput(string &input, string options, int from, int to);
+// void menu();
 
 int main()
 {
-    menu();
-    return 0;
+    string menu0 =
+        "\n1. Create a New Map"
+        // "\n- 1.1 Easy"
+        // "\n- 1.2 Hard"
+        "\n2. Playground"
+        // "\n- 2.1 Choose from Existing Maps"
+        // "\n- 2.1 Import a Custom Map"
+        "\n3. Solve a Maze"
+        // "\n- 3.1 Choose from Existing Maps"
+        // "\n- 3.1 Import a Custom Map"
+        "\n4. History"
+        "\n5. Users"
+        "\n6. Leaderboard"
+        "\n0. Exit";
+    string menu1 =
+        "\n1. Easy"
+        "\n2. Hard"
+        "\n0. Back";
+    string menu2 =
+        "\n1. Choose from Existing Maps"
+        "\n2. Import a Custom Map"
+        "\n0. Back";
+    string choice1, choice2;
+    // cout << menu;
+    getinput(choice1, menu0, 0, 6);
+    switch (stoi(choice1))
+    {
+    case 1:
+        getinput(choice2, menu1, 0, 2);
+        break;
+    case 2:
+        getinput(choice2, menu1, 0, 2);
+        break;
+    case 3:
+        getinput(choice2, menu2, 0, 2);
+        break;
+    case 4:
+        break;
+    case 5:
+        break;
+    case 6:
+        break;
+    default:
+        cout << endl
+             << yellow + "Exiting program...\n\n" + reset;
+        return 0;
+    }
+    main();
 }
 
 void clearScreen()
@@ -48,36 +95,22 @@ bool isInteger(string s)
     return 1;
 }
 
-void menu()
+void getinput(string &input, string options, int from, int to)
 {
-    string menu =
-        "\n1. Create a New Map"
-        // "\n- 1.1 Easy"
-        // "\n- 1.2 Hard"
-        "\n2. Playground"
-        // "\n- 2.1 Choose from Existing Maps"
-        // "\n- 2.1 Import a Custom Map"
-        "\n3. Solve a Maze"
-        // "\n- 3.1 Choose from Existing Maps"
-        // "\n- 3.1 Import a Custom Map"
-        "\n4. History"
-        "\n5. Users"
-        "\n6. Leaderboard"
-        "\n0. Exit";
-    string choice1;
     bool indexerror = 0, typeerror = 0;
     do
     {
         clearScreen();
-        cout << menu << endl
-             << ((indexerror) ? red + "Out of Index! Please enetr a number between 0 and 6" + reset + "\n" : "\n")
-             << ((typeerror) ? red + "Input wasn't a number! Please enetr a number between 0 and 6" + reset + "\n" : "\n")
+        cout << options << endl
+             << ((indexerror) ? red + "Out of Index!\nPlease enetr a number between 0 and 6" + reset + "\n" : "")
+             << ((typeerror) ? red + "Input wasn't a number!\nPlease enetr a number between 0 and 6" + reset + "\n" : "")
+             << string(2 * (1 - indexerror - typeerror), '\n')
              << "Enter your choice: ";
         indexerror = typeerror = 0;
-        cin >> choice1;
-        if (isInteger(choice1))
+        cin >> input;
+        if (isInteger(input))
         {
-            if (choice1.size() > 2 || stoi(choice1) > 6 || stoi(choice1) < 0)
+            if (input.size() > 2 || stoi(input) > to || stoi(input) < from)
                 indexerror = 1;
         }
         else
@@ -85,3 +118,52 @@ void menu()
 
     } while (indexerror || typeerror);
 }
+
+// void menu()
+// {
+//     string menu0 =
+//         "\n1. Create a New Map"
+//         // "\n- 1.1 Easy"
+//         // "\n- 1.2 Hard"
+//         "\n2. Playground"
+//         // "\n- 2.1 Choose from Existing Maps"
+//         // "\n- 2.1 Import a Custom Map"
+//         "\n3. Solve a Maze"
+//         // "\n- 3.1 Choose from Existing Maps"
+//         // "\n- 3.1 Import a Custom Map"
+//         "\n4. History"
+//         "\n5. Users"
+//         "\n6. Leaderboard"
+//         "\n0. Exit";
+//     string menu1 =
+//         "\n1. Easy"
+//         "\n2. Hard"
+//         "\n0. Back";
+//     string menu2 =
+//         "\n1. Choose from Existing Maps"
+//         "\n2. Import a Custom Map"
+//         "\n0. Back";
+//     string choice1, choice2;
+//     // cout << menu;
+//     getinput(choice1, menu0, 0, 6);
+//     switch (stoi(choice1))
+//     {
+//     case 1:
+//         getinput(choice2, menu1, 0, 2);
+//         break;
+//     case 2:
+//         getinput(choice2, menu1, 0, 2);
+//         break;
+//     case 3:
+//         getinput(choice2, menu2, 0, 2);
+//         break;
+//     case 4:
+//         break;
+//     case 5:
+//         break;
+//     case 6:
+//         break;
+//     default:
+//         return;
+//     }
+// }

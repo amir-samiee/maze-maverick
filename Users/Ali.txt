@@ -1,1 +1,4 @@
-This file was created only to provide the ability to create the folder including it, otherwise it's nothing more than a test file.
+Games: examplenumber
+Wins: examplenumber
+Last Win Time: examplenumber
+Total Time: examplenumber

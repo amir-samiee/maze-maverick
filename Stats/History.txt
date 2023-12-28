@@ -1,2 +1,11 @@
-exampledate exampleusername examplemapname time result
-12/27/2023 Ali Map1 123 W
+exampledate 
+exampleusername
+examplemapname
+time
+result
+
+12/27/2023
+Ali
+Map1
+123
+W

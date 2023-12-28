@@ -24,6 +24,29 @@ void getinput(string &input, string options, int from, int to);
     // strftime(buffer, sizeof(buffer), "%m/%d/%Y", ltm);
     // cout << buffer << endl;
 
+// reading the history data:
+    // ifstream historyfile("./Stats/History.txt");
+    // string date, user, map, emptyline;
+    // int time;
+    // char result;
+    // while (historyfile.ignore(6))
+    // {
+    //     getline(historyfile, date);
+    //     historyfile.ignore(11);
+    //     getline(historyfile, user);
+    //     historyfile.ignore(10);
+    //     getline(historyfile, map);
+    //     historyfile.ignore(6);
+    //     historyfile >> time;
+    //     historyfile.ignore(8);
+    //     historyfile >> result;
+    //     getline(historyfile, emptyline);
+    //     /*
+    //     Processing data and printing it
+    //     */
+    // }
+    // historyfile.close();
+
 
 int main()
 {

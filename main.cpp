@@ -14,7 +14,7 @@ void clearScreen();
 bool isInteger(string s);
 void getinput(string &input, string options, int from, int to);
 
-// pieces of codes that we will need:
+// pieces of code that we will need:
 
 // getting the date in the most proper format:
     // #include <ctime>

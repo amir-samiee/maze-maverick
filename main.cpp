@@ -25,7 +25,7 @@ void getinput(string &input, string options, int from, int to);
     // cout << buffer << endl;
 
 // reading the history data:
-    // ifstream historyfile("./Stats/History.txt");
+    // ifstream historyfile("Stats/History.txt");
     // string date, user, map, emptyline;
     // int time;
     // char result;

@@ -152,7 +152,7 @@ void getinput(string &input, string options, int from, int to)
 void createNewMap()
 {
     string choice;
-    getinput(choice, menu1, 0, 2);
+    getinput(choice, "Create a new map:\n" + menu1, 0, 2);
     switch (stoi(choice))
     {
     case 1:

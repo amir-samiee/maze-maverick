@@ -12,12 +12,10 @@ const string cyan("\033[0;36m");
 const string magenta("\033[0;35m");
 const string reset("\033[0m");
 // FUNCTIONS
-void clearScreen();
-bool isInteger(string s);
-void getinput(string &input, string options, int from, int to);
-void createNewMap();
-void easy();
-void hard();
+void clearScreen(); // this function has been declared to clear the screen on both windows and linux
+bool isInteger(string s); //returns 1 if a string can be converted to an integer, otherwise 0
+void getinput(string &input, string options, int from, int to); // shows a list of options and gets input until user inputs a valid choice. the choice should be an integer from integer "from" to integer "to"
+void createNewMap(); 
 
 // pieces of code that we will need:
 
@@ -86,10 +84,8 @@ int main()
         createNewMap();
         break;
     case 2:
-        // getinput(choice2, menu2, 0, 2);
         break;
     case 3:
-        // getinput(choice2, menu2, 0, 2);
         break;
     case 4:
         break;

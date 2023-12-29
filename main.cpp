@@ -1,4 +1,7 @@
 #include <iostream>
+#include <algorithm>
+#include <vector>
+#include <random>
 #include <windows.h>
 #include <ctype.h>
 using namespace std;
@@ -13,6 +16,8 @@ const string reset("\033[0m");
 void clearScreen();
 bool isInteger(string s);
 void getinput(string &input, string options, int from, int to);
+//function to find a random path
+void mazepathmaker(int eorh, int x , int y, int x_1 , int y_1, int& length, int togo)
 
 // pieces of code that we will need:
 
@@ -140,4 +145,46 @@ void getinput(string &input, string options, int from, int to)
             typeerror = 1;
 
     } while (indexerror || typeerror);
+}
+void mazepathmaker(int eorh, int x , int y, int x_1 , int y_1, int& length, int togo)
+{
+    if(eorh == 1)
+    {
+        string a;
+        cout << "pls enter the length of the path:\n";
+        cin >> a;
+        if(stoi(a) < x + y - 2)
+        {
+            cout << "invalid length. pls try again:\n";
+        }
+        else
+        {
+            length = stoi(a);
+        }
+    }
+    vector<int> arr;
+    for(int i = 1; i < 5; i++)
+    {
+        arr.push_back(i);
+    }
+    unsigned seed = 0;
+    shuffle(arr.begin() , arr.end() , default_random_engine(seed));
+    for(int i = 0; i < 4; i++)
+    {
+        switch (arr[i])
+        {
+        case 1:
+            mazepathmaker(2 , x , y , x_1 + 1 , y_1, length, togo - 1);
+            break;
+        case 2:
+            mazepathmaker(2, x , y , x_1 - 1 , y_1, length, togo - 1);
+            break;
+        case 3:
+            mazepathmaker(2, x , y , x_1 , y_1 + 1, length, togo - 1);
+            break;
+        default:
+            mazepathmaker(2, x , y , x_1 , y_1 - 1, length, togo - 1);
+            break;
+        }
+    }
 }

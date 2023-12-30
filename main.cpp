@@ -1,5 +1,6 @@
 #include <iostream>
 #include <windows.h>
+#include <fstream>
 // #include <cstdio>
 #include <conio.h>
 #include <ctype.h>
@@ -16,6 +17,7 @@ void clearScreen();                                             // this function
 bool isInteger(string s);                                       // returns 1 if a string can be converted to an integer, otherwise 0
 void getinput(string &input, string options, int from, int to); // shows a list of options and gets input until user inputs a valid choice. the choice should be an integer from integer "from" to integer "to"
 void createNewMap();
+void showHistory();
 
 // pieces of code that we will need:
 
@@ -40,7 +42,7 @@ void createNewMap();
 //     historyfile.ignore(10);
 //     getline(historyfile, map);
 //     historyfile.ignore(6);
-//     historyfile >> time;
+//     historyfile >> time >> emptyline;
 //     historyfile.ignore(8);
 //     historyfile >> result;
 //     getline(historyfile, emptyline);
@@ -137,6 +139,7 @@ int main()
     case 3:
         break;
     case 4:
+        showHistory();
         break;
     case 5:
         break;
@@ -194,6 +197,22 @@ void getinput(string &input, string options, int from, int to)
     } while (indexerror || typeerror);
 }
 
+void easy()
+{
+    clearScreen();
+    cout << "This part of the program has not been ready yet\nEnter something to go back";
+    _getch();
+    return;
+}
+
+void hard()
+{
+    clearScreen();
+    cout << "This part of the program has not been ready yet\nEnter something to go back";
+    _getch();
+    return;
+}
+
 void createNewMap()
 {
     string choice;
@@ -210,19 +229,14 @@ void createNewMap()
         return;
     }
 }
-
-void easy()
+void showHistory()
 {
     clearScreen();
-    cout << "This part of the program has not been ready yet\nEnter something to go back";
+    ifstream historyfile("Stats/History.txt");
+    string line;
+    while (getline(historyfile, line))
+        cout << line << endl;
+    historyfile.close();
+    cout << "\nPress any key to coninue: ";
     _getch();
-    return;
-}
-
-void hard()
-{
-    clearScreen();
-    cout << "This part of the program has not been ready yet\nEnter something to go back";
-    _getch();
-    return;
 }

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <windows.h>
 #include <fstream>
+#include <vector>
 // #include <cstdio>
 #include <conio.h>
 #include <ctype.h>
@@ -18,6 +19,7 @@ bool isInteger(string s);                                       // returns 1 if 
 void getinput(string &input, string options, int from, int to); // shows a list of options and gets input until user inputs a valid choice. the choice should be an integer from integer "from" to integer "to"
 void createNewMap();
 void showHistory();
+void showUsers();
 
 // pieces of code that we will need:
 
@@ -237,6 +239,16 @@ void showHistory()
     while (getline(historyfile, line))
         cout << line << endl;
     historyfile.close();
+    cout << "\nPress any key to coninue: ";
+    _getch();
+}
+void showUsers()
+{
+    clearScreen();
+    ifstream usersfile("Users/allusers.txt");
+    vector<string> users;
+
+    usersfile.close();
     cout << "\nPress any key to coninue: ";
     _getch();
 }

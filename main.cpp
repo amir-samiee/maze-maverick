@@ -12,10 +12,10 @@ const string cyan("\033[0;36m");
 const string magenta("\033[0;35m");
 const string reset("\033[0m");
 // FUNCTIONS
-void clearScreen(); // this function has been declared to clear the screen on both windows and linux
-bool isInteger(string s); //returns 1 if a string can be converted to an integer, otherwise 0
+void clearScreen();                                             // this function has been declared to clear the screen on both windows and linux
+bool isInteger(string s);                                       // returns 1 if a string can be converted to an integer, otherwise 0
 void getinput(string &input, string options, int from, int to); // shows a list of options and gets input until user inputs a valid choice. the choice should be an integer from integer "from" to integer "to"
-void createNewMap(); 
+void createNewMap();
 
 // pieces of code that we will need:
 
@@ -49,6 +49,55 @@ void createNewMap();
 //     */
 // }
 // historyfile.close();
+
+// updating the screen:
+// #include <windows.h>
+// #include <conio.h>
+// #include <ctime>
+// char ch;
+// int i = 0 while (true)
+// {
+//     if (kbhit())
+//     {
+//         ch = getch();
+//         if (ch == ' ')
+//             updateScreen();
+//     }
+//     else
+//     {
+//         Sleep(100);
+//         if (i++ --9)
+//         {
+//             i = 0;
+//             updateScreen();
+//         }
+//     }
+// }
+
+// getting arrow keys as input:
+// #include <conio.h> // for getch()
+// #include <iostream> // for cout
+// using namespace std;
+
+// int main() {
+//   int ch; // to store the character code
+//   while (true) { // loop until ESC is pressed
+//     ch = getch(); // get the first value
+//     if (ch == 0 || ch == 224) { // check if it is 0 or 224
+//       ch = getch(); // get the second value
+//       switch (ch) { // check the arrow key code
+//         case 72: cout << "UP\n"; break; // up arrow
+//         case 80: cout << "DOWN\n"; break; // down arrow
+//         case 75: cout << "LEFT\n"; break; // left arrow
+//         case 77: cout << "RIGHT\n"; break; // right arrow
+//       }
+//     }
+//     else if (ch == 27) { // check if it is ESC
+//       break; // exit the loop
+//     }
+//   }
+//   return 0;
+// }
 
 string menu0 =
     "\n1. Create a New Map"

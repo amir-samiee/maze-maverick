@@ -20,6 +20,7 @@ void getinput(string &input, string options, int from, int to); // shows a list 
 void createNewMap();                                            // creates a map (part 1)
 void showHistory();                                             // shows the history of the games (part 4)
 void showUsers();                                               // shows the users (part 5)
+void leaderboard();                                             // shows the users (part 5)
 
 // pieces of code that we will need:
 
@@ -130,6 +131,7 @@ int main()
 {
 
     string choice1;
+    // cin >> choice1;
     getinput(choice1, menu0, 0, 6);
     switch (stoi(choice1))
     {
@@ -147,6 +149,7 @@ int main()
         showUsers();
         break;
     case 6:
+        leaderboard();
         break;
     default:
         cout << endl
@@ -184,7 +187,7 @@ void getinput(string &input, string options, int from, int to)
         clearScreen();
         cout << options << endl
              << ((indexerror) ? red + "Out of Index!\nPlease enetr a number between 0 and 6" + reset + "\n" : "")
-             << ((typeerror) ? red + "Input wasn't a number!\nPlease enetr a number between 0 and 6" + reset + "\n" : "")
+             << ((typeerror) ? red + "Input wasn't a number!\nPlease enetr a number between " + to_string(from) + " and " + to_string(to) + reset + "\n" : "")
              << string(2 * (1 - indexerror - typeerror), '\n')
              << "Enter your choice: ";
         indexerror = typeerror = 0;
@@ -232,6 +235,7 @@ void createNewMap()
         return;
     }
 }
+
 void showHistory()
 {
     clearScreen();
@@ -243,6 +247,7 @@ void showHistory()
     cout << "\nPress any key to coninue: ";
     _getch();
 }
+
 void showUsers()
 {
     clearScreen();
@@ -279,6 +284,46 @@ void showUsers()
     // else
     //     cout << red + "error" + reset;
     usersfile.close();
+    cout << "\nPress any key to coninue: ";
+    _getch();
+}
+
+struct user
+{
+    string name;
+    int wins;
+    int totaltime;
+};
+
+bool compare(user a, user b)
+{
+    if (a.wins > b.wins)
+        return 1;
+    if (a.wins < b.wins)
+        return 0;
+    if (a.totaltime < b.totaltime)
+        return 1;
+    // if (a.totaltime > b.totaltime)
+    return 0;
+}
+
+void leaderboard()
+{
+    clearScreen();
+    ifstream usersfile("Users/allusers.txt");
+    vector<string> users;
+    string name;
+    while (usersfile >> name)
+        users.push_back(name);
+    usersfile.close();
+    vector<user> players;
+    for (auto u : users)
+    {
+        // cout << user << endl;
+        ifstream userfile("Users/" + u + ".txt");
+        cout << userfile.is_open();
+        userfile.close();
+    }
     cout << "\nPress any key to coninue: ";
     _getch();
 }

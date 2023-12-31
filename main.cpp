@@ -19,7 +19,7 @@ const string reset("\033[0m");
 // FUNCTIONS
 
 //function to find a random path
-void mazepathmaker(int eorh, int x , int y, int x_1 , int y_1, int& length, int togo)
+void mazepathmaker(int eorh, int x , int y, int x_1 , int y_1, int& length, int togo , int& flag);
 
 void clearScreen();                                             // this function has been declared to clear the screen on both windows and linux
 bool isInteger(string s);                                       // returns 1 if a string can be converted to an integer, otherwise 0
@@ -207,37 +207,36 @@ void getinput(string &input, string options, int from, int to)
     } while (indexerror || typeerror);
 }
 
-void easy()
-{
-    clearScreen();
-    cout << "This part of the program has not been ready yet\nEnter something to go back";
-    _getch();
-    return;
-}
-
-void hard()
-{
-    clearScreen();
-    cout << "This part of the program has not been ready yet\nEnter something to go back";
-    _getch();
-    return;
-}
-
 void createNewMap()
 {
-    string choice;
+    string choice , Scolumn , Srow;
     getinput(choice, "Create a new map:\n" + menu1, 0, 2);
-    switch (stoi(choice))
+    int flag = 0 , column = stoi(Scolumn) , row = stoi(Srow) , length = column + row - 2 , maze[column + 2][row + 2];
+    for(int i = 0; i < row + 2; i++)
     {
-    case 1:
-        easy();
-        break;
-    case 2:
-        hard();
-        break;
-    default:
-        return;
+        if(i == 0 || i == row + 1)
+        {
+            for(int l = 0 ; l < column + 2; l++)
+            {
+                maze[i][l] = 0;
+            }
+        }
+        else
+        {
+            for(int l = 0; l < column + 2; l++)
+            {
+                if(l == 0 || l == column + 1)
+                {
+                    maze[i][l] = 0;
+                }
+                else
+                {
+                    maze[i][l] = 1;
+                }
+            }
+        }
     }
+    mazepathmaker(stoi(choice), column, row, 1, 1, length, length, flag);
 }
 void showHistory()
 {
@@ -264,4 +263,59 @@ void showUsers()
     usersfile.close();
     cout << "\nPress any key to coninue: ";
     _getch();
+}
+void mazepathmaker(int eorh, int x , int y, int x_1 , int y_1, int& length, int togo , int& flag)
+{
+    string Slength;
+    if(eorh == 2)
+    {
+        getinput(Slength , "pls enter the length of the path:\n", x + y - 2 , x * y - 1);
+        length = stoi(Slength);
+    }
+    if(togo = 0 && x_1 == x && y_1 == y)
+    {
+        flag = 1;
+        return;
+    }
+    vector<int> arr;
+    for(int i = 1; i < 5; i++)
+    {
+        arr.push_back(i);
+    }
+    unsigned seed = 0;
+    shuffle(arr.begin() , arr.end() , default_random_engine(seed));
+    for(int i = 0; i < 4; i++)
+    {
+        switch (arr[i])
+        {
+        case 1:
+            mazepathmaker(1 , x , y , x_1 + 1 , y_1, length, togo - 1, flag);
+            if(flag == 1)
+            {
+                return;
+            }
+            break;
+        case 2:
+            mazepathmaker(1, x , y , x_1 - 1 , y_1, length, togo - 1, flag);
+            if(flag == 1)
+            {
+                return;
+            }
+            break;
+        case 3:
+            mazepathmaker(1, x , y , x_1 , y_1 + 1, length, togo - 1, flag);
+            if(flag == 1)
+            {
+                return;
+            }
+            break;
+        default:
+            mazepathmaker(1, x , y , x_1 , y_1 - 1, length, togo - 1, flag);
+            if(flag == 1)
+            {
+                return;
+            }
+            break;
+        }
+    }
 }

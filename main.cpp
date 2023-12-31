@@ -24,9 +24,9 @@ void mazepathmaker(int eorh, int x , int y, int x_1 , int y_1, int& length, int 
 void clearScreen();                                             // this function has been declared to clear the screen on both windows and linux
 bool isInteger(string s);                                       // returns 1 if a string can be converted to an integer, otherwise 0
 void getinput(string &input, string options, int from, int to); // shows a list of options and gets input until user inputs a valid choice. the choice should be an integer from integer "from" to integer "to"
-void createNewMap();                                            // creates a map (part 1)
-void showHistory();                                             // shows the history of the games (part 4)
-void showUsers();                                               // shows the users (part 5)
+void createNewMap();
+void showHistory();
+void showUsers();
 
 
 // pieces of code that we will need:

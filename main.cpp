@@ -19,7 +19,7 @@ const string reset("\033[0m");
 // FUNCTIONS
 
 //function to find a random path
-void mazepathmaker(int eorh, int x , int y, int x_1 , int y_1, int& length, int togo , int& flag);
+void mazepathmaker(int eorh, int **& maze , int x , int y, int x_1 , int y_1, int& length, int togo , int& flag);
 
 void clearScreen();                                             // this function has been declared to clear the screen on both windows and linux
 bool isInteger(string s);                                       // returns 1 if a string can be converted to an integer, otherwise 0
@@ -211,7 +211,11 @@ void createNewMap()
 {
     string choice , Scolumn , Srow;
     getinput(choice, "Create a new map:\n" + menu1, 0, 2);
-    int flag = 0 , column = stoi(Scolumn) , row = stoi(Srow) , length = column + row - 2 , maze[column + 2][row + 2];
+    int flag = 0 , column = stoi(Scolumn) , row = stoi(Srow) , length = column + row - 2 , **maze = new int*[row + 2];
+    for(int i = 0; i < row + 2; i++)
+    {
+        maze[i] = new int[column + 2];
+    }
     for(int i = 0; i < row + 2; i++)
     {
         if(i == 0 || i == row + 1)
@@ -236,7 +240,7 @@ void createNewMap()
             }
         }
     }
-    mazepathmaker(stoi(choice), column, row, 1, 1, length, length, flag);
+    mazepathmaker(stoi(choice), maze ,column, row, 1, 1, length, length, flag);
 }
 void showHistory()
 {
@@ -264,8 +268,9 @@ void showUsers()
     cout << "\nPress any key to coninue: ";
     _getch();
 }
-void mazepathmaker(int eorh, int x , int y, int x_1 , int y_1, int& length, int togo , int& flag)
+void mazepathmaker(int eorh, int**& maze, int x , int y, int x_1 , int y_1, int& length, int togo , int& flag)
 {
+    maze[x_1][y_1] = 0;
     string Slength;
     if(eorh == 2)
     {
@@ -289,28 +294,28 @@ void mazepathmaker(int eorh, int x , int y, int x_1 , int y_1, int& length, int 
         switch (arr[i])
         {
         case 1:
-            mazepathmaker(1 , x , y , x_1 + 1 , y_1, length, togo - 1, flag);
+            mazepathmaker(1 , maze ,x , y , x_1 + 1 , y_1, length, togo - 1, flag);
             if(flag == 1)
             {
                 return;
             }
             break;
         case 2:
-            mazepathmaker(1, x , y , x_1 - 1 , y_1, length, togo - 1, flag);
+            mazepathmaker(1, maze ,x , y , x_1 - 1 , y_1, length, togo - 1, flag);
             if(flag == 1)
             {
                 return;
             }
             break;
         case 3:
-            mazepathmaker(1, x , y , x_1 , y_1 + 1, length, togo - 1, flag);
+            mazepathmaker(1, maze ,x , y , x_1 , y_1 + 1, length, togo - 1, flag);
             if(flag == 1)
             {
                 return;
             }
             break;
         default:
-            mazepathmaker(1, x , y , x_1 , y_1 - 1, length, togo - 1, flag);
+            mazepathmaker(1, maze ,x , y , x_1 , y_1 - 1, length, togo - 1, flag);
             if(flag == 1)
             {
                 return;
@@ -318,4 +323,5 @@ void mazepathmaker(int eorh, int x , int y, int x_1 , int y_1, int& length, int 
             break;
         }
     }
+    maze[x_1][y_1] = 1;
 }

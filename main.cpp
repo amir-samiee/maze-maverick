@@ -186,7 +186,7 @@ void getinput(string &input, string options, int from, int to)
     {
         clearScreen();
         cout << options << endl
-             << ((indexerror) ? red + "Out of Index!\nPlease enetr a number between 0 and 6" + reset + "\n" : "")
+             << ((indexerror) ? red + "Out of Index!\nPlease enetr a number between " + to_string(from) + " and " + to_string(to) + reset + "\n" : "")
              << ((typeerror) ? red + "Input wasn't a number!\nPlease enetr a number between " + to_string(from) + " and " + to_string(to) + reset + "\n" : "")
              << string(2 * (1 - indexerror - typeerror), '\n')
              << "Enter your choice: ";
@@ -264,14 +264,19 @@ void showUsers()
         clearScreen();
         cout << "List of users:\n\n";
         for (int i = 0; i < users.size(); i++)
-            cout << '\t' << i + 1 << ". " << users[i] << endl;
+            cout << '\t' << users[i] << endl;
         cout << (nameerror ? red + "Invalid name!\nPlease enter a name included in the list\n" + reset : "\n\n")
-             << "Enter a name: ";
+             << "Enter a name or enter 0 to go back: ";
         cin >> name;
+        if (name == "0")
+            return;
         nameerror = 1;
         for (int i = 0; i < users.size(); i++)
             if (users[i] == name)
+            {
                 nameerror = 0;
+                break;
+            }
 
     } while (nameerror);
     ifstream userfile("Users/" + name + ".txt");
@@ -286,6 +291,7 @@ void showUsers()
     usersfile.close();
     cout << "\nPress any key to coninue: ";
     _getch();
+    showUsers();
 }
 
 struct user
@@ -303,16 +309,18 @@ bool compare(user a, user b)
         return 0;
     if (a.totaltime < b.totaltime)
         return 1;
-    // if (a.totaltime > b.totaltime)
-    return 0;
+    if (a.totaltime > b.totaltime)
+        return 0;
+    return (b.name.compare(a.name) >= 0);
 }
 
 void leaderboard()
 {
     clearScreen();
+    cout << "Finding best players...";
     ifstream usersfile("Users/allusers.txt");
     vector<string> users;
-    string name;
+    string name, line;
     while (usersfile >> name)
         users.push_back(name);
     usersfile.close();
@@ -321,9 +329,23 @@ void leaderboard()
     {
         // cout << user << endl;
         ifstream userfile("Users/" + u + ".txt");
-        cout << userfile.is_open();
+        user opened;
+        opened.name = u;
+        getline(usersfile, line);
+        userfile.ignore(6);
+        userfile >> opened.wins;
+        getline(usersfile, line);
+        userfile.ignore(12);
+        userfile >> opened.totaltime;
+        players.push_back(opened);
         userfile.close();
     }
+
+    clearScreen();
+    cout << "Leaderboard:\n\n";
+    int size = players.size();
+    for (int i = min(3, size) - 1; i >= 0; i--)
+        cout << min(3, size) - i << ". " << players[i].name << endl;
     cout << "\nPress any key to coninue: ";
     _getch();
 }

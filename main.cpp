@@ -144,6 +144,7 @@ int main()
         showHistory();
         break;
     case 5:
+        showUsers();
         break;
     case 6:
         break;
@@ -247,12 +248,36 @@ void showUsers()
     clearScreen();
     ifstream usersfile("Users/allusers.txt");
     vector<string> users;
-    // incomplete
-    // incomplete
-    // incomplete
-    // incomplete
-    // incomplete
-    // incomplete
+    string name;
+    while (usersfile >> name)
+        users.push_back(name);
+    usersfile.close();
+
+    bool nameerror = 0;
+    do
+    {
+        clearScreen();
+        cout << "List of users:\n\n";
+        for (int i = 0; i < users.size(); i++)
+            cout << '\t' << i + 1 << ". " << users[i] << endl;
+        cout << (nameerror ? red + "Invalid name!\nPlease enter a name included in the list\n" + reset : "\n\n")
+             << "Enter a name: ";
+        cin >> name;
+        nameerror = 1;
+        for (int i = 0; i < users.size(); i++)
+            if (users[i] == name)
+                nameerror = 0;
+
+    } while (nameerror);
+    ifstream userfile("Users/" + name + ".txt");
+    string line;
+    // if (userfile.is_open())
+    clearScreen();
+    cout << "Name: " << name << endl;
+    while (getline(userfile, line))
+        cout << line << endl;
+    // else
+    //     cout << red + "error" + reset;
     usersfile.close();
     cout << "\nPress any key to coninue: ";
     _getch();

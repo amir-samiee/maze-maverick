@@ -19,7 +19,7 @@ const string reset("\033[0m");
 // FUNCTIONS
 
 //function to find a random path
-void mazepathmaker(int eorh, int **& maze , int x , int y, int x_1 , int y_1, int& length, int togo , int& flag);
+void mazepathmaker(int eorh, int **& maze , int x , int y, int x_1 , int y_1, int togo , int& flag);
 
 void clearScreen();                                             // this function has been declared to clear the screen on both windows and linux
 bool isInteger(string s);                                       // returns 1 if a string can be converted to an integer, otherwise 0
@@ -212,6 +212,7 @@ void createNewMap()
     string choice , Scolumn , Srow;
     getinput(choice, "Create a new map:\n" + menu1, 0, 2);
     int flag = 0 , column = stoi(Scolumn) , row = stoi(Srow) , length = column + row - 2 , **maze = new int*[row + 2];
+    
     for(int i = 0; i < row + 2; i++)
     {
         maze[i] = new int[column + 2];
@@ -240,7 +241,7 @@ void createNewMap()
             }
         }
     }
-    mazepathmaker(stoi(choice), maze ,column, row, 1, 1, length, length, flag);
+    mazepathmaker(stoi(choice), maze ,row, column, 1, 1, length, flag);
 }
 void showHistory()
 {
@@ -268,18 +269,27 @@ void showUsers()
     cout << "\nPress any key to coninue: ";
     _getch();
 }
-void mazepathmaker(int eorh, int**& maze, int x , int y, int x_1 , int y_1, int& length, int togo , int& flag)
+void mazepathmaker(int eorh, int**& maze, int x , int y, int x_1 , int y_1, int togo , int& flag)
 {
+    if(maze[x_1][y_1] == 0)
+    {
+        return;
+    }
     maze[x_1][y_1] = 0;
     string Slength;
     if(eorh == 2)
     {
         getinput(Slength , "pls enter the length of the path:\n", x + y - 2 , x * y - 1);
-        length = stoi(Slength);
+        togo = stoi(Slength);
     }
-    if(togo = 0 && x_1 == x && y_1 == y)
+    if(togo == 0 && x_1 == x && y_1 == y)
     {
         flag = 1;
+        return;
+    }
+    if(togo < x + y - x_1 - y_1)
+    {
+        maze[x_1][y_1] = 1;
         return;
     }
     vector<int> arr;
@@ -287,35 +297,36 @@ void mazepathmaker(int eorh, int**& maze, int x , int y, int x_1 , int y_1, int&
     {
         arr.push_back(i);
     }
-    unsigned seed = 0;
-    shuffle(arr.begin() , arr.end() , default_random_engine(seed));
+    std::random_device rd;
+    std::default_random_engine rng(rd());
+    shuffle(arr.begin() , arr.end() ,rng);
     for(int i = 0; i < 4; i++)
     {
         switch (arr[i])
         {
         case 1:
-            mazepathmaker(1 , maze ,x , y , x_1 + 1 , y_1, length, togo - 1, flag);
+            mazepathmaker(1 , maze ,x , y , x_1 + 1 , y_1, togo - 1, flag);
             if(flag == 1)
             {
                 return;
             }
             break;
         case 2:
-            mazepathmaker(1, maze ,x , y , x_1 - 1 , y_1, length, togo - 1, flag);
+            mazepathmaker(1, maze ,x , y , x_1 - 1 , y_1, togo - 1, flag);
             if(flag == 1)
             {
                 return;
             }
             break;
         case 3:
-            mazepathmaker(1, maze ,x , y , x_1 , y_1 + 1, length, togo - 1, flag);
+            mazepathmaker(1, maze ,x , y , x_1 , y_1 + 1, togo - 1, flag);
             if(flag == 1)
             {
                 return;
             }
             break;
         default:
-            mazepathmaker(1, maze ,x , y , x_1 , y_1 - 1, length, togo - 1, flag);
+            mazepathmaker(1, maze ,x , y , x_1 , y_1 - 1, togo - 1, flag);
             if(flag == 1)
             {
                 return;

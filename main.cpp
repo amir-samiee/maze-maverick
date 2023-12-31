@@ -1,5 +1,9 @@
 #include <iostream>
 #include <windows.h>
+#include <fstream>
+#include <vector>
+// #include <cstdio>
+#include <conio.h>
 #include <ctype.h>
 using namespace std;
 // COLORS
@@ -10,89 +14,142 @@ const string cyan("\033[0;36m");
 const string magenta("\033[0;35m");
 const string reset("\033[0m");
 // FUNCTIONS
-void clearScreen();
-bool isInteger(string s);
-void getinput(string &input, string options, int from, int to);
+void clearScreen();                                             // this function has been declared to clear the screen on both windows and linux
+bool isInteger(string s);                                       // returns 1 if a string can be converted to an integer, otherwise 0
+void getinput(string &input, string options, int from, int to); // shows a list of options and gets input until user inputs a valid choice. the choice should be an integer from integer "from" to integer "to"
+void createNewMap();                                            // creates a map (part 1)
+void showHistory();                                             // shows the history of the games (part 4)
+void showUsers();                                               // shows the users (part 5)
 
 // pieces of code that we will need:
 
 // getting the date in the most proper format:
-    // #include <ctime>
-    // time_t now = time(0);
-    // tm *ltm = localtime(&now);
-    // char buffer[256];
-    // strftime(buffer, sizeof(buffer), "%m/%d/%Y", ltm);
-    // cout << buffer << endl;
+// #include <ctime>
+// time_t now = time(0);
+// tm *ltm = localtime(&now);
+// char buffer[256];
+// strftime(buffer, sizeof(buffer), "%m/%d/%Y", ltm);
+// cout << buffer << endl;
 
 // reading the history data:
-    // ifstream historyfile("Stats/History.txt");
-    // string date, user, map, emptyline;
-    // int time;
-    // char result;
-    // while (historyfile.ignore(6))
-    // {
-    //     getline(historyfile, date);
-    //     historyfile.ignore(11);
-    //     getline(historyfile, user);
-    //     historyfile.ignore(10);
-    //     getline(historyfile, map);
-    //     historyfile.ignore(6);
-    //     historyfile >> time;
-    //     historyfile.ignore(8);
-    //     historyfile >> result;
-    //     getline(historyfile, emptyline);
-    //     /*
-    //     Processing data and printing it
-    //     */
-    // }
-    // historyfile.close();
+// ifstream historyfile("Stats/History.txt");
+// string date, user, map, emptyline;
+// int time;
+// char result;
+// while (historyfile.ignore(6))
+// {
+//     getline(historyfile, date);
+//     historyfile.ignore(11);
+//     getline(historyfile, user);
+//     historyfile.ignore(10);
+//     getline(historyfile, map);
+//     historyfile.ignore(6);
+//     historyfile >> time >> emptyline;
+//     historyfile.ignore(8);
+//     historyfile >> result;
+//     getline(historyfile, emptyline);
+//     /*
+//     Processing data and printing it
+//     */
+// }
+// historyfile.close();
 
+// updating the screen:
+// #include <windows.h>
+// #include <conio.h>
+// #include <ctime>
+// char ch;
+// int i = 0 while (true)
+// {
+//     if (kbhit())
+//     {
+//         ch = getch();
+//         if (ch == ' ')
+//             updateScreen();
+//     }
+//     else
+//     {
+//         Sleep(100);
+//         if (i++ --9)
+//         {
+//             i = 0;
+//             updateScreen();
+//         }
+//     }
+// }
+
+// getting arrow keys as input:
+// #include <conio.h> // for getch()
+// #include <iostream> // for cout
+// using namespace std;
+
+// int main() {
+//   int ch; // to store the character code
+//   while (true) { // loop until ESC is pressed
+//     ch = getch(); // get the first value
+//     if (ch == 0 || ch == 224) { // check if it is 0 or 224
+//       ch = getch(); // get the second value
+//       switch (ch) { // check the arrow key code
+//         case 72: cout << "UP\n"; break; // up arrow
+//         case 80: cout << "DOWN\n"; break; // down arrow
+//         case 75: cout << "LEFT\n"; break; // left arrow
+//         case 77: cout << "RIGHT\n"; break; // right arrow
+//       }
+//     }
+//     else if (ch == 27) { // check if it is ESC
+//       break; // exit the loop
+//     }
+//   }
+//   return 0;
+// }
+
+string menu0 =
+    "\n1. Create a New Map"
+    // "\n- 1.1 Easy"
+    // "\n- 1.2 Hard"
+    "\n2. Playground"
+    // "\n- 2.1 Choose from Existing Maps"
+    // "\n- 2.1 Import a Custom Map"
+    "\n3. Solve a Maze"
+    // "\n- 3.1 Choose from Existing Maps"
+    // "\n- 3.1 Import a Custom Map"
+    "\n4. History"
+    "\n5. Users"
+    "\n6. Leaderboard"
+    "\n0. Exit";
+string menu1 =
+    "\n1. Easy"
+    "\n2. Hard"
+    "\n0. Back";
+string menu2 =
+    "\n1. Choose from Existing Maps"
+    "\n2. Import a Custom Map"
+    "\n0. Back";
 
 int main()
 {
-    string menu0 =
-        "\n1. Create a New Map"
-        // "\n- 1.1 Easy"
-        // "\n- 1.2 Hard"
-        "\n2. Playground"
-        // "\n- 2.1 Choose from Existing Maps"
-        // "\n- 2.1 Import a Custom Map"
-        "\n3. Solve a Maze"
-        // "\n- 3.1 Choose from Existing Maps"
-        // "\n- 3.1 Import a Custom Map"
-        "\n4. History"
-        "\n5. Users"
-        "\n6. Leaderboard"
-        "\n0. Exit";
-    string menu1 =
-        "\n1. Easy"
-        "\n2. Hard"
-        "\n0. Back";
-    string menu2 =
-        "\n1. Choose from Existing Maps"
-        "\n2. Import a Custom Map"
-        "\n0. Back";
-    string choice1, choice2;
+
+    string choice1;
     getinput(choice1, menu0, 0, 6);
     switch (stoi(choice1))
     {
     case 1:
-        getinput(choice2, menu1, 0, 2);
+        createNewMap();
         break;
     case 2:
-        getinput(choice2, menu1, 0, 2);
         break;
     case 3:
-        getinput(choice2, menu2, 0, 2);
         break;
     case 4:
+        showHistory();
         break;
     case 5:
         break;
     case 6:
         break;
     default:
-        cout << endl << yellow + "Exiting program...\n\n" + reset;
+        cout << endl
+             << yellow + "Exiting program...\n\n" + reset;
         return 0;
     }
     main();
@@ -140,4 +197,63 @@ void getinput(string &input, string options, int from, int to)
             typeerror = 1;
 
     } while (indexerror || typeerror);
+}
+
+void easy()
+{
+    clearScreen();
+    cout << "This part of the program has not been ready yet\nEnter something to go back";
+    _getch();
+    return;
+}
+
+void hard()
+{
+    clearScreen();
+    cout << "This part of the program has not been ready yet\nEnter something to go back";
+    _getch();
+    return;
+}
+
+void createNewMap()
+{
+    string choice;
+    getinput(choice, "Create a new map:\n" + menu1, 0, 2);
+    switch (stoi(choice))
+    {
+    case 1:
+        easy();
+        break;
+    case 2:
+        hard();
+        break;
+    default:
+        return;
+    }
+}
+void showHistory()
+{
+    clearScreen();
+    ifstream historyfile("Stats/History.txt");
+    string line;
+    while (getline(historyfile, line))
+        cout << line << endl;
+    historyfile.close();
+    cout << "\nPress any key to coninue: ";
+    _getch();
+}
+void showUsers()
+{
+    clearScreen();
+    ifstream usersfile("Users/allusers.txt");
+    vector<string> users;
+    // incomplete
+    // incomplete
+    // incomplete
+    // incomplete
+    // incomplete
+    // incomplete
+    usersfile.close();
+    cout << "\nPress any key to coninue: ";
+    _getch();
 }

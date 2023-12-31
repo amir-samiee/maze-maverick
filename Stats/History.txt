@@ -1,12 +1,11 @@
-Date: exampledate
-User Name: exampleusername
-Map Name: examplemapname
-Time: examplenumber
-Result: W/L
+Date: 12/27/2023
+User Name: Ali
+Map Name: Map1
+Time: 123 seconds
+Result: Win
 
 Date: 12/27/2023
 User Name: Ali
 Map Name: Map1
-Time: 123
-Result: W
-
+Time: 123 seconds
+Result: Win

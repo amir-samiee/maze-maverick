@@ -27,7 +27,7 @@ void getinput(string &input, string options, int from, int to); // shows a list 
 void createNewMap();
 void showHistory();
 void showUsers();
-
+bool isvalidint(string& input, int& output);                    //checks if the input is integer
 
 // pieces of code that we will need:
 
@@ -136,7 +136,7 @@ string menu2 =
 
 int main()
 {
-
+    
     string choice1;
     getinput(choice1, menu0, 0, 6);
     switch (stoi(choice1))
@@ -183,6 +183,31 @@ bool isInteger(string s)
     return 1;
 }
 
+bool isvalidint(string& input , int& output)
+{
+    try
+    {
+        output = stoi(input);
+    }
+    catch(invalid_argument)
+    {
+        return false;
+    }
+    return true;
+}
+
+void getintinput(string interact, string& input, int& result)
+{
+    // clearScreen();
+    cout << interact << '\n';
+    getline(cin , input);
+    while(!isvalidint(input, result))
+    {
+        clearScreen();
+        cout << "Invalid entry. pls try again: \n";
+        getline(cin, input);
+    }
+}
 void getinput(string &input, string options, int from, int to)
 {
     bool indexerror = 0, typeerror = 0;
@@ -210,9 +235,24 @@ void getinput(string &input, string options, int from, int to)
 void createNewMap()
 {
     string choice , Scolumn , Srow;
-    getinput(choice, "Create a new map:\n" + menu1, 0, 2);
-    int flag = 0 , column = stoi(Scolumn) , row = stoi(Srow) , length = column + row - 2 , **maze = new int*[row + 2];
-    
+    int mapdif ,flag = 0 , column , row , length , **maze;
+    getintinput("Create a new map: \n1. Easy\n2. Hard\n0. Back\nPls enter your choice: ", choice, mapdif);
+    while(mapdif > 2 || mapdif < 0)
+    {
+        getintinput("Pls enter a valid choice: \n1. Easy\n2. Hard\n0. Back\nPls enter your choice: ", choice, mapdif);
+    }
+    getintinput("Pls enter maze height: \n", Srow, row);
+    while(row < 2)
+    {
+        getintinput("Pls enter maze height (it cannot be less than 2): \n", Srow, row);
+    }
+    getintinput("Pls enter maze width: \n", Scolumn, column);
+    while(column < 2)
+    {
+        getintinput("Pls enter maze width (it cannot be less than 2): \n", Scolumn, column);
+    }
+    length = column + row - 2;
+    maze = new int*[row + 2];
     for(int i = 0; i < row + 2; i++)
     {
         maze[i] = new int[column + 2];
@@ -241,7 +281,7 @@ void createNewMap()
             }
         }
     }
-    mazepathmaker(stoi(choice), maze ,row, column, 1, 1, length, flag);
+    mazepathmaker(mapdif, maze ,row, column, 1, 1, length, flag);
 }
 void showHistory()
 {
@@ -279,8 +319,12 @@ void mazepathmaker(int eorh, int**& maze, int x , int y, int x_1 , int y_1, int 
     string Slength;
     if(eorh == 2)
     {
-        getinput(Slength , "pls enter the length of the path:\n", x + y - 2 , x * y - 1);
-        togo = stoi(Slength);
+        getintinput("Pls enter the length of the path:\n", Slength, togo);
+        while(togo < x + y - 2 || togo > x * y - 1)
+        {
+            cout << "Such a path cannot exist. \n Try again: \n";
+            getintinput( "Pls enter the length of the path:\n", Slength, togo);
+        }
     }
     if(togo == 0 && x_1 == x && y_1 == y)
     {

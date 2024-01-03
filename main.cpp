@@ -325,7 +325,7 @@ bool next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int
 void playground()
 {
     clearScreen();
-    ifstream mapfile("Maps/Map2.txt");
+    ifstream mapfile("Maps/Map3.txt");
     // get input ...
     int m, n, x = 1, y = 1;
     mapfile >> m >> n;

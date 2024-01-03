@@ -19,8 +19,11 @@ const string reset("\033[0m");
 // FUNCTIONS
 
 //function to find a random path
-void mazepathmaker(int eorh, int **& maze , int x , int y, int x_1 , int y_1, int togo , int& flag);
-
+void mazepathmaker(int **& maze , int row , int column , int rowin , int columnin , int togo , int& flag);
+//function to fill the maze
+void mazefiller(int **& maze, int row, int column, int length , int lowV , int highV , int leastW, int mostW);
+//function for generating random int excluding 0
+int randint(int floor, int ceil);
 void clearScreen();                                             // this function has been declared to clear the screen on both windows and linux
 bool isInteger(string s);                                       // returns 1 if a string can be converted to an integer, otherwise 0
 void getinput(string &input, string options, int from, int to); // shows a list of options and gets input until user inputs a valid choice. the choice should be an integer from integer "from" to integer "to"
@@ -234,24 +237,40 @@ void getinput(string &input, string options, int from, int to)
 
 void createNewMap()
 {
-    string choice , Scolumn , Srow;
+    string choice , Scolumn , Srow , Slength;
     int mapdif ,flag = 0 , column , row , length , **maze;
+    //gets map difficulty from user
     getintinput("Create a new map: \n1. Easy\n2. Hard\n0. Back\nPls enter your choice: ", choice, mapdif);
     while(mapdif > 2 || mapdif < 0)
     {
         getintinput("Pls enter a valid choice: \n1. Easy\n2. Hard\n0. Back\nPls enter your choice: ", choice, mapdif);
     }
+    // gets maze height from user 
     getintinput("Pls enter maze height: \n", Srow, row);
     while(row < 2)
     {
         getintinput("Pls enter maze height (it cannot be less than 2): \n", Srow, row);
     }
+    // gets maze width from user
     getintinput("Pls enter maze width: \n", Scolumn, column);
     while(column < 2)
     {
         getintinput("Pls enter maze width (it cannot be less than 2): \n", Scolumn, column);
     }
+    //length for basic maze
     length = column + row - 2;
+    // checks the difficulty option for advanced path making
+    if(mapdif == 2)
+    {
+        // gets length of path for the maze from user
+        getintinput("Pls enter the length of the path:\n", Slength, length);
+        while(length < row + column - 2 || length > row * column - 1 || length % 2 != (row + column) % 2)
+        {
+            cout << "Such a path cannot exist. \nTry again: \n";
+            getintinput( "Pls enter the length of the path:\n", Slength, length);
+        }
+    }
+    // setting the maze up
     maze = new int*[row + 2];
     for(int i = 0; i < row + 2; i++)
     {
@@ -281,7 +300,46 @@ void createNewMap()
             }
         }
     }
-    mazepathmaker(mapdif, maze ,row, column, 1, 1, length, flag);
+    // finding a random path for maze
+    mazepathmaker(maze ,row, column, 1, 1, length, flag);
+    
+    string SlowV , ShighV, SleastW, SmostW;
+    int lowV = -3 , highV = 3, leastW = 2, mostW = 5;
+    if(mapdif == 2)
+    {
+        // inputs the min value of blocks
+        getintinput("Pls enter your choice of min value of block: ", SlowV, lowV);
+        // inputs the max value of blocks
+        getintinput("Pls enter your choice of max value of block: ", ShighV, highV);
+        while(lowV > highV || (lowV == highV && lowV == 0))
+        {
+            getintinput("Pls enter your choice of max value of block (it can't be less than the min value): ", ShighV, highV);
+        }
+        // inputs the least amount of walls
+        getintinput("Pls enter your choice of min amount of walls: ", SleastW, leastW);
+        while(leastW < 0 || leastW > row * column - length - 1)
+        {
+            getintinput("Pls enter your choice of min amount of walls \n(it can't be less than 0 or more than amount of block available): ", SleastW, leastW);
+        }
+        //inputs the most amount of walls
+        getintinput("Pls enter your choice of max amount of walls: ", SleastW, mostW);
+        while(leastW > mostW)
+        {
+            getintinput("Pls enter your choice of max amount of walls (it can't be less than the min amount of walls): ", SleastW, mostW);
+        }
+    }
+    
+    //filling the maze
+    mazefiller(maze , row , column , length , lowV , highV , leastW, mostW);
+    cout << '\n';
+    // for(int i = 1 ; i < row + 1; i++)
+    // {
+    //     for(int l = 1; l < column + 1; l++)
+    //     {
+    //         cout << maze[i][l] << ' ';
+    //     }
+    //     cout << '\n';
+    // }
 }
 void showHistory()
 {
@@ -309,68 +367,68 @@ void showUsers()
     cout << "\nPress any key to coninue: ";
     _getch();
 }
-void mazepathmaker(int eorh, int**& maze, int x , int y, int x_1 , int y_1, int togo , int& flag)
+void mazepathmaker(int**& maze, int row , int column, int rowin , int columnin, int togo , int& flag)
 {
-    if(maze[x_1][y_1] == 0)
+    // checks if there is a wall in the way of advancing
+    if(maze[rowin][columnin] == 0)
     {
         return;
     }
-    maze[x_1][y_1] = 0;
+    // makes this block a wall so we can't go through this block again in the path
+    maze[rowin][columnin] = 0;
     string Slength;
-    if(eorh == 2)
+    // checks if the path has been found
+    if(togo == 0 && rowin == row && columnin == column)
     {
-        getintinput("Pls enter the length of the path:\n", Slength, togo);
-        while(togo < x + y - 2 || togo > x * y - 1)
-        {
-            cout << "Such a path cannot exist. \n Try again: \n";
-            getintinput( "Pls enter the length of the path:\n", Slength, togo);
-        }
-    }
-    if(togo == 0 && x_1 == x && y_1 == y)
-    {
+        // with changing the flag we make sure we get out of the function in total
         flag = 1;
         return;
     }
-    if(togo < x + y - x_1 - y_1)
+    // a boolean for the case we can't reach the final house from this block anymore
+    if(togo < row + column - rowin - columnin)
     {
-        maze[x_1][y_1] = 1;
+        maze[rowin][columnin] = 1;
         return;
     }
+    // a vector to make randomness
     vector<int> arr;
     for(int i = 1; i < 5; i++)
     {
         arr.push_back(i);
     }
+    // pure randomness :))
     std::random_device rd;
     std::default_random_engine rng(rd());
     shuffle(arr.begin() , arr.end() ,rng);
+    // choosing the path options randomly
+    // pathfinding
     for(int i = 0; i < 4; i++)
     {
         switch (arr[i])
         {
         case 1:
-            mazepathmaker(1 , maze ,x , y , x_1 + 1 , y_1, togo - 1, flag);
+            mazepathmaker(maze , row , column , rowin + 1 , columnin , togo - 1 , flag);
             if(flag == 1)
             {
                 return;
             }
             break;
         case 2:
-            mazepathmaker(1, maze ,x , y , x_1 - 1 , y_1, togo - 1, flag);
+            mazepathmaker(maze , row , column , rowin - 1 , columnin , togo - 1 , flag);
             if(flag == 1)
             {
                 return;
             }
             break;
         case 3:
-            mazepathmaker(1, maze ,x , y , x_1 , y_1 + 1, togo - 1, flag);
+            mazepathmaker(maze , row , column , rowin , columnin + 1 , togo - 1 , flag);
             if(flag == 1)
             {
                 return;
             }
             break;
         default:
-            mazepathmaker(1, maze ,x , y , x_1 , y_1 - 1, togo - 1, flag);
+            mazepathmaker(maze , row , column , rowin , columnin - 1 , togo - 1 , flag);
             if(flag == 1)
             {
                 return;
@@ -378,5 +436,72 @@ void mazepathmaker(int eorh, int**& maze, int x , int y, int x_1 , int y_1, int 
             break;
         }
     }
-    maze[x_1][y_1] = 1;
+    // if the path hasn't been found yet the path does not go 
+    //through this block of the maze with the path given till now at all
+    maze[rowin][columnin] = 1;
+}
+
+void mazefiller(int**& maze , int row , int column , int length , int lowV , int highV , int leastW , int mostW)
+{
+    srand(time(0));
+    // finalblock is the sum for the final block of the path
+    int finalblock = 0;
+    // generates a random number for the aount of walls in the maze
+    int walls = rand() % (mostW - leastW + 1) + leastW;
+    vector<int> mazeparts;
+    vector<int> mazepathparts;
+    // walls
+    for(int i = 0; i < walls; i++)
+    {
+        mazeparts.push_back(0);
+    }
+    // values for the blocks in the path
+    for(int i = 0; i < length; i++)
+    {
+        int part;
+        part = randint(lowV , highV);
+        mazepathparts.push_back(part);
+    }
+    // values for the blocks that are not walls and are not in the path
+    for(int i = 0; i < row * column - walls - length; i++)
+    {
+        int part;
+        part = randint(lowV, highV);
+        mazeparts.push_back(part);
+    }
+
+    std::random_device rd;
+    std::default_random_engine rng(rd());
+    // shuffling the vector so walls are in a random place in the maze
+    shuffle(mazeparts.begin(), mazeparts.end() , rng);
+    // filling time :)
+    for(int i = 1; i <= row; i++)
+    {
+        for(int l = 1; l <= column; l++)
+        {
+            if(maze[i][l] == 0 && i + l != row + column)
+            {
+                maze[i][l] = mazepathparts[mazepathparts.size() - 1];
+                finalblock += mazepathparts[mazepathparts.size() - 1];
+                mazepathparts.pop_back();
+            }
+            else if(i + l == column + row)
+            {
+                maze[i][l] = finalblock;
+            }
+            else
+            {
+                maze[i][l] = mazeparts[mazeparts.size() - 1];
+                mazeparts.pop_back();
+            }
+        }
+    }
+}
+
+int randint(int floor, int ceil)
+{
+    bool zeroin = floor * ceil <= 0;
+    int dif = ceil - floor + 1;
+    int res = rand() % dif + floor - zeroin;
+    return res + (res >= 0) * zeroin;
 }

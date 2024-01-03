@@ -263,6 +263,74 @@ void printmap(int **values, bool **ispassed, int currentx, int currenty, int m, 
     }
 }
 
+void next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int y0)
+{
+    if (values[x][y] == 0 || ispassed[x][y])
+        return;
+    clearScreen();
+    printmap(values, ispassed, x, y, m + 2, n + 2, 0);
+    ispassed[x][y] = 1;
+    int x2 = x, y2 = y, ch;
+    ch = getch(); // get the first value
+    if (ch == 0 || ch == 224)
+    {                 // check if it is 0 or 224
+        ch = getch(); // get the second value
+        switch (ch)
+        {        // check the arrow key code
+        case 72: // UP
+            x2 = x - 1;
+            break; // up arrow
+        case 80:   // DOWN
+            x2 = x + 1;
+            break; // down arrow
+        case 75:   // LEFT
+            y2 = y - 1;
+            break; // left arrow
+        case 77:   // RIGHT
+            y2 = y + 1;
+            break; // right arrow
+        }
+    }
+    else if (ch == 27)
+    {           // check if it is ESC
+        return; // exit the loop
+    }
+    while (x2 != x0 && y2 != y0)
+    {
+        next(values, ispassed, m, n, x2, y2, x, y);
+        x2 = x;
+        y2 = y;
+        clearScreen();
+        printmap(values, ispassed, x, y, m + 2, n + 2, 0);
+        ch = getch(); // get the first value
+        if (ch == 0 || ch == 224)
+        {                 // check if it is 0 or 224
+            ch = getch(); // get the second value
+            switch (ch)
+            {        // check the arrow key code
+            case 72: // UP
+                x2 = x - 1;
+                break; // up arrow
+            case 80:   // DOWN
+                x2 = x + 1;
+                break; // down arrow
+            case 75:   // LEFT
+                y2 = y - 1;
+                break; // left arrow
+            case 77:   // RIGHT
+                y2 = y + 1;
+                break; // right arrow
+            }
+        }
+        else if (ch == 27)
+        {           // check if it is ESC
+            return; // exit the loop
+        }
+    }
+    ispassed[x][y] = 0;
+    return;
+}
+
 void playground()
 {
     clearScreen();
@@ -286,36 +354,56 @@ void playground()
     }
 
     printmap(values, ispassed, 1, 1, m + 2, n + 2, 0);
-    int sum = 0, ch;
-    while (!(x == m - 1 && y == n - 1 && sum == values[x][y]))
-    {
-        break;
-        ispassed[x][y] = 1;
-        ch = getch(); // get the first value
-        if (ch == 0 || ch == 224)
-        {                 // check if it is 0 or 224
-            ch = getch(); // get the second value
-            switch (ch)
-            {        // check the arrow key code
-            case 72: // UP
-                // cout << "UP\n";
-                break; // up arrow
-            case 80:   // DOWN
-                // cout << "DOWN\n";
-                break; // down arrow
-            case 75:   // LEFT
-                // cout << "LEFT\n";
-                break; // left arrow
-            case 77:   // RIGHT
-                // cout << "RIGHT\n";
-                break; // right arrow
-            }
-        }
-        else if (ch == 27)
-        {          // check if it is ESC
-            break; // exit the loop
-        }
-    }
+    int sum = 0, ch, x2 = x, y2 = y, x0 = x, y0 = y;
+    next(values, ispassed, m, n, x, y, -1, -1);
+    // while (!(x == m - 1 && y == n - 1 && sum == values[x][y]))
+    // {
+    //     // break;
+    //     clearScreen();
+    //     printmap(values, ispassed, x, y, m + 2, n + 2, 0);
+    //     ispassed[x][y] = 1;
+    //     ch = getch(); // get the first value
+    //     if (ch == 0 || ch == 224)
+    //     {                 // check if it is 0 or 224
+    //         ch = getch(); // get the second value
+    //         switch (ch)
+    //         {        // check the arrow key code
+    //         case 72: // UP
+    //             // cout << "UP\n";
+    //             x2 = x - 1;
+    //             break; // up arrow
+    //         case 80:   // DOWN
+    //             // cout << "DOWN\n";
+    //             x2 = x + 1;
+    //             break; // down arrow
+    //         case 75:   // LEFT
+    //             // cout << "LEFT\n";
+    //             y2 = y - 1;
+    //             break; // left arrow
+    //         case 77:   // RIGHT
+    //             // cout << "RIGHT\n";
+    //             y2 = y + 1;
+    //             break; // right arrow
+    //         }
+    //     }
+    //     else if (ch == 27)
+    //     {          // check if it is ESC
+    //         break; // exit the loop
+    //     }
+    //     if (values[x2][y2] == 0)
+    //         continue;
+    //     if (ispassed[x2][y2])
+    //     {
+    //         if (x2 == x0 && y2 == y0)
+    //             ispassed[x][y] = 0;
+    //         else
+    //             continue;
+    //     }
+    //     x0 = x;
+    //     y0 = y;
+    //     x = x2;
+    //     y = y2;
+    // }
 
     for (int i = 0; i < m; i++)
     {

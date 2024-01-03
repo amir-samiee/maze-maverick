@@ -332,8 +332,8 @@ void playground()
     clearScreen();
     int i = 1;
     bool valid = 1;
-    string choice, name, list = "List of maps:\n";
-    ifstream mapfile, allmaps("Maps/allmaps.txt");
+    string choice, name, list = "List of maps:\n", username;
+    ifstream mapfile, allmaps("Maps/allmaps.txt"), allusers("Users/allusers.txt");
     vector<string> maps;
     getinput(choice, "Playground\n" + menu2, 0, 2);
     switch (stoi(choice))
@@ -369,6 +369,29 @@ void playground()
         break;
     }
     allmaps.close();
+
+    vector<string> users;
+    while (getline(allusers, name))
+        users.push_back(name);
+    allusers.close();
+    valid = 1;
+    clearScreen();
+    while (1)
+    {
+        cout << "\nPlease enter a username: ";
+        getline(cin, username);
+        for (i = 0; i < users.size(); i++)
+            if (users[i] == username)
+            {
+                valid = 0;
+                break;
+            }
+        if (valid && username != "")
+            break;
+        clearScreen();
+        if (username != "")
+            cout << red << "Username taken before!!" << reset;
+    }
     // ifstream mapfile("Maps/Map2.txt");
     // get input ...
     int m, n, x = 1, y = 1;

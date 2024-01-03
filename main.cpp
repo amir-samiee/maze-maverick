@@ -18,9 +18,10 @@ void clearScreen();                                             // this function
 bool isInteger(string s);                                       // returns 1 if a string can be converted to an integer, otherwise 0
 void getinput(string &input, string options, int from, int to); // shows a list of options and gets input until user inputs a valid choice. the choice should be an integer from integer "from" to integer "to"
 void createNewMap();                                            // creates a map (part 1)
+void playground();                                              // the interactive game part (part 2)
 void showHistory();                                             // shows the history of the games (part 4)
 void showUsers();                                               // shows the users (part 5)
-void leaderboard();                                             // shows the users (part 5)
+void leaderboard();                                             // shows the leader users (part 6)
 
 // pieces of code that we will need:
 
@@ -129,7 +130,7 @@ string menu2 =
 
 int main()
 {
-
+    playground();
     string choice1;
     // cin >> choice1;
     getinput(choice1, menu0, 0, 6);
@@ -139,6 +140,7 @@ int main()
         createNewMap();
         break;
     case 2:
+        playground();
         break;
     case 3:
         break;
@@ -234,6 +236,55 @@ void createNewMap()
     default:
         return;
     }
+}
+
+struct mfile // a struct for the
+{
+    int value;
+    bool ispassed = 0;
+    bool ison = 0;
+};
+
+void printmap(mfile **map, int currentx, int currenty, int m, int n, bool includezeros = 1)
+{
+    for (int i = 0 + !includezeros; i < m - !includezeros; i++)
+    {
+        for (int j = 0 + !includezeros; j < n - !includezeros; j++)
+        {
+            if (i == currentx && j == currenty)
+                cout << red;
+            else if (map[i][j].ispassed)
+                cout << green;
+            cout << (i == m - 1 && j == n - 1 ? cyan : "") << map[i][j].value << reset << ' ';
+        }
+        cout << endl;
+    }
+}
+
+void playground()
+{
+    clearScreen();
+    ifstream mapfile("Maps/Map1.txt");
+    // get input ...
+    int m, n;
+    mapfile >> m >> n;
+    mfile **map = new mfile *[m + 2];
+    mfile temp = {0};
+    for (int i = 0; i < m + 2; i++)
+    {
+        map[i] = new mfile[n + 2];
+        fill(&map[i][0], &map[i][0] + n + 2, temp);
+    }
+    printmap(map, 0, 0, m + 2, n + 2);
+
+    for (int i = 0; i < m; i++)
+    {
+        delete[] map[i];
+    }
+    delete[] map;
+    cout << "\nPress any key to coninue: ";
+    _getch();
+    mapfile.close();
 }
 
 void showHistory()

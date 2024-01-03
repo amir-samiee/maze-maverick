@@ -2,6 +2,7 @@
 #include <windows.h>
 #include <fstream>
 #include <vector>
+#include <ctime>
 // #include <cstdio>
 #include <conio.h>
 #include <ctype.h>
@@ -265,49 +266,57 @@ void printmap(int **values, bool **ispassed, int currentx, int currenty, int las
     }
 }
 
-bool next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int y0, int sum)
+bool next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int y0, int sum, int start_time)
 {
     if (x == m && y == n && values[x][y] * 2 == sum)
         return 1;
     if (values[x][y] == 0 || ispassed[x][y])
         return 0;
     ispassed[x][y] = 1;
-    int x2 = x, y2 = y, ch;
+    int x2 = x, y2 = y, ch, i = 0, screenupdatespersecond = 7;
     while (1)
     {
         clearScreen();
         printmap(values, ispassed, x, y, x0, y0, m + 2, n + 2, 0);
-        cout << sum;
-        ch = getch(); // get the first value
-        if (ch == 0 || ch == 224)
-        {                 // check if it is 0 or 224
-            ch = getch(); // get the second value
-            switch (ch)
-            {        // check the arrow key code
-            case 72: // UP
-                x2 = x - 1;
-                break; // up arrow
-            case 80:   // DOWN
-                x2 = x + 1;
-                break; // down arrow
-            case 75:   // LEFT
-                y2 = y - 1;
-                break; // left arrow
-            case 77:   // RIGHT
-                y2 = y + 1;
-                break; // right arrow
-            }
-        }
-        else if (ch == 27) // check if it is ESC
-            return 0;      // exit the loop
-        if (x2 == x0 && y2 == y0)
-            break;
-        if (next(values, ispassed, m, n, x2, y2, x, y, sum + values[x2][y2]))
+        cout << sum << endl
+             << time(0) - start_time;
+        if (kbhit())
         {
-            return 1;
+            ch = getch(); // get the first value
+            if (ch == 0 || ch == 224)
+            {                 // check if it is 0 or 224
+                ch = getch(); // get the second value
+                switch (ch)
+                {        // check the arrow key code
+                case 72: // UP
+                    x2 = x - 1;
+                    break; // up arrow
+                case 80:   // DOWN
+                    x2 = x + 1;
+                    break; // down arrow
+                case 75:   // LEFT
+                    y2 = y - 1;
+                    break; // left arrow
+                case 77:   // RIGHT
+                    y2 = y + 1;
+                    break; // right arrow
+                }
+            }
+            else if (ch == 27) // check if it is ESC
+                return 0;      // exit the loop
+            if (x2 == x0 && y2 == y0)
+                break;
+            if (next(values, ispassed, m, n, x2, y2, x, y, sum + values[x2][y2], start_time))
+                return 1;
+            x2 = x;
+            y2 = y;
         }
-        x2 = x;
-        y2 = y;
+        else
+        {
+            Sleep(1000 / screenupdatespersecond);
+            if (i++ == screenupdatespersecond)
+                i = 0;
+        }
     }
     ispassed[x][y] = 0;
     return 0;
@@ -330,14 +339,13 @@ void playground()
         fill(&ispassed[i][0], &ispassed[i][0] + n + 2, 0);
     }
     for (int i = 1; i < m + 1; i++)
-    {
         for (int j = 1; j < n + 1; j++)
             mapfile >> values[i][j];
-    }
 
+    int start = time(0);
     printmap(values, ispassed, 1, 1, 0, 0, m + 2, n + 2, 0);
     int sum = 0, ch, x2 = x, y2 = y, x0 = x, y0 = y;
-    next(values, ispassed, m, n, x, y, -1, -1, values[1][1]);
+    next(values, ispassed, m, n, x, y, -1, -1, values[1][1], start);
     // while (!(x == m - 1 && y == n - 1 && sum == values[x][y]))
     // {
     //     // break;

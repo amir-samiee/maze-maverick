@@ -265,16 +265,19 @@ void printmap(int **values, bool **ispassed, int currentx, int currenty, int las
     }
 }
 
-void next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int y0)
+bool next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int y0, int sum)
 {
+    if (x == m && y == n && values[x][y] * 2 == sum)
+        return 1;
     if (values[x][y] == 0 || ispassed[x][y])
-        return;
+        return 0;
     ispassed[x][y] = 1;
     int x2 = x, y2 = y, ch;
     while (1)
     {
         clearScreen();
         printmap(values, ispassed, x, y, x0, y0, m + 2, n + 2, 0);
+        cout << sum;
         ch = getch(); // get the first value
         if (ch == 0 || ch == 224)
         {                 // check if it is 0 or 224
@@ -296,14 +299,18 @@ void next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int
             }
         }
         else if (ch == 27) // check if it is ESC
-            return;        // exit the loop
+            return 0;      // exit the loop
         if (x2 == x0 && y2 == y0)
             break;
-        next(values, ispassed, m, n, x2, y2, x, y);
+        if (next(values, ispassed, m, n, x2, y2, x, y, sum + values[x2][y2]))
+        {
+            return 1;
+        }
         x2 = x;
         y2 = y;
     }
     ispassed[x][y] = 0;
+    return 0;
 }
 
 void playground()
@@ -330,7 +337,7 @@ void playground()
 
     printmap(values, ispassed, 1, 1, 0, 0, m + 2, n + 2, 0);
     int sum = 0, ch, x2 = x, y2 = y, x0 = x, y0 = y;
-    next(values, ispassed, m, n, x, y, -1, -1);
+    next(values, ispassed, m, n, x, y, -1, -1, values[1][1]);
     // while (!(x == m - 1 && y == n - 1 && sum == values[x][y]))
     // {
     //     // break;

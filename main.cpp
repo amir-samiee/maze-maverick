@@ -130,7 +130,7 @@ string menu2 =
 
 int main()
 {
-    playground();
+    // playground();
     string choice1;
     // cin >> choice1;
     getinput(choice1, menu0, 0, 6);
@@ -263,6 +263,8 @@ void printmap(int **values, bool **ispassed, int currentx, int currenty, int las
                 cout << green;
             else if (i == m - 2 + includezeros && j == n - 2 + includezeros)
                 cout << cyan;
+            else if (!values[i][j])
+                cout << magenta;
             cout << values[i][j] << reset << ' ';
         }
         cout << endl;
@@ -272,10 +274,13 @@ void printmap(int **values, bool **ispassed, int currentx, int currenty, int las
     // }
 }
 
-bool next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int y0, int sum, int start_time)
+int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int y0, int sum, int start_time) // returns a code: 0 for continuing, 1 for "User won", -1 for "User lost"
 {
     if (x == m && y == n && values[x][y] * 2 == sum)
+    {
+        printmap(values, ispassed, x, y, x0, y0, m + 2, n + 2, 0);
         return 1;
+    }
     if (values[x][y] == 0 || ispassed[x][y])
         return 0;
     ispassed[x][y] = 1;
@@ -284,9 +289,11 @@ bool next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int
     {
         clearScreen();
         printmap(values, ispassed, x, y, x0, y0, m + 2, n + 2, 0);
-        cout << sum << endl
+        cout << "Sum of the blocks: " << sum << "\nTime: "
              << time(0) - start_time;
         ch = getch(); // get the first value
+        while (ch != 0 && ch != 224 && ch != 27)
+            ch = getch(); // get the first value
         if (ch == 0 || ch == 224)
         {                 // check if it is 0 or 224
             ch = getch(); // get the second value
@@ -307,11 +314,12 @@ bool next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int
             }
         }
         else if (ch == 27) // check if it is ESC
-            return 0;      // exit the loop
+            return -1;     // exit the loop
         if (x2 == x0 && y2 == y0)
             break;
-        if (next(values, ispassed, m, n, x2, y2, x, y, sum + values[x2][y2], start_time))
-            return 1;
+        int flag = next(values, ispassed, m, n, x2, y2, x, y, sum + values[x2][y2], start_time);
+        if (flag)
+            return flag;
         x2 = x;
         y2 = y;
     }
@@ -322,7 +330,46 @@ bool next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int
 void playground()
 {
     clearScreen();
-    ifstream mapfile("Maps/Map3.txt");
+    int i = 1;
+    bool valid = 1;
+    string choice, name, list = "List of maps:\n";
+    ifstream mapfile, allmaps("Maps/allmaps.txt");
+    vector<string> maps;
+    getinput(choice, "Playground\n" + menu2, 0, 2);
+    switch (stoi(choice))
+    {
+    case 0:
+        return;
+    case 1:
+        while (allmaps >> name)
+        {
+            list += "\n\t" + to_string(i) + ". " + name;
+            maps.push_back(name);
+            i++;
+        }
+        getinput(choice, list + "\n\t0. Back", 0, maps.size());
+        if (choice == "0")
+            return;
+        mapfile.open("Maps/" + maps[stoi(choice) - 1] + ".txt");
+        break;
+    case 2:
+        while (!mapfile.is_open())
+        {
+            clearScreen();
+            if (!valid && choice != "")
+                cout << red << "The file doesn't exist" << reset;
+            cout << "\nEnter a path to a custom map or enter 0 to go back: ";
+            valid = 0;
+            getline(cin, choice);
+            // getline(cin, choice);
+            if (choice == "0")
+                return;
+            mapfile.open(choice);
+        }
+        break;
+    }
+    allmaps.close();
+    // ifstream mapfile("Maps/Map2.txt");
     // get input ...
     int m, n, x = 1, y = 1;
     mapfile >> m >> n;
@@ -338,59 +385,11 @@ void playground()
     for (int i = 1; i < m + 1; i++)
         for (int j = 1; j < n + 1; j++)
             mapfile >> values[i][j];
-
+    mapfile.close();
     int start = time(0);
     printmap(values, ispassed, 1, 1, 0, 0, m + 2, n + 2, 0);
     int sum = 0, ch, x2 = x, y2 = y, x0 = x, y0 = y;
     next(values, ispassed, m, n, x, y, -1, -1, values[1][1], start);
-    // while (!(x == m - 1 && y == n - 1 && sum == values[x][y]))
-    // {
-    //     // break;
-    //     clearScreen();
-    //     printmap(values, ispassed, x, y, m + 2, n + 2, 0);
-    //     ispassed[x][y] = 1;
-    //     ch = getch(); // get the first value
-    //     if (ch == 0 || ch == 224)
-    //     {                 // check if it is 0 or 224
-    //         ch = getch(); // get the second value
-    //         switch (ch)
-    //         {        // check the arrow key code
-    //         case 72: // UP
-    //             // cout << "UP\n";
-    //             x2 = x - 1;
-    //             break; // up arrow
-    //         case 80:   // DOWN
-    //             // cout << "DOWN\n";
-    //             x2 = x + 1;
-    //             break; // down arrow
-    //         case 75:   // LEFT
-    //             // cout << "LEFT\n";
-    //             y2 = y - 1;
-    //             break; // left arrow
-    //         case 77:   // RIGHT
-    //             // cout << "RIGHT\n";
-    //             y2 = y + 1;
-    //             break; // right arrow
-    //         }
-    //     }
-    //     else if (ch == 27)
-    //     {          // check if it is ESC
-    //         break; // exit the loop
-    //     }
-    //     if (values[x2][y2] == 0)
-    //         continue;
-    //     if (ispassed[x2][y2])
-    //     {
-    //         if (x2 == x0 && y2 == y0)
-    //             ispassed[x][y] = 0;
-    //         else
-    //             continue;
-    //     }
-    //     x0 = x;
-    //     y0 = y;
-    //     x = x2;
-    //     y = y2;
-    // }
 
     for (int i = 0; i < m; i++)
     {
@@ -401,7 +400,6 @@ void playground()
     delete[] ispassed;
     cout << "\nPress any key to coninue: ";
     _getch();
-    mapfile.close();
 }
 
 void showHistory()

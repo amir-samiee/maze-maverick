@@ -84,7 +84,6 @@ void leaderboard();                                             // shows the lea
 // #include <conio.h> // for getch()
 // #include <iostream> // for cout
 // using namespace std;
-
 // int main() {
 //   int ch; // to store the character code
 //   while (true) { // loop until ESC is pressed
@@ -238,24 +237,27 @@ void createNewMap()
     }
 }
 
-struct mfile // a struct for the
-{
-    int value;
-    bool ispassed = 0;
-    bool ison = 0;
-};
+// struct mfile // a struct for the
+// {
+//     int value;
+//     bool ispassed = 0;
+//     bool ison = 0;
+// };
 
-void printmap(mfile **map, int currentx, int currenty, int m, int n, bool includezeros = 1)
+void printmap(int **values, bool **ispassed, int currentx, int currenty, int m, int n, bool includezeros = 1)
 {
+
     for (int i = 0 + !includezeros; i < m - !includezeros; i++)
     {
         for (int j = 0 + !includezeros; j < n - !includezeros; j++)
         {
             if (i == currentx && j == currenty)
                 cout << red;
-            else if (map[i][j].ispassed)
+            else if (ispassed[i][j])
                 cout << green;
-            cout << (i == m - 1 && j == n - 1 ? cyan : "") << map[i][j].value << reset << ' ';
+            else if (i == m - 2 + includezeros && j == n - 2 + includezeros)
+                cout << cyan;
+            cout << values[i][j] << reset << ' ';
         }
         cout << endl;
     }
@@ -266,22 +268,62 @@ void playground()
     clearScreen();
     ifstream mapfile("Maps/Map1.txt");
     // get input ...
-    int m, n;
+    int m, n, x = 1, y = 1;
     mapfile >> m >> n;
-    mfile **map = new mfile *[m + 2];
-    mfile temp = {0};
+    int **values = new int *[m + 2];
+    bool **ispassed = new bool *[m + 2];
     for (int i = 0; i < m + 2; i++)
     {
-        map[i] = new mfile[n + 2];
-        fill(&map[i][0], &map[i][0] + n + 2, temp);
+        values[i] = new int[n + 2];
+        ispassed[i] = new bool[n + 2];
+        fill(&values[i][0], &values[i][0] + n + 2, 0);
+        fill(&ispassed[i][0], &ispassed[i][0] + n + 2, 0);
     }
-    printmap(map, 0, 0, m + 2, n + 2);
+    for (int i = 1; i < m + 1; i++)
+    {
+        for (int j = 1; j < n + 1; j++)
+            mapfile >> values[i][j];
+    }
+
+    printmap(values, ispassed, 1, 1, m + 2, n + 2, 0);
+    int sum = 0, ch;
+    while (!(x == m - 1 && y == n - 1 && sum == values[x][y]))
+    {
+        break;
+        ispassed[x][y] = 1;
+        ch = getch(); // get the first value
+        if (ch == 0 || ch == 224)
+        {                 // check if it is 0 or 224
+            ch = getch(); // get the second value
+            switch (ch)
+            {        // check the arrow key code
+            case 72: // UP
+                // cout << "UP\n";
+                break; // up arrow
+            case 80:   // DOWN
+                // cout << "DOWN\n";
+                break; // down arrow
+            case 75:   // LEFT
+                // cout << "LEFT\n";
+                break; // left arrow
+            case 77:   // RIGHT
+                // cout << "RIGHT\n";
+                break; // right arrow
+            }
+        }
+        else if (ch == 27)
+        {          // check if it is ESC
+            break; // exit the loop
+        }
+    }
 
     for (int i = 0; i < m; i++)
     {
-        delete[] map[i];
+        delete[] values[i];
+        delete[] ispassed[i];
     }
-    delete[] map;
+    delete[] values;
+    delete[] ispassed;
     cout << "\nPress any key to coninue: ";
     _getch();
     mapfile.close();

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <windows.h>
 #include <fstream>
+#include <algorithm>
 #include <vector>
 #include <ctime>
 #include <cmath>
@@ -347,6 +348,37 @@ struct user
     int lastwintime;
     int totaltime;
 };
+
+vector<user> getplayersdata()
+{
+    ifstream usersfile("Users/allusers.txt");
+    vector<string> users;
+    string name, line;
+    while (usersfile >> name)
+        users.push_back(name);
+    usersfile.close();
+    vector<user> players;
+    for (auto u : users)
+    {
+        // cout << user << endl;
+        ifstream userfile("Users/" + u + ".txt");
+        user opened;
+        opened.name = u;
+        // getline(usersfile, line);
+        userfile.ignore(7);
+        userfile >> opened.games;
+        userfile.ignore(6);
+        userfile >> opened.wins;
+        // getline(usersfile, line);
+        userfile.ignore(15);
+        userfile >> opened.lastwintime;
+        userfile.ignore(12);
+        userfile >> opened.totaltime;
+        players.push_back(opened);
+        userfile.close();
+    }
+    return players;
+}
 int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int y0, int sum, int start_time) // returns a code: 0 for continuing, 1 for "User won", -1 for "User lost"
 {
     if (x == m && y == n && values[x][y] * 2 == sum)
@@ -500,8 +532,6 @@ void playground() // more than 1 digit is not supported yet
         next(values, ispassed, m, n, x, y, 1, 1, values[1][1], start);
         int end = time(0);
 
-        
-
         for (int i = 0; i < m; i++)
         {
             delete[] values[i];
@@ -576,43 +606,22 @@ void showUsers()
 bool compare(user a, user b)
 {
     if (a.wins > b.wins)
-        return 1;
+        return 0;
     if (a.wins < b.wins)
-        return 0;
-    if (a.totaltime < b.totaltime)
         return 1;
-    if (a.totaltime > b.totaltime)
+    if (a.totaltime < b.totaltime)
         return 0;
-    return (b.name.compare(a.name) >= 0);
+    if (a.totaltime > b.totaltime)
+        return 1;
+    return (b.name.compare(a.name) < 0);
 }
 
 void leaderboard()
 {
     clearScreen();
     cout << "Finding best players...";
-    ifstream usersfile("Users/allusers.txt");
-    vector<string> users;
-    string name, line;
-    while (usersfile >> name)
-        users.push_back(name);
-    usersfile.close();
-    vector<user> players;
-    for (auto u : users)
-    {
-        // cout << user << endl;
-        ifstream userfile("Users/" + u + ".txt");
-        user opened;
-        opened.name = u;
-        getline(usersfile, line);
-        userfile.ignore(6);
-        userfile >> opened.wins;
-        getline(usersfile, line);
-        userfile.ignore(12);
-        userfile >> opened.totaltime;
-        players.push_back(opened);
-        userfile.close();
-    }
-
+    vector<user> players = getplayersdata();
+    sort(players.begin(), players.end(), compare);
     clearScreen();
     cout << "Leaderboard:\n\n";
     int size = players.size();

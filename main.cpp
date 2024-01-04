@@ -528,12 +528,20 @@ void playground() // more than 1 digit is not supported yet
             break;
         }
         allmaps.close();
-        while (player.name == "")
+        brk = 0;
+        while (player.name == "" || player.name == "allusers")
         {
             clearScreen();
-            cout << "\nPlease enter a username: ";
+            cout << "\nPlease enter a username or enter 0 to go back: ";
             getline(cin, player.name);
+            if (player.name == "0")
+            {
+                brk = 1;
+                break;
+            }
         }
+        if (brk)
+            continue;
         int m, n, x = 1, y = 1;
         mapfile >> m >> n;
         int **values = new int *[m + 2];

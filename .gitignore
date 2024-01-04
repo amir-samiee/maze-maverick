@@ -1,4 +1,4 @@
 *.exe
-Maps
-Stats
-Users
+Maps/*
+Stats/*
+Users/*

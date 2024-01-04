@@ -400,99 +400,108 @@ int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int 
 
 void playground()
 {
-    int i = 1;
-    bool valid = 1;
-    string choice, name, list = "List of maps:\n", username;
-    ifstream mapfile, allmaps("Maps/allmaps.txt"), allusers("Users/allusers.txt");
-    vector<string> maps;
-    getinput(choice, "Playground\n" + menu2, 0, 2);
-    switch (stoi(choice))
-    {
-    case 0:
-        return;
-    case 1:
-        while (allmaps >> name)
-        {
-            list += "\n\t" + to_string(i) + ". " + name;
-            maps.push_back(name);
-            i++;
-        }
-        getinput(choice, list + "\n\t0. Back", 0, maps.size());
-        if (choice == "0")
-            return;
-        mapfile.open("Maps/" + maps[stoi(choice) - 1] + ".txt");
-        break;
-    case 2:
-        while (!mapfile.is_open())
-        {
-            clearScreen();
-            if (!valid && choice != "")
-                cout << red << "The file doesn't exist" << reset;
-            cout << "\nEnter a path to a custom map or enter 0 to go back: ";
-            valid = 0;
-            getline(cin, choice);
-            // getline(cin, choice);
-            if (choice == "0")
-                return;
-            mapfile.open(choice);
-        }
-        break;
-    }
-    allmaps.close();
-
-    vector<string> users;
-    while (getline(allusers, name))
-        users.push_back(name);
-    allusers.close();
-    valid = 1;
-    clearScreen();
     while (1)
     {
-        cout << "\nPlease enter a username: ";
-        getline(cin, username);
-        for (i = 0; i < users.size(); i++)
-            if (users[i] == username)
+        int i = 1;
+        bool valid = 1, brk = 0;
+        string choice, name, list = "List of maps:\n", username;
+        ifstream mapfile, allmaps("Maps/allmaps.txt"), allusers("Users/allusers.txt");
+        vector<string> maps;
+        getinput(choice, "Playground\n" + menu2, 0, 2);
+        switch (stoi(choice))
+        {
+        case 0:
+            return;
+        case 1:
+            while (allmaps >> name)
             {
-                valid = 0;
-                break;
+                list += "\n\t" + to_string(i) + ". " + name;
+                maps.push_back(name);
+                i++;
             }
-        if (valid && username != "")
+            getinput(choice, list + "\n\t0. Back", 0, maps.size());
+            if (choice == "0")
+                continue;
+            mapfile.open("Maps/" + maps[stoi(choice) - 1] + ".txt");
             break;
-        clearScreen();
-        if (username != "")
-            cout << red << "Username taken before!!" << reset;
-    }
-    // ifstream mapfile("Maps/Map2.txt");
-    // get input ...
-    int m, n, x = 1, y = 1;
-    mapfile >> m >> n;
-    int **values = new int *[m + 2];
-    bool **ispassed = new bool *[m + 2];
-    for (int i = 0; i < m + 2; i++)
-    {
-        values[i] = new int[n + 2];
-        ispassed[i] = new bool[n + 2];
-        fill(&values[i][0], &values[i][0] + n + 2, 0);
-        fill(&ispassed[i][0], &ispassed[i][0] + n + 2, 0);
-    }
-    for (int i = 1; i < m + 1; i++)
-        for (int j = 1; j < n + 1; j++)
-            mapfile >> values[i][j];
-    mapfile.close();
-    int start = time(0);
-    // printmap(values, ispassed, 1, 1, 0, 0, m + 2, n + 2, 0);
-    int sum = 0, ch, x2 = x, y2 = y, x0 = x, y0 = y;
-    next(values, ispassed, m, n, x, y, 1, 1, values[1][1], start);
+        case 2:
+            while (!mapfile.is_open())
+            {
+                clearScreen();
+                if (!valid && choice != "")
+                    cout << red << "The file doesn't exist" << reset;
+                cout << "\nEnter a path to a custom map or enter 0 to go back: ";
+                valid = 0;
+                getline(cin, choice);
+                // getline(cin, choice);
+                if (choice == "0")
+                {
+                    brk = 1;
+                    break;
+                }
+                mapfile.open(choice);
+            }
+            if (brk)
+                continue;
+            break;
+        }
+        allmaps.close();
 
-    for (int i = 0; i < m; i++)
-    {
-        delete[] values[i];
-        delete[] ispassed[i];
+        vector<string> users;
+        while (getline(allusers, name))
+            users.push_back(name);
+        allusers.close();
+        valid = 1;
+        clearScreen();
+        while (1)
+        {
+            cout << "\nPlease enter a username: ";
+            getline(cin, username);
+            for (i = 0; i < users.size(); i++)
+                if (users[i] == username)
+                {
+                    valid = 0;
+                    break;
+                }
+            if (valid && username != "")
+                break;
+            clearScreen();
+            if (username != "")
+                cout << red << "Username taken before!!" << reset;
+        }
+        // ifstream mapfile("Maps/Map2.txt");
+        // get input ...
+        int m, n, x = 1, y = 1;
+        mapfile >> m >> n;
+        int **values = new int *[m + 2];
+        bool **ispassed = new bool *[m + 2];
+        for (int i = 0; i < m + 2; i++)
+        {
+            values[i] = new int[n + 2];
+            ispassed[i] = new bool[n + 2];
+            fill(&values[i][0], &values[i][0] + n + 2, 0);
+            fill(&ispassed[i][0], &ispassed[i][0] + n + 2, 0);
+        }
+        for (int i = 1; i < m + 1; i++)
+            for (int j = 1; j < n + 1; j++)
+                mapfile >> values[i][j];
+        mapfile.close();
+        int start = time(0);
+        // printmap(values, ispassed, 1, 1, 0, 0, m + 2, n + 2, 0);
+        int sum = 0, ch, x2 = x, y2 = y, x0 = x, y0 = y;
+        next(values, ispassed, m, n, x, y, 1, 1, values[1][1], start);
+
+        for (int i = 0; i < m; i++)
+        {
+            delete[] values[i];
+            delete[] ispassed[i];
+        }
+        delete[] values;
+        delete[] ispassed;
+        cout << "\nPress any key to coninue: ";
+        _getch();
+        return;
     }
-    delete[] values;
-    delete[] ispassed;
-    cout << "\nPress any key to coninue: ";
-    _getch();
 }
 
 void showHistory()

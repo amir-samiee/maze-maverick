@@ -342,43 +342,84 @@ void printmap(int **values, bool **ispassed, int currentx, int currenty, int las
 
 struct user
 {
-    string name;
-    int games;
-    int wins;
-    int lastwintime;
-    int totaltime;
+    string name = "";
+    int games = 0;
+    int wins = 0;
+    int lastwintime = 0;
+    int totaltime = 0;
 };
 
-vector<user> getplayersdata()
+vector<string> getusers()
 {
     ifstream usersfile("Users/allusers.txt");
     vector<string> users;
-    string name, line;
+    string name;
     while (usersfile >> name)
         users.push_back(name);
-    usersfile.close();
+    return users;
+}
+user formuser(string name)
+{
+    ifstream userfile("Users/" + name + ".txt");
+    user opened;
+    opened.name = name;
+    // getline(usersfile, line);
+    userfile.ignore(7);
+    userfile >> opened.games;
+    userfile.ignore(6);
+    userfile >> opened.wins;
+    // getline(usersfile, line);
+    userfile.ignore(15);
+    userfile >> opened.lastwintime;
+    userfile.ignore(12);
+    userfile >> opened.totaltime;
+    userfile.close();
+    return opened;
+}
+vector<user> getplayersdata()
+{
+    vector<string> users = getusers();
     vector<user> players;
     for (auto u : users)
-    {
-        // cout << user << endl;
-        ifstream userfile("Users/" + u + ".txt");
-        user opened;
-        opened.name = u;
-        // getline(usersfile, line);
-        userfile.ignore(7);
-        userfile >> opened.games;
-        userfile.ignore(6);
-        userfile >> opened.wins;
-        // getline(usersfile, line);
-        userfile.ignore(15);
-        userfile >> opened.lastwintime;
-        userfile.ignore(12);
-        userfile >> opened.totaltime;
-        players.push_back(opened);
-        userfile.close();
-    }
+        players.push_back(formuser(u));
     return players;
 }
+
+void updateusers(user player, bool won)
+{
+    vector<string> users = getusers();
+    bool isin = 0;
+    for (int i = 0; i < users.size(); i++)
+        if (player.name == users[i])
+        {
+            isin = 1;
+            break;
+        }
+    if (isin)
+    {
+        user beforeupdate = formuser(player.name);
+        player.totaltime += beforeupdate.totaltime;
+        player.games = beforeupdate.games;
+        player.wins = beforeupdate.wins;
+    }
+    else
+    {
+        ofstream usersfile("Users/allusers.txt", ios::app);
+        usersfile << endl
+                  << player.name;
+        usersfile.close();
+    }
+    player.totaltime += player.lastwintime;
+    player.wins += won;
+    player.games++;
+    ofstream userfile("Users/" + player.name + ".txt");
+    userfile << "Games: " << player.games << endl;
+    userfile << "Wins: " << player.wins << endl;
+    userfile << "Last Win Time: " << player.lastwintime << endl;
+    userfile << "Total Time: " << player.totaltime;
+    userfile.close();
+}
+
 int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int y0, int sum, int start_time) // returns a code: 0 for continuing, 1 for "User won", -1 for "User lost"
 {
     if (x == m && y == n && values[x][y] * 2 == sum)
@@ -444,8 +485,9 @@ void playground() // more than 1 digit is not supported yet
     {
         int i = 1;
         bool valid = 1, brk = 0;
-        string choice, name, list = "List of maps:\n", username;
-        ifstream mapfile, allmaps("Maps/allmaps.txt"), allusers("Users/allusers.txt");
+        string choice, name, list = "List of maps:\n";
+        user player;
+        ifstream mapfile, allmaps("Maps/allmaps.txt");
         vector<string> maps;
         getinput(choice, "Playground\n" + menu2, 0, 2);
         switch (stoi(choice))
@@ -486,31 +528,12 @@ void playground() // more than 1 digit is not supported yet
             break;
         }
         allmaps.close();
-
-        vector<string> users;
-        while (getline(allusers, name))
-            users.push_back(name);
-        allusers.close();
-        valid = 1;
-        clearScreen();
-        while (1)
+        while (player.name == "")
         {
-            cout << "\nPlease enter a username: ";
-            getline(cin, username);
-            for (i = 0; i < users.size(); i++)
-                if (users[i] == username)
-                {
-                    valid = 0;
-                    break;
-                }
-            if (valid && username != "")
-                break;
             clearScreen();
-            if (username != "")
-                cout << red << "Username taken before!!" << reset;
+            cout << "\nPlease enter a username: ";
+            getline(cin, player.name);
         }
-        // ifstream mapfile("Maps/Map2.txt");
-        // get input ...
         int m, n, x = 1, y = 1;
         mapfile >> m >> n;
         int **values = new int *[m + 2];
@@ -529,8 +552,10 @@ void playground() // more than 1 digit is not supported yet
         int start = time(0);
         // printmap(values, ispassed, 1, 1, 0, 0, m + 2, n + 2, 0);
         int sum = 0, ch, x2 = x, y2 = y, x0 = x, y0 = y;
-        next(values, ispassed, m, n, x, y, 1, 1, values[1][1], start);
+        bool won = next(values, ispassed, m, n, x, y, 1, 1, values[1][1], start) == 1;
         int end = time(0);
+        player.lastwintime = end - start;
+        updateusers(player, won);
 
         for (int i = 0; i < m; i++)
         {
@@ -560,12 +585,8 @@ void showHistory()
 void showUsers()
 {
     clearScreen();
-    ifstream usersfile("Users/allusers.txt");
-    vector<string> users;
+    vector<string> users = getusers();
     string name;
-    while (usersfile >> name)
-        users.push_back(name);
-    usersfile.close();
 
     bool nameerror = 0;
     do
@@ -597,7 +618,6 @@ void showUsers()
         cout << line << endl;
     // else
     //     cout << red + "error" + reset;
-    usersfile.close();
     cout << "\nPress any key to coninue: ";
     _getch();
     showUsers();

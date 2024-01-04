@@ -1,6 +1,2 @@
 *.exe
-/Maps/*
-/Stats/*
-/Users/*
-Users/Reza.txt
-Users/Reza.txt
+*.txt

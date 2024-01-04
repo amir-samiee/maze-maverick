@@ -1,4 +1,0 @@
-Games: 43
-Wins: 35
-Last Win Time: 444
-Total Time: 1327

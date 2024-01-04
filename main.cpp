@@ -339,6 +339,14 @@ void printmap(int **values, bool **ispassed, int currentx, int currenty, int las
     // cout << cyan << values[i][j] << reset << endl;
 }
 
+struct user
+{
+    string name;
+    int games;
+    int wins;
+    int lastwintime;
+    int totaltime;
+};
 int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int y0, int sum, int start_time) // returns a code: 0 for continuing, 1 for "User won", -1 for "User lost"
 {
     if (x == m && y == n && values[x][y] * 2 == sum)
@@ -398,7 +406,7 @@ int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int 
     return 0;
 }
 
-void playground()
+void playground() // more than 1 digit is not supported yet
 {
     while (1)
     {
@@ -490,6 +498,9 @@ void playground()
         // printmap(values, ispassed, 1, 1, 0, 0, m + 2, n + 2, 0);
         int sum = 0, ch, x2 = x, y2 = y, x0 = x, y0 = y;
         next(values, ispassed, m, n, x, y, 1, 1, values[1][1], start);
+        int end = time(0);
+
+        
 
         for (int i = 0; i < m; i++)
         {
@@ -561,13 +572,6 @@ void showUsers()
     _getch();
     showUsers();
 }
-
-struct user
-{
-    string name;
-    int wins;
-    int totaltime;
-};
 
 bool compare(user a, user b)
 {

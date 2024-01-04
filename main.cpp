@@ -3,6 +3,7 @@
 #include <fstream>
 #include <algorithm>
 #include <vector>
+#include <stdio.h>
 #include <ctime>
 #include <cmath>
 // #include <cstdio>
@@ -422,6 +423,15 @@ void updateusers(user &player, bool won)
     userfile.close();
 }
 
+string Date()
+{
+    time_t now = time(0);
+    tm *ltm = localtime(&now);
+    char buffer[256];
+    strftime(buffer, sizeof(buffer), "%m/%d/%Y", ltm);
+    return buffer;
+}
+
 int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int y0, int sum, int start_time) // returns a code: 0 for continuing, 1 for "User won", -1 for "User lost"
 {
     if (x == m && y == n && values[x][y] * 2 == sum)
@@ -491,7 +501,7 @@ void playground() // more than 1 digit is not supported yet
     {
         int i = 1;
         bool valid = 1, brk = 0;
-        string choice, name, list = "List of maps:\n";
+        string choice, name, list = "List of maps:\n", mapchoice, mapaddress;
         user player;
         ifstream mapfile, allmaps("Maps/allmaps.txt");
         vector<string> maps;
@@ -507,26 +517,26 @@ void playground() // more than 1 digit is not supported yet
                 maps.push_back(name);
                 i++;
             }
-            getinput(choice, list + "\n\t0. Back", 0, maps.size());
-            if (choice == "0")
+            getinput(mapchoice, list + "\n\t0. Back", 0, maps.size());
+            if (mapchoice == "0")
                 continue;
-            mapfile.open("Maps/" + maps[stoi(choice) - 1] + ".txt");
+            mapfile.open("Maps/" + maps[stoi(mapchoice) - 1] + ".txt");
             break;
         case 2:
             while (!mapfile.is_open())
             {
                 clearScreen();
-                if (!valid && choice != "")
+                if (!valid && mapaddress != "")
                     cout << red << "The file doesn't exist" << reset;
                 cout << "\nEnter a path to a custom map or enter 0 to go back: ";
                 valid = 0;
-                getline(cin, choice);
-                if (choice == "0")
+                getline(cin, mapaddress);
+                if (mapaddress == "0")
                 {
                     brk = 1;
                     break;
                 }
-                mapfile.open(choice);
+                mapfile.open(mapaddress);
             }
             if (brk)
                 continue;
@@ -576,6 +586,23 @@ void playground() // more than 1 digit is not supported yet
         cout << "Time: " << end - start << endl;
         player.lastwintime = end - start;
         updateusers(player, won);
+        // update history
+        ofstream temp("Stats/temp.txt");
+        ifstream hist("Stats/History.txt");
+        temp << "Date: " << Date() << "\n";
+        temp << "User Name: " << player.name << "\n";
+        temp << "Map: " << ((choice == "1") ? maps[stoi(mapchoice) - 1] : mapaddress) << "\n";
+        temp << "Time: " << end - start << "\n";
+        temp << "Result: " << (won ? "Win" : "Loose") << "\n"
+             << "\n";
+        int sizecontrol = 0;
+        string line;
+        while (getline(hist, line) && sizecontrol++ < 54)
+            temp << line << endl;
+        temp.close();
+        hist.close();
+        remove("Stats/History.txt");
+        rename("Stats/temp.txt", "Stats/History.txt");
         for (int i = 0; i < m; i++)
         {
             delete[] values[i];

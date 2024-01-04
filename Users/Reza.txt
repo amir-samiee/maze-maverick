@@ -1,4 +1,4 @@
-Games: 1000
+Games: 1001
 Wins: 999
 Last Win Time: 444
-Total Time: 1327
+Total Time: 1771

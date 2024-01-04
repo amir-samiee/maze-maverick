@@ -385,7 +385,7 @@ vector<user> getplayersdata()
     return players;
 }
 
-void updateusers(user player, bool won)
+void updateusers(user &player, bool won)
 {
     vector<string> users = getusers();
     bool isin = 0;
@@ -398,9 +398,11 @@ void updateusers(user player, bool won)
     if (isin)
     {
         user beforeupdate = formuser(player.name);
-        player.totaltime += beforeupdate.totaltime;
         player.games = beforeupdate.games;
         player.wins = beforeupdate.wins;
+        if (!won)
+            player.lastwintime = beforeupdate.lastwintime;
+        player.totaltime += beforeupdate.totaltime;
     }
     else
     {
@@ -460,7 +462,11 @@ int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int 
             }
         }
         else if (ch == 27) // check if it is ESC
-            return -1;     // exit the loop
+        {
+            clearScreen();
+            printmap(values, ispassed, x, y, x0, y0, m + 2, n + 2, 0);
+            return -1; // exit the loop
+        }
         if (x2 == x0 && y2 == y0)
             break;
         if (!values[x2][y2] || ispassed[x2][y2])
@@ -515,7 +521,6 @@ void playground() // more than 1 digit is not supported yet
                 cout << "\nEnter a path to a custom map or enter 0 to go back: ";
                 valid = 0;
                 getline(cin, choice);
-                // getline(cin, choice);
                 if (choice == "0")
                 {
                     brk = 1;
@@ -562,9 +567,15 @@ void playground() // more than 1 digit is not supported yet
         int sum = 0, ch, x2 = x, y2 = y, x0 = x, y0 = y;
         bool won = next(values, ispassed, m, n, x, y, 1, 1, values[1][1], start) == 1;
         int end = time(0);
+
+        cout << endl;
+        if (won)
+            cout << green << "YOU WON" << red << "!!!" << reset << endl;
+        else
+            cout << red << "YOU LOST" << green << "!!!" << reset << endl;
+        cout << "Time: " << end - start << endl;
         player.lastwintime = end - start;
         updateusers(player, won);
-
         for (int i = 0; i < m; i++)
         {
             delete[] values[i];

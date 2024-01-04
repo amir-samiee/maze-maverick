@@ -3,6 +3,7 @@
 #include <fstream>
 #include <vector>
 #include <ctime>
+#include <cmath>
 // #include <cstdio>
 #include <conio.h>
 #include <ctype.h>
@@ -130,7 +131,7 @@ string menu2 =
 
 int main()
 {
-    // playground();
+    playground();
     string choice1;
     // cin >> choice1;
     getinput(choice1, menu0, 0, 6);
@@ -247,31 +248,79 @@ void createNewMap()
 
 void printmap(int **values, bool **ispassed, int currentx, int currenty, int lastx, int lasty, int m, int n, bool includezeros = 1)
 {
-    // int i = 0;
-    // while (1)
+    // clearScreen();
+    // for (int i = 0 + !includezeros; i < m - !includezeros; i++)
     // {
+    //     for (int j = 0 + !includezeros; j < n - !includezeros; j++)
+    //     {
+    //         if (i == currentx && j == currenty)
+    //             cout << red;
+    //         else if (i == lastx && j == lasty)
+    //             cout << yellow;
+    //         else if (ispassed[i][j])
+    //             cout << green;
+    //         else if (i == m - 2 + includezeros && j == n - 2 + includezeros)
+    //             cout << cyan;
+    //         // else if (!values[i][j])
+    //         //     cout << magenta;
+    //         cout << values[i][j] << reset << ' ';
+    //     }
+    //     cout << endl;
+    // }
     clearScreen();
-    for (int i = 0 + !includezeros; i < m - !includezeros; i++)
+    int i, j;
+    for (i = 0 + !includezeros; i < min(currentx, lastx); i++)
     {
-        for (int j = 0 + !includezeros; j < n - !includezeros; j++)
+        for (j = 0 + !includezeros; j < n - !includezeros; j++)
         {
-            if (i == currentx && j == currenty)
-                cout << red;
-            else if (i == lastx && j == lasty)
-                cout << yellow;
-            else if (ispassed[i][j])
+            if (ispassed[i][j])
                 cout << green;
-            else if (i == m - 2 + includezeros && j == n - 2 + includezeros)
-                cout << cyan;
             else if (!values[i][j])
                 cout << magenta;
             cout << values[i][j] << reset << ' ';
         }
         cout << endl;
     }
-    //     cout << i++;
-    //     Sleep(1000/7);
-    // }
+    bool lastlinehandle = max(currentx, lastx) == m - !includezeros - 1;
+    for (i = min(currentx, lastx); i <= max(currentx, lastx); i++)
+    {
+        for (j = 0 + !includezeros; j < n - !includezeros; j++)
+        {
+            if (!values[i][j])
+                cout << magenta;
+            else if (i == currentx && j == currenty)
+                cout << red;
+            else if (i == lastx && j == lasty)
+                cout << yellow;
+            else if (ispassed[i][j])
+                cout << green;
+            cout << values[i][j] << reset << ' ';
+        }
+        cout << endl;
+    }
+    for (i = max(currentx, lastx) + 1; i < m - !includezeros - 1; i++)
+    {
+        for (j = 0 + !includezeros; j < n - !includezeros; j++)
+        {
+            if (ispassed[i][j])
+                cout << green;
+            else if (!values[i][j])
+                cout << magenta;
+            cout << values[i][j] << reset << ' ';
+        }
+        cout << endl;
+    }
+
+    i = m - !includezeros - 1;
+    for (j = 0 + !includezeros; j < n - !includezeros - 1; j++)
+    {
+        if (ispassed[i][j])
+            cout << green;
+        else if (!values[i][j])
+            cout << magenta;
+        cout << values[i][j] << reset << ' ';
+    }
+    cout << cyan << values[i][j] << reset << endl;
 }
 
 int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int y0, int sum, int start_time) // returns a code: 0 for continuing, 1 for "User won", -1 for "User lost"
@@ -281,8 +330,8 @@ int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int 
         printmap(values, ispassed, x, y, x0, y0, m + 2, n + 2, 0);
         return 1;
     }
-    if (values[x][y] == 0 || ispassed[x][y])
-        return 0;
+    // if (values[x][y] == 0 || ispassed[x][y])
+    //     return 0;
     ispassed[x][y] = 1;
     int x2 = x, y2 = y, ch, i = 0, screenupdatespersecond = 7;
     while (1)
@@ -317,6 +366,12 @@ int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int 
             return -1;     // exit the loop
         if (x2 == x0 && y2 == y0)
             break;
+        if (!values[x2][y2] || ispassed[x2][y2])
+        {
+            x2 = x;
+            y2 = y;
+            continue;
+        }
         int flag = next(values, ispassed, m, n, x2, y2, x, y, sum + values[x2][y2], start_time);
         if (flag)
             return flag;
@@ -329,7 +384,6 @@ int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int 
 
 void playground()
 {
-    clearScreen();
     int i = 1;
     bool valid = 1;
     string choice, name, list = "List of maps:\n", username;
@@ -410,9 +464,9 @@ void playground()
             mapfile >> values[i][j];
     mapfile.close();
     int start = time(0);
-    printmap(values, ispassed, 1, 1, 0, 0, m + 2, n + 2, 0);
+    // printmap(values, ispassed, 1, 1, 0, 0, m + 2, n + 2, 0);
     int sum = 0, ch, x2 = x, y2 = y, x0 = x, y0 = y;
-    next(values, ispassed, m, n, x, y, -1, -1, values[1][1], start);
+    next(values, ispassed, m, n, x, y, 1, 1, values[1][1], start);
 
     for (int i = 0; i < m; i++)
     {

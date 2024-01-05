@@ -506,7 +506,6 @@ void playground() // more than 1 digit is not supported yet
     while (1)
     {
         // int i = 1;
-        bool valid = 1, brk = 0;
         string choice, name, list = "List of maps:\n", mapchoice, mapaddress;
         user player;
         ifstream mapfile, allmaps("Maps/allmaps.txt");
@@ -517,6 +516,7 @@ void playground() // more than 1 digit is not supported yet
         getinput(choice, "Playground\n" + menu2, 0, 2);
     choose_map:
         mapfile.close();
+        bool valid = 1, brk = 0;
         switch (stoi(choice))
         {
         case 0:
@@ -534,11 +534,11 @@ void playground() // more than 1 digit is not supported yet
             mapfile.open("Maps/" + maps[stoi(mapchoice) - 1] + ".txt");
             break;
         case 2:
-            while (!mapfile.is_open())
+            while (!mapfile.is_open() || mapaddress.substr(0, 5) == "Users" || mapaddress.substr(0, 5) == "Stats")
             {
                 clearScreen();
                 if (!valid && mapaddress != "")
-                    cout << red << "The file doesn't exist" << reset;
+                    cout << red << "Invalid file!!" << reset;
                 cout << "\nEnter a path to a custom map or enter 0 to go back: ";
                 valid = 0;
                 getline(cin, mapaddress);

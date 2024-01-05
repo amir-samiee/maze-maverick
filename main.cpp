@@ -5,6 +5,7 @@
 #include <windows.h>
 #include <fstream>
 #include <vector>
+#include <iomanip>
 // #include <cstdio>
 #include <conio.h>
 #include <ctype.h>
@@ -27,7 +28,7 @@ int randint(int floor, int ceil);
 //function for getting input util its a valid int input
 void getintinput(string interact, string& input, int& output);
 //function that solves a map
-void mazesolver(int** maze, char**& copymaze , int row , int column , int rowin , int coumnin, int togo , int& flag);
+void mazesolver(int** maze, int**& copymaze , string**& path , int row , int column , int rowin , int coulumnin, int togo , int& flag , int sum);
 void clearScreen();                                             // this function has been declared to clear the screen on both windows and linux
 bool isInteger(string s);                                       // returns 1 if a string can be converted to an integer, otherwise 0
 void getinput(string &input, string options, int from, int to); // shows a list of options and gets input until user inputs a valid choice. the choice should be an integer from integer "from" to integer "to"
@@ -144,7 +145,6 @@ string menu2 =
 
 int main()
 {
-    
     string choice1;
     getinput(choice1, menu0, 0, 6);
     switch (stoi(choice1))
@@ -155,7 +155,7 @@ int main()
     case 2:
         break;
     case 3:
-        mazesolving():
+        mazesolving();
         break;
     case 4:
         showHistory();
@@ -207,7 +207,7 @@ bool isvalidint(string& input , int& output)
 
 void getintinput(string interact, string& input, int& result)
 {
-    // clearScreen();
+    clearScreen();
     cout << interact << '\n';
     getline(cin , input);
     while(!isvalidint(input, result))
@@ -514,7 +514,149 @@ int randint(int floor, int ceil)
 
 void mazesolving()
 {
-    int row , column, length, mapdif, sum = 0, flag = 0 , maze[row + 2][column + 2];
-    char copymaze[2 * row + 1][2 * column + 1];
-    mazesolver(maze , row , column , 1 , 1 , length , flag);
+    clearScreen();
+    int row , column, length, mapdif, sum = 0, flag = 0 , **maze , **copymaze , filecapacity = 2;
+    string **path;
+    // cin >> row >> column >> length;
+    maze = new int*[row + 2];
+    copymaze = new int*[row + 2];
+    path = new string*[2 * (row + 2)];
+    for(int i = 0; i < row + 2; i++)
+    {
+        maze[i] = new int[column + 2];
+        copymaze[i] = new int[column + 2];
+        path[2 * i] = new string[column + 2];
+        path[2 * i + 1] = new string[column + 2];
+    }
+    for(int i = 0; i < row + 2; i++)
+    {
+        for(int l = 0; l < column + 2; l++)
+        {
+            if(i == 0 || i == row + 1 || l == 0 || l == column + 1)
+            {
+                maze[i][l] = 0;
+                copymaze[i][l] = 0;
+                path[2 * i][l] = "";
+                path[2 * i + 1][l] = "";
+            }
+            else
+            {
+                // cin >> maze[i][l];
+                int digitscout = log10(maze[i][l]) + 2;
+                if (digitscout > filecapacity)
+                {
+                    filecapacity = digitscout;
+                }
+                if(maze[i][l] == 0)
+                {
+                    copymaze[i][l] = 0;
+                }
+                else
+                {
+                    copymaze[i][l] = 1;
+                }
+                path[2 * i][l] = " ";
+                path[2 * i + 1][l] = " ";
+            }
+        }
+    }
+    for(int i = 1; i < row + 1; i++)
+    {
+        for(int l = 1; l < column + 1; l++)
+        {
+            cout << left << setw(filecapacity) << maze[i][l];
+        }
+        cout << endl;
+    }
+    cout << endl;
+    mazesolver(maze , copymaze , path , row , column , 1 , 1 , length , flag , sum);
+    for(int i = 1; i < row + 1; i++)
+    {
+        for(int l = 1; l < column + 1; l++)
+        {
+            cout << left << setw(filecapacity) << copymaze[i][l];
+        }
+        cout << endl;
+    }
+    cout << endl;
+    for(int i = 1; i < row + 1; i++)
+    {
+        for(int l = 1; l < column + 1; l++)
+        {
+            if(copymaze[i][l] == 2)
+            {
+                cout << green;
+            }
+            cout << left << setw(filecapacity) << maze[i][l] << reset << left << setw(filecapacity) << path[2 * i][l];
+        }
+        cout << endl;
+        for(int l = 1; l < column + 1; l++)
+        {
+            cout << left << setw(2 * filecapacity) << path[2 * i + 1][l];
+        }
+        cout << endl;
+    }
+}
+
+void mazesolver(int** maze, int**& copymaze , string**& path , int row , int column , int rowin , int columnin, int togo , int& flag , int sum)
+{
+    if(maze[rowin][columnin] == 0 || copymaze[rowin][columnin] == 2)
+    {
+        return;
+    }
+    sum += maze[rowin][columnin];
+    copymaze[rowin][columnin] = 2;
+    if(togo == 0 && rowin == row && columnin == column && sum == 2 * maze[row][column])
+    {
+        flag = 1;
+        return;
+    }
+    if(togo < row + column - rowin - columnin)
+    {
+        copymaze[rowin][columnin] = 1;
+        return;
+    }
+    if(copymaze[rowin - 1][columnin] != 0 && copymaze[rowin - 1][columnin] != 2)
+    {
+        path[2 * rowin - 1][columnin] = "|";
+        mazesolver(maze , copymaze , path , row , column , rowin - 1 , columnin , togo - 1 , flag , sum);
+        if(flag == 1)
+        {
+            return;
+        }
+        path[2 * rowin - 1][columnin] = " ";
+    }
+    if(copymaze[rowin][columnin + 1] != 0 && copymaze[rowin][columnin + 1] != 2)
+    {
+        path[2 * rowin][columnin] = "_";
+        mazesolver(maze , copymaze , path , row , column , rowin , columnin + 1 , togo - 1 , flag , sum);
+        if(flag == 1)
+        {
+            return;
+        }
+        path[2 * rowin][columnin] = " ";
+    }
+    if(copymaze[rowin + 1][columnin] != 0 && copymaze[rowin + 1][columnin] != 2)
+    {
+        path[2 * rowin + 1][columnin] = "|";
+        if(copymaze[rowin + 1][columnin] != 0 && copymaze[rowin + 1][columnin] != 2)
+        mazesolver(maze , copymaze , path , row , column , rowin + 1 , columnin , togo - 1 , flag , sum);
+        if(flag == 1)
+        {
+            return;
+        }
+        path[2 * rowin + 1][columnin] = " ";
+    }
+    if(copymaze[rowin][columnin - 1] != 0 && copymaze[rowin][columnin - 1] != 2)
+    {
+        path[rowin * 2][columnin - 1] = "_";
+        mazesolver(maze , copymaze , path , row , column , rowin , columnin - 1 , togo - 1 , flag , sum);
+        if(flag == 1)
+        {
+            return;
+        }
+        path[rowin * 2][columnin - 1] = " ";
+    }
+    sum -= maze[rowin][columnin];
+    copymaze[rowin][columnin] = 1;
 }

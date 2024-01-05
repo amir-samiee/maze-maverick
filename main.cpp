@@ -133,7 +133,6 @@ string menu2 =
 
 int main()
 {
-    playground();
     string choice1;
     // cin >> choice1;
     getinput(choice1, menu0, 0, 6);
@@ -232,7 +231,7 @@ void printmap(int **values, bool **ispassed, int currentx, int currenty, int las
                 cout << cyan;
             else if (!values[i][j])
                 cout << magenta;
-            cout << left << setw(filecapacity + 1) << values[i][j] << reset << ' ';
+            cout << left << setw(filecapacity) << values[i][j] << reset << ' ';
         }
         cout << endl;
     }
@@ -502,24 +501,29 @@ void playground() // more than 1 digit is not supported yet
 {
     while (1)
     {
-        int i = 1;
+        // int i = 1;
         bool valid = 1, brk = 0;
         string choice, name, list = "List of maps:\n", mapchoice, mapaddress;
         user player;
         ifstream mapfile, allmaps("Maps/allmaps.txt");
-        vector<string> maps;
+        vector<string> maps = getusers("Maps/allmaps.txt");
+        for (int i = 0; i < maps.size(); i++)
+            list += "\n\t" + to_string(i + 1) + ". " + maps[i];
+        allmaps.close();
         getinput(choice, "Playground\n" + menu2, 0, 2);
+    choose_map:
+        mapfile.close();
         switch (stoi(choice))
         {
         case 0:
             return;
         case 1:
-            while (allmaps >> name)
-            {
-                list += "\n\t" + to_string(i) + ". " + name;
-                maps.push_back(name);
-                i++;
-            }
+            // while (allmaps >> name)
+            // {
+            //     list += "\n\t" + to_string(i) + ". " + name;
+            //     maps.push_back(name);
+            //     i++;
+            // }
             getinput(mapchoice, list + "\n\t0. Back", 0, maps.size());
             if (mapchoice == "0")
                 continue;
@@ -547,7 +551,7 @@ void playground() // more than 1 digit is not supported yet
         }
         allmaps.close();
         brk = 0;
-        while (player.name == "" || player.name == "allusers")
+        while (player.name == "0" || player.name == "" || player.name == "allusers")
         {
             clearScreen();
             cout << "\nPlease enter a username or enter 0 to go back: ";
@@ -559,7 +563,7 @@ void playground() // more than 1 digit is not supported yet
             }
         }
         if (brk)
-            continue;
+            goto choose_map;
         int m, n, x = 1, y = 1, filecapacity = 1;
         mapfile >> m >> n;
         int **values = new int *[m + 2];

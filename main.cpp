@@ -507,3 +507,4 @@ int randint(int floor, int ceil)
     int res = rand() % dif + floor - zeroin;
     return res + (res >= 0) * zeroin;
 }
+

@@ -208,12 +208,12 @@ bool isvalidint(string& input , int& output)
 void getintinput(string interact, string& input, int& result)
 {
     clearScreen();
-    cout << interact << '\n';
-    getline(cin , input);
+    cout << interact;
+    cin >> input;
     while(!isvalidint(input, result))
     {
         clearScreen();
-        cout << "Invalid entry. pls try again: \n";
+        cout << interact << "\n" <<"Invalid entry. pls try again: \n";
         getline(cin, input);
     }
 }
@@ -250,6 +250,10 @@ void createNewMap()
     while(mapdif > 2 || mapdif < 0)
     {
         getintinput("Pls enter a valid choice: \n1. Easy\n2. Hard\n0. Back\nPls enter your choice: ", choice, mapdif);
+    }
+    if(mapdif == 0)
+    {
+        return;
     }
     // gets maze height from user 
     getintinput("Pls enter maze height: \n", Srow, row);
@@ -517,7 +521,7 @@ void mazesolving()
     clearScreen();
     int row , column, length, mapdif, sum = 0, flag = 0 , **maze , **copymaze , filecapacity = 2;
     string **path;
-    // cin >> row >> column >> length;
+    cin >> row >> column >> length;
     maze = new int*[row + 2];
     copymaze = new int*[row + 2];
     path = new string*[2 * (row + 2)];
@@ -541,7 +545,7 @@ void mazesolving()
             }
             else
             {
-                // cin >> maze[i][l];
+                cin >> maze[i][l];
                 int digitscout = log10(maze[i][l]) + 2;
                 if (digitscout > filecapacity)
                 {
@@ -560,25 +564,7 @@ void mazesolving()
             }
         }
     }
-    for(int i = 1; i < row + 1; i++)
-    {
-        for(int l = 1; l < column + 1; l++)
-        {
-            cout << left << setw(filecapacity) << maze[i][l];
-        }
-        cout << endl;
-    }
-    cout << endl;
     mazesolver(maze , copymaze , path , row , column , 1 , 1 , length , flag , sum);
-    for(int i = 1; i < row + 1; i++)
-    {
-        for(int l = 1; l < column + 1; l++)
-        {
-            cout << left << setw(filecapacity) << copymaze[i][l];
-        }
-        cout << endl;
-    }
-    cout << endl;
     for(int i = 1; i < row + 1; i++)
     {
         for(int l = 1; l < column + 1; l++)
@@ -596,6 +582,7 @@ void mazesolving()
         }
         cout << endl;
     }
+    
 }
 
 void mazesolver(int** maze, int**& copymaze , string**& path , int row , int column , int rowin , int columnin, int togo , int& flag , int sum)

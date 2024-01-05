@@ -1,4 +1,0 @@
-Games: examplenumber
-Wins: examplenumber
-Last Win Time: examplenumber
-Total Time: examplenumber

@@ -24,6 +24,8 @@ void mazepathmaker(int **& maze , int row , int column , int rowin , int columni
 void mazefiller(int **& maze, int row, int column, int length , int lowV , int highV , int leastW, int mostW);
 //function for generating random int excluding 0
 int randint(int floor, int ceil);
+//function for getting input util its a valid int input
+void getintinput(string interact, string& input, int& output);
 void clearScreen();                                             // this function has been declared to clear the screen on both windows and linux
 bool isInteger(string s);                                       // returns 1 if a string can be converted to an integer, otherwise 0
 void getinput(string &input, string options, int from, int to); // shows a list of options and gets input until user inputs a valid choice. the choice should be an integer from integer "from" to integer "to"

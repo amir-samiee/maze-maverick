@@ -26,10 +26,13 @@ void mazefiller(int **& maze, int row, int column, int length , int lowV , int h
 int randint(int floor, int ceil);
 //function for getting input util its a valid int input
 void getintinput(string interact, string& input, int& output);
+//function that solves a map
+void mazesolver(int** maze, char**& copymaze , int row , int column , int rowin , int coumnin, int togo , int& flag);
 void clearScreen();                                             // this function has been declared to clear the screen on both windows and linux
 bool isInteger(string s);                                       // returns 1 if a string can be converted to an integer, otherwise 0
 void getinput(string &input, string options, int from, int to); // shows a list of options and gets input until user inputs a valid choice. the choice should be an integer from integer "from" to integer "to"
 void createNewMap();
+void mazesolving();
 void showHistory();
 void showUsers();
 bool isvalidint(string& input, int& output);                    //checks if the input is integer
@@ -152,6 +155,7 @@ int main()
     case 2:
         break;
     case 3:
+        mazesolving():
         break;
     case 4:
         showHistory();
@@ -508,3 +512,9 @@ int randint(int floor, int ceil)
     return res + (res >= 0) * zeroin;
 }
 
+void mazesolving()
+{
+    int row , column, length, mapdif, sum = 0, flag = 0 , maze[row + 2][column + 2];
+    char copymaze[2 * row + 1][2 * column + 1];
+    mazesolver(maze , row , column , 1 , 1 , length , flag);
+}

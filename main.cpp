@@ -643,43 +643,44 @@ void showHistory()
 
 void showUsers()
 {
-    clearScreen();
     vector<string> users = getusers();
-    string name;
-
-    bool nameerror = 0;
-    do
+    while (1)
     {
         clearScreen();
-        cout << "List of users:\n\n";
-        for (int i = 0; i < users.size(); i++)
-            cout << '\t' << users[i] << endl;
-        cout << (nameerror ? red + "Invalid name!\nPlease enter a name included in the list\n" + reset : "\n\n")
-             << "Enter a name or enter 0 to go back: ";
-        cin >> name;
-        if (name == "0")
-            return;
-        nameerror = 1;
-        for (int i = 0; i < users.size(); i++)
-            if (users[i] == name)
-            {
-                nameerror = 0;
-                break;
-            }
+        string name;
+        bool nameerror = 0;
+        do
+        {
+            clearScreen();
+            cout << "List of users:\n\n";
+            for (int i = 0; i < users.size(); i++)
+                cout << '\t' << users[i] << endl;
+            cout << (nameerror ? red + "Invalid name!\nPlease enter a name included in the list\n" + reset : "\n\n")
+                 << "Enter a name or enter 0 to go back: ";
+            cin >> name;
+            if (name == "0")
+                return;
+            nameerror = 1;
+            for (int i = 0; i < users.size(); i++)
+                if (users[i] == name)
+                {
+                    nameerror = 0;
+                    break;
+                }
 
-    } while (nameerror);
-    ifstream userfile("Users/" + name + ".txt");
-    string line;
-    // if (userfile.is_open())
-    clearScreen();
-    cout << "Name: " << name << endl;
-    while (getline(userfile, line))
-        cout << line << endl;
-    // else
-    //     cout << red + "error" + reset;
-    cout << "\nPress any key to coninue: ";
-    _getch();
-    showUsers();
+        } while (nameerror);
+        ifstream userfile("Users/" + name + ".txt");
+        string line;
+        // if (userfile.is_open())
+        clearScreen();
+        cout << "Name: " << name << endl;
+        while (getline(userfile, line))
+            cout << line << endl;
+        // else
+        //     cout << red + "error" + reset;
+        cout << "\nPress any key to coninue: ";
+        _getch();
+    }
 }
 
 void leaderboard()

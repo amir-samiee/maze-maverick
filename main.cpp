@@ -26,7 +26,7 @@ void playground();                                              // the interacti
 void showHistory();                                             // shows the history of the games (part 4)
 void showUsers();                                               // shows the users (part 5)
 void leaderboard();                                             // shows the leader users (part 6)
-
+void resetstats();                                              // clears user and games history data but keeps the maps
 // pieces of code that we will need:
 
 // getting the date in the most proper format:
@@ -121,6 +121,7 @@ string menu0 =
     "\n4. History"
     "\n5. Users"
     "\n6. Leaderboard"
+    "\n7. Reset stats"
     "\n0. Exit";
 string menu1 =
     "\n1. Easy"
@@ -135,7 +136,7 @@ int main()
 {
     string choice1;
     // cin >> choice1;
-    getinput(choice1, menu0, 0, 6);
+    getinput(choice1, menu0, 0, 7);
     switch (stoi(choice1))
     {
     case 1:
@@ -153,6 +154,9 @@ int main()
         break;
     case 6:
         leaderboard();
+        break;
+    case 7:
+        resetstats();
         break;
     default:
         cout << endl
@@ -701,6 +705,40 @@ void leaderboard()
     cout << "Leaderboard:\n\n";
     for (int i = 0; i < leaders.size(); i++)
         cout << '\t' << i + 1 << ". " << leaders[i] << endl;
+    cout << "\nPress any key to coninue: ";
+    _getch();
+}
+
+void resetstats()
+{
+    clearScreen();
+    cout << "This action clears any data related to users and games history but keeps the maps"
+         << "\nEnter y to confirm the action. Enter anything else to cancel and go back: ";
+    string choice;
+    getline(cin, choice);
+    if (choice == "")
+        getline(cin, choice);
+    if (choice != "y")
+    {
+        cout << red + "no changes applied" + reset;
+        cout << "\nPress any key to coninue: ";
+        _getch();
+        return;
+    }
+    vector<string> users = getusers();
+    for (string u : users)
+    {
+        string filename = "Users/" + u + ".txt";
+        remove(filename.c_str());
+    }
+    ofstream file;
+    file.open("Users/allusers.txt");
+    file.close();
+    file.open("Stats/History.txt");
+    file.close();
+    file.open("Stats/Leaderboard.txt");
+    file.close();
+    cout << green << "Cleared successfully!!" << reset;
     cout << "\nPress any key to coninue: ";
     _getch();
 }

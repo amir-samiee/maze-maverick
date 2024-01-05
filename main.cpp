@@ -1,14 +1,15 @@
 #include <iostream>
 #include <windows.h>
 #include <fstream>
+#include <iomanip>
 #include <algorithm>
 #include <vector>
 #include <stdio.h>
 #include <ctime>
 #include <cmath>
-// #include <cstdio>
 #include <conio.h>
 #include <ctype.h>
+// #include <cstdio>
 using namespace std;
 // COLORS
 const string red("\033[0;31m");
@@ -21,7 +22,6 @@ const string reset("\033[0m");
 void clearScreen();                                             // this function has been declared to clear the screen on both windows and linux
 bool isInteger(string s);                                       // returns 1 if a string can be converted to an integer, otherwise 0
 void getinput(string &input, string options, int from, int to); // shows a list of options and gets input until user inputs a valid choice. the choice should be an integer from integer "from" to integer "to"
-void createNewMap();                                            // creates a map (part 1)
 void playground();                                              // the interactive game part (part 2)
 void showHistory();                                             // shows the history of the games (part 4)
 void showUsers();                                               // shows the users (part 5)
@@ -140,7 +140,6 @@ int main()
     switch (stoi(choice1))
     {
     case 1:
-        createNewMap();
         break;
     case 2:
         playground();
@@ -208,39 +207,6 @@ void getinput(string &input, string options, int from, int to)
     } while (indexerror || typeerror);
 }
 
-void easy()
-{
-    clearScreen();
-    cout << "This part of the program has not been ready yet\nEnter something to go back";
-    _getch();
-    return;
-}
-
-void hard()
-{
-    clearScreen();
-    cout << "This part of the program has not been ready yet\nEnter something to go back";
-    _getch();
-    return;
-}
-
-void createNewMap()
-{
-    string choice;
-    getinput(choice, "Create a new map:\n" + menu1, 0, 2);
-    switch (stoi(choice))
-    {
-    case 1:
-        easy();
-        break;
-    case 2:
-        hard();
-        break;
-    default:
-        return;
-    }
-}
-
 // struct mfile // a struct for the
 // {
 //     int value;
@@ -248,9 +214,10 @@ void createNewMap()
 //     bool ison = 0;
 // };
 
-void printmap(int **values, bool **ispassed, int currentx, int currenty, int lastx, int lasty, int m, int n, bool includezeros = 1)
+void printmap(int **values, bool **ispassed, int currentx, int currenty, int lastx, int lasty, int m, int n, bool includezeros = 1, int filecapacity = 1)
 {
     clearScreen();
+    cout << "Use the arrow keys to move. Press Esc to exit\n\n";
     for (int i = 0 + !includezeros; i < m - !includezeros; i++)
     {
         for (int j = 0 + !includezeros; j < n - !includezeros; j++)
@@ -265,7 +232,7 @@ void printmap(int **values, bool **ispassed, int currentx, int currenty, int las
                 cout << cyan;
             else if (!values[i][j])
                 cout << magenta;
-            cout << values[i][j] << reset << ' ';
+            cout << left << setw(filecapacity + 1) << values[i][j] << reset << ' ';
         }
         cout << endl;
     }
@@ -350,9 +317,9 @@ struct user
     int totaltime = 0;
 };
 
-vector<string> getusers()
+vector<string> getusers(string filename = "Users/allusers.txt")
 {
-    ifstream usersfile("Users/allusers.txt");
+    ifstream usersfile(filename);
     vector<string> users;
     string name;
     while (usersfile >> name)
@@ -377,9 +344,9 @@ user formuser(string name)
     userfile.close();
     return opened;
 }
-vector<user> getplayersdata()
+vector<user> getusersdata(string filename = "Users/allusers.txt")
 {
-    vector<string> users = getusers();
+    vector<string> users = getusers(filename);
     vector<user> players;
     for (auto u : users)
         players.push_back(formuser(u));
@@ -423,6 +390,42 @@ void updateusers(user &player, bool won)
     userfile.close();
 }
 
+bool compare(user a, user b)
+{
+    if (a.wins > b.wins)
+        return 0;
+    if (a.wins < b.wins)
+        return 1;
+    if (a.totaltime < b.totaltime)
+        return 0;
+    if (a.totaltime > b.totaltime)
+        return 1;
+    return (b.name.compare(a.name) < 0);
+}
+
+void updateleaderboard(user player)
+{
+    vector<user> leaders = getusersdata("Stats/Leaderboard.txt");
+    bool isin = 0;
+    for (int i = 0; i < leaders.size(); i++)
+    {
+        if (leaders[i].name == player.name)
+        {
+            isin = 1;
+            break;
+        }
+    }
+    if (!isin)
+        leaders.push_back(player);
+    sort(leaders.begin(), leaders.end(), compare);
+    reverse(leaders.begin(), leaders.end());
+    int size = leaders.size();
+    ofstream leadfile("Stats/Leaderboard.txt");
+    for (int i = 0; i < min(size, 3); i++)
+        leadfile << leaders[i].name << endl;
+    leadfile.close();
+}
+
 string Date()
 {
     time_t now = time(0);
@@ -432,11 +435,11 @@ string Date()
     return buffer;
 }
 
-int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int y0, int sum, int start_time) // returns a code: 0 for continuing, 1 for "User won", -1 for "User lost"
+int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int y0, int sum, int start_time, int filecapacity) // returns a code: 0 for continuing, 1 for "User won", -1 for "User lost"
 {
     if (x == m && y == n && values[x][y] * 2 == sum)
     {
-        printmap(values, ispassed, x, y, x0, y0, m + 2, n + 2, 0);
+        printmap(values, ispassed, x, y, x0, y0, m + 2, n + 2, 0, filecapacity);
         return 1;
     }
     // if (values[x][y] == 0 || ispassed[x][y])
@@ -446,8 +449,8 @@ int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int 
     while (1)
     {
         clearScreen();
-        printmap(values, ispassed, x, y, x0, y0, m + 2, n + 2, 0);
-        cout << "Sum of the blocks: " << sum << "\nTime: "
+        printmap(values, ispassed, x, y, x0, y0, m + 2, n + 2, 0, filecapacity);
+        cout << "\nSum of the blocks: " << sum << "\nTime: "
              << time(0) - start_time;
         ch = getch(); // get the first value
         while (ch != 0 && ch != 224 && ch != 27)
@@ -474,7 +477,7 @@ int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int 
         else if (ch == 27) // check if it is ESC
         {
             clearScreen();
-            printmap(values, ispassed, x, y, x0, y0, m + 2, n + 2, 0);
+            printmap(values, ispassed, x, y, x0, y0, m + 2, n + 2, 0, filecapacity);
             return -1; // exit the loop
         }
         if (x2 == x0 && y2 == y0)
@@ -485,7 +488,7 @@ int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int 
             y2 = y;
             continue;
         }
-        int flag = next(values, ispassed, m, n, x2, y2, x, y, sum + values[x2][y2], start_time);
+        int flag = next(values, ispassed, m, n, x2, y2, x, y, sum + values[x2][y2], start_time, filecapacity);
         if (flag)
             return flag;
         x2 = x;
@@ -557,7 +560,7 @@ void playground() // more than 1 digit is not supported yet
         }
         if (brk)
             continue;
-        int m, n, x = 1, y = 1;
+        int m, n, x = 1, y = 1, filecapacity = 1;
         mapfile >> m >> n;
         int **values = new int *[m + 2];
         bool **ispassed = new bool *[m + 2];
@@ -570,12 +573,17 @@ void playground() // more than 1 digit is not supported yet
         }
         for (int i = 1; i < m + 1; i++)
             for (int j = 1; j < n + 1; j++)
+            {
                 mapfile >> values[i][j];
+                int digitscout = log10(values[i][j]) + 1;
+                if (digitscout > filecapacity)
+                    filecapacity = digitscout;
+            }
         mapfile.close();
         int start = time(0);
         // printmap(values, ispassed, 1, 1, 0, 0, m + 2, n + 2, 0);
         int sum = 0, ch, x2 = x, y2 = y, x0 = x, y0 = y;
-        bool won = next(values, ispassed, m, n, x, y, 1, 1, values[1][1], start) == 1;
+        bool won = next(values, ispassed, m, n, x, y, 1, 1, values[1][1], start, filecapacity) == 1;
         int end = time(0);
 
         cout << endl;
@@ -603,6 +611,7 @@ void playground() // more than 1 digit is not supported yet
         hist.close();
         remove("Stats/History.txt");
         rename("Stats/temp.txt", "Stats/History.txt");
+        updateleaderboard(player);
         for (int i = 0; i < m; i++)
         {
             delete[] values[i];
@@ -669,30 +678,24 @@ void showUsers()
     showUsers();
 }
 
-bool compare(user a, user b)
-{
-    if (a.wins > b.wins)
-        return 0;
-    if (a.wins < b.wins)
-        return 1;
-    if (a.totaltime < b.totaltime)
-        return 0;
-    if (a.totaltime > b.totaltime)
-        return 1;
-    return (b.name.compare(a.name) < 0);
-}
-
 void leaderboard()
 {
+    // clearScreen();
+    // cout << "Finding best players...";
+    // vector<user> players = getusersdata();
+    // sort(players.begin(), players.end(), compare);
+    // clearScreen();
+    // cout << "Leaderboard:\n\n";
+    // int size = players.size();
+    // for (int i = min(3, size) - 1; i >= 0; i--)
+    //     cout << min(3, size) - i << ". " << players[i].name << endl;
+    // cout << "\nPress any key to coninue: ";
+    // _getch();
     clearScreen();
-    cout << "Finding best players...";
-    vector<user> players = getplayersdata();
-    sort(players.begin(), players.end(), compare);
-    clearScreen();
+    vector<string> leaders = getusers("Stats/Leaderboard.txt");
     cout << "Leaderboard:\n\n";
-    int size = players.size();
-    for (int i = min(3, size) - 1; i >= 0; i--)
-        cout << min(3, size) - i << ". " << players[i].name << endl;
+    for (int i = 0; i < leaders.size(); i++)
+        cout << '\t' << i + 1 << ". " << leaders[i] << endl;
     cout << "\nPress any key to coninue: ";
     _getch();
 }

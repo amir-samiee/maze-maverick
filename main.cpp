@@ -210,13 +210,6 @@ void getinput(string &input, string options, int from, int to)
     } while (indexerror || typeerror);
 }
 
-// struct mfile // a struct for the
-// {
-//     int value;
-//     bool ispassed = 0;
-//     bool ison = 0;
-// };
-
 void printmap(int **values, bool **ispassed, int currentx, int currenty, int lastx, int lasty, int m, int n, bool includezeros = 1, int filecapacity = 1)
 {
     clearScreen();

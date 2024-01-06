@@ -244,7 +244,8 @@ void getinput(string &input, string options, int from, int to)
 void createNewMap()
 {
     string choice , Scolumn , Srow , Slength;
-    int mapdif ,flag = 0 , column , row , length , **maze;
+    int mapdif ,flag = 0 , column , row , length , **maze , reseter = 1;
+reset_dif:
     //gets map difficulty from user
     getintinput("Create a new map: \n1. Easy\n2. Hard\n0. Back\nPls enter your choice: ", choice, mapdif);
     while(mapdif > 2 || mapdif < 0)
@@ -256,30 +257,41 @@ void createNewMap()
         return;
     }
     // gets maze height from user 
-    getintinput("Pls enter maze height: \n", Srow, row);
-    while(row < 2)
+    getintinput("Pls enter maze height or enter 0 to restart the process: \n", Srow, row);
+    while(row < 2 && row != 0)
     {
-        getintinput("Pls enter maze height (it cannot be less than 2): \n", Srow, row);
+        getintinput("Pls enter maze height (it cannot be less than 2) or enter 0 to restart the process: \n", Srow, row);
     }
+    if(row == 0)
+    goto reset_dif;
     // gets maze width from user
-    getintinput("Pls enter maze width: \n", Scolumn, column);
-    while(column < 2)
+    getintinput("Pls enter maze width or enter 0 to restart the process: \n", Scolumn, column);
+    while(column < 2 && column != 0)
     {
-        getintinput("Pls enter maze width (it cannot be less than 2): \n", Scolumn, column);
+        getintinput("Pls enter maze width (it cannot be less than 2) or enter 0 to restart the process: \n", Scolumn, column);
     }
+    if(column == 0)
+    goto reset_dif;
     //length for basic maze
     length = column + row - 2;
     // checks the difficulty option for advanced path making
     if(mapdif == 2)
     {
         // gets length of path for the maze from user
-        getintinput("Pls enter the length of the path:\n", Slength, length);
-        while(length < row + column - 2 || length > row * column - 1 || length % 2 != (row + column) % 2)
+        getintinput("Pls enter the length of the path or enter 0 to restart the process:\n", Slength, length);
+        while(length < row + column - 2 || length > row * column - 1 || length % 2 != (row + column) % 2 && length != 0)
         {
             cout << "Such a path cannot exist. \nTry again: \n";
-            getintinput( "Pls enter the length of the path:\n", Slength, length);
+            getintinput( "Pls enter the length of the path or enter 0 to restart the process:\n", Slength, length);
         }
     }
+    if(length == 0)
+    goto reset_dif;
+    clearScreen();
+    cout << yellow <<"You won't be able to reset the settings for the maze from this point forward\n" << reset <<"Enter 0 to restart the process:";
+    cin >> reseter;
+    if(reseter == 0)
+    goto reset_dif;
     // setting the maze up
     maze = new int*[row + 2];
     for(int i = 0; i < row + 2; i++)
@@ -314,7 +326,7 @@ void createNewMap()
     mazepathmaker(maze ,row, column, 1, 1, length, flag);
     
     string SlowV , ShighV, SleastW, SmostW;
-    int lowV = -3 , highV = 3, leastW = 2, mostW = 5;
+    int lowV = -3 , highV = 3, leastW = 2, mostW = 5 , filecapacity = 2;
     if(mapdif == 2)
     {
         // inputs the min value of blocks
@@ -338,18 +350,19 @@ void createNewMap()
             getintinput("Pls enter your choice of max amount of walls (it can't be less than the min amount of walls): ", SleastW, mostW);
         }
     }
-    
+    for (int i = 1; i < row + 1; i++)
+            for (int j = 1; j < column + 1; j++)
+            {
+                int digitscout = log10(fabs(maze[i][j])) + 1;
+                if (digitscout > filecapacity)
+                    filecapacity = digitscout;
+            }
+
     //filling the maze
     mazefiller(maze , row , column , length , lowV , highV , leastW, mostW);
-    cout << '\n';
-    // for(int i = 1 ; i < row + 1; i++)
-    // {
-    //     for(int l = 1; l < column + 1; l++)
-    //     {
-    //         cout << maze[i][l] << ' ';
-    //     }
-    //     cout << '\n';
-    // }
+    cout << "Maze has been made, Press any Key to return to menu: ";
+    _getch();
+    return;
 }
 void showHistory()
 {
@@ -546,7 +559,7 @@ void mazesolving()
             else
             {
                 cin >> maze[i][l];
-                int digitscout = log10(maze[i][l]) + 2;
+                int digitscout = log10(fabs(maze[i][l])) + 2;
                 if (digitscout > filecapacity)
                 {
                     filecapacity = digitscout;
@@ -573,16 +586,18 @@ void mazesolving()
             {
                 cout << green;
             }
-            cout << left << setw(filecapacity) << maze[i][l] << reset << left << setw(filecapacity) << path[2 * i][l];
+            cout << left << setw(filecapacity) << maze[i][l] << cyan << left << setw(filecapacity) << path[2 * i][l] << reset;
         }
         cout << endl;
         for(int l = 1; l < column + 1; l++)
         {
-            cout << left << setw(2 * filecapacity) << path[2 * i + 1][l];
+            cout << cyan << left << setw(2 * filecapacity) << path[2 * i + 1][l] << reset;
         }
         cout << endl;
     }
-    
+    cout << "\nPress any key to coninue: ";
+    _getch();
+    return;
 }
 
 void mazesolver(int** maze, int**& copymaze , string**& path , int row , int column , int rowin , int columnin, int togo , int& flag , int sum)

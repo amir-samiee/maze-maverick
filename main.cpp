@@ -323,7 +323,7 @@ struct user
     int totaltime = 0;
 };
 
-vector<string> getusers(string filename = "Users/allusers.txt")
+vector<string> getnames(string filename = "Users/allusers.txt")
 {
     ifstream usersfile(filename);
     vector<string> users;
@@ -352,7 +352,7 @@ user formuser(string name)
 }
 vector<user> getusersdata(string filename = "Users/allusers.txt")
 {
-    vector<string> users = getusers(filename);
+    vector<string> users = getnames(filename);
     vector<user> players;
     for (auto u : users)
         players.push_back(formuser(u));
@@ -361,7 +361,7 @@ vector<user> getusersdata(string filename = "Users/allusers.txt")
 
 void updateusers(user &player, bool won)
 {
-    vector<string> users = getusers();
+    vector<string> users = getnames();
     bool isin = 0;
     for (int i = 0; i < users.size(); i++)
         if (player.name == users[i])
@@ -512,7 +512,7 @@ void playground() // more than 1 digit is not supported yet
         string choice, name, list = "List of maps:\n", mapchoice, mapaddress;
         user player;
         ifstream mapfile, allmaps("Maps/allmaps.txt");
-        vector<string> maps = getusers("Maps/allmaps.txt");
+        vector<string> maps = getnames("Maps/allmaps.txt");
         for (int i = 0; i < maps.size(); i++)
             list += "\n\t" + to_string(i + 1) + ". " + maps[i];
         allmaps.close();
@@ -650,7 +650,7 @@ void showHistory()
 
 void showUsers()
 {
-    vector<string> users = getusers();
+    vector<string> users = getnames();
     while (1)
     {
         clearScreen();
@@ -704,7 +704,7 @@ void leaderboard()
     // cout << "\nPress any key to coninue: ";
     // _getch();
     clearScreen();
-    vector<string> leaders = getusers("Stats/Leaderboard.txt");
+    vector<string> leaders = getnames("Stats/Leaderboard.txt");
     cout << "Leaderboard:\n\n";
     for (int i = 0; i < leaders.size(); i++)
         cout << '\t' << i + 1 << ". " << leaders[i] << endl;
@@ -728,7 +728,7 @@ void resetstats()
         _getch();
         return;
     }
-    vector<string> users = getusers();
+    vector<string> users = getnames();
     for (string u : users)
     {
         string filename = "Users/" + u + ".txt";

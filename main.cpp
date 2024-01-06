@@ -578,22 +578,29 @@ void mazesolving()
         }
     }
     mazesolver(maze , copymaze , path , row , column , 1 , 1 , length , flag , sum);
-    for(int i = 1; i < row + 1; i++)
+    if(flag == 1)
     {
-        for(int l = 1; l < column + 1; l++)
+        for(int i = 1; i < row + 1; i++)
         {
-            if(copymaze[i][l] == 2)
+            for(int l = 1; l < column + 1; l++)
             {
-                cout << green;
+                if(copymaze[i][l] == 2)
+                {
+                    cout << green;
+                }
+                cout << left << setw(filecapacity) << maze[i][l] << cyan << left << setw(filecapacity) << path[2 * i][l] << reset;
             }
-            cout << left << setw(filecapacity) << maze[i][l] << cyan << left << setw(filecapacity) << path[2 * i][l] << reset;
+            cout << endl;
+            for(int l = 1; l < column + 1; l++)
+            {
+                cout << cyan << left << setw(2 * filecapacity) << path[2 * i + 1][l] << reset;
+            }
+            cout << endl;
         }
-        cout << endl;
-        for(int l = 1; l < column + 1; l++)
-        {
-            cout << cyan << left << setw(2 * filecapacity) << path[2 * i + 1][l] << reset;
-        }
-        cout << endl;
+    }
+    else
+    {
+        cout << yellow << "There's no path with the given length in this maze" << reset;
     }
     cout << "\nPress any key to coninue: ";
     _getch();

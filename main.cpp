@@ -141,36 +141,39 @@ string menu2 =
 
 int main()
 {
-    string choice1;
-    // cin >> choice1;
-    getinput(choice1, menu0, 0, 7);
-    switch (stoi(choice1))
+    while (1)
     {
-    case 1:
-        break;
-    case 2:
-        playground();
-        break;
-    case 3:
-        break;
-    case 4:
-        showHistory();
-        break;
-    case 5:
-        showUsers();
-        break;
-    case 6:
-        leaderboard();
-        break;
-    case 7:
-        resetstats();
-        break;
-    default:
-        cout << endl
-             << yellow + "Exiting program...\n\n" + reset;
-        return 0;
+        string choice1;
+        // cin >> choice1;
+        getinput(choice1, menu0, 0, 7);
+        switch (stoi(choice1))
+        {
+        case 1:
+            break;
+        case 2:
+            playground();
+            break;
+        case 3:
+            break;
+        case 4:
+            showHistory();
+            break;
+        case 5:
+            showUsers();
+            break;
+        case 6:
+            leaderboard();
+            break;
+        case 7:
+            resetstats();
+            break;
+        default:
+            cout << endl
+                 << yellow + "Exiting program...\n\n" + reset;
+            return 0;
+        }
     }
-    main();
+    // main();
 }
 
 void clearScreen()
@@ -583,7 +586,7 @@ void playground() // more than 1 digit is not supported yet
             for (int j = 1; j < n + 1; j++)
             {
                 mapfile >> values[i][j];
-                int digitscout = log10(values[i][j]) + 1;
+                int digitscout = log10(abs(values[i][j])) + (values[i][j] < 0) + 1;
                 if (digitscout > filecapacity)
                     filecapacity = digitscout;
             }

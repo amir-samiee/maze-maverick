@@ -1,5 +1,47 @@
 Date: 01/06/2024
 User Name: Amir
+Map: Maps/Map4.txt
+Time: 27
+Result: Win
+
+Date: 01/06/2024
+User Name: Hasan
+Map: Map1
+Time: 3
+Result: Win
+
+Date: 01/06/2024
+User Name: Amir
+Map: Map3
+Time: 17
+Result: Win
+
+Date: 01/06/2024
+User Name: Hesam
+Map: Map3
+Time: 12
+Result: Win
+
+Date: 01/06/2024
+User Name: Hesam
+Map: Map3
+Time: 10
+Result: Win
+
+Date: 01/06/2024
+User Name: Amir
+Map: Map1
+Time: 3
+Result: Win
+
+Date: 01/06/2024
+User Name: Amir
+Map: Map3
+Time: 12
+Result: Win
+
+Date: 01/06/2024
+User Name: Amir
 Map: Map3
 Time: 122
 Result: Win
@@ -15,16 +57,4 @@ User Name: Hesam
 Map: Map2
 Time: 1
 Result: Loose
-
-Date: 01/05/2024
-User Name: Hasan
-Map: Map3
-Time: 66
-Result: Win
-
-Date: 01/05/2024
-User Name: Amir
-Map: Map3
-Time: 87
-Result: Win
 

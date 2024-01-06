@@ -752,7 +752,6 @@ void leaderboard()
         cout << '\t' << i + 1 << ". " << leaders[i] << endl;
     cout << "\nPress any key to coninue: ";
     _getch();
-    _getch();
 }
 
 void resetstats()

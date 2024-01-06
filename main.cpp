@@ -758,12 +758,12 @@ void resetstats()
 {
     clearScreen();
     cout << "This action clears any data related to users and games history but keeps the maps"
-         << "\nEnter y to confirm the action. Enter anything else to cancel and go back: ";
+         << "\nEnter yes to confirm the action. Enter anything else to cancel and go back: ";
     string choice;
     getline(cin, choice);
     if (choice == "")
         getline(cin, choice);
-    if (choice != "y")
+    if (choice != "yes")
     {
         cout << red + "no changes applied" + reset;
         cout << "\nPress any key to coninue: ";

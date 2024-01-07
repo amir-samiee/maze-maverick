@@ -165,10 +165,10 @@ void getintinput(string interact, string &input, int &result ,bool flag)
         clearScreen();
     cout << interact;
     // cin >> input;
-    getline(cin, input);
+    getline(cin, input , '\r');
     while (!isInteger(input))
     {
-        clearScreen();
+        
         cout << interact << "\n"
              << red << "Invalid entry. Please try again: \n" << reset;
         getline(cin, input);
@@ -564,7 +564,7 @@ reset_dif:
     // gets map difficulty from user
     getintinput("Create a new map: \n1. Easy\n2. Hard\n0. Back\nPlease enter your choice: ", choice, mapdif , 0);
     while (mapdif > 2 || mapdif < 0)
-        getintinput(yellow + "Please enter a valid choice: \n" + reset +"1. Easy\n2. Hard\n0. Back\nPlease enter your choice: ", choice, mapdif , 0);
+        getintinput(yellow + "Please enter a valid choice: \n" + reset +"1. Easy\n2. Hard\n0. Back\nPlease enter your choice: ", choice, mapdif , 1);
     if (mapdif == 0)
         return;
     // gets maze height from user

@@ -1,60 +1,60 @@
 Date: 01/07/2024
-User Name: Amir
-Map: Map3
-Time: 12
-Result: Win
+User Name: Ali
+Map: 88
+Time: 38
+Result: Loose
 
-Date: 01/06/2024
+Date: 01/07/2024
 User Name: Amir
-Map: Maps/Map4.txt
-Time: 27
-Result: Win
-
-Date: 01/06/2024
-User Name: Hasan
-Map: Map1
+Map: 88
 Time: 3
-Result: Win
+Result: Loose
 
-Date: 01/06/2024
+Date: 01/07/2024
 User Name: Amir
-Map: Map3
-Time: 17
-Result: Win
-
-Date: 01/06/2024
-User Name: Hesam
-Map: Map3
+Map: 88
 Time: 12
-Result: Win
+Result: Loose
 
-Date: 01/06/2024
-User Name: Hesam
-Map: Map3
-Time: 10
-Result: Win
+Date: 01/07/2024
+User Name: Amir
+Map: 88
+Time: 36
+Result: Loose
 
-Date: 01/06/2024
+Date: 01/07/2024
+User Name: Ali
+Map: 88
+Time: 16
+Result: Loose
+
+Date: 01/07/2024
 User Name: Amir
 Map: Map1
-Time: 3
+Time: 9
 Result: Win
 
-Date: 01/06/2024
+Date: 01/07/2024
+User Name: Ali
+Map: 88
+Time: 36
+Result: Loose
+
+Date: 01/07/2024
+User Name: Ali
+Map: 88
+Time: 28
+Result: Loose
+
+Date: 01/07/2024
+User Name: Amir
+Map: 99
+Time: 46
+Result: Loose
+
+Date: 01/07/2024
 User Name: Amir
 Map: Map3
-Time: 12
-Result: Win
-
-Date: 01/06/2024
-User Name: Amir
-Map: Map3
-Time: 122
-Result: Win
-
-Date: 01/05/2024
-User Name: Hesam
-Map: Map1
-Time: 3
-Result: Win
+Time: 50
+Result: Loose
 

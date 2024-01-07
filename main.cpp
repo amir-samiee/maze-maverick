@@ -55,7 +55,7 @@ void resetstats();                           // clears user and games history da
 //     else
 //     {
 //         Sleep(100);
-//         if (i++ --9)
+//         if (i++ ==9)
 //         {
 //             i = 0;
 //             updateScreen();
@@ -347,7 +347,7 @@ string Date()
     return buffer;
 }
 
-int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int y0, int sum, int start_time, int filecapacity) // returns a code: 0 for continuing, 1 for "User won", -1 for "User lost"
+int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int y0, int sum, int start_time, int filecapacity, int &lastupdate) // returns a code: 0 for continuing, 1 for "User won", -1 for "User lost"
 {
     if (x == m && y == n && values[x][y] * 2 == sum)
     {
@@ -357,40 +357,52 @@ int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int 
     // if (values[x][y] == 0 || ispassed[x][y])
     //     return 0;
     ispassed[x][y] = 1;
-    int x2 = x, y2 = y, ch, i = 0, screenupdatespersecond = 7;
+    int x2 = x, y2 = y, ch, i = 0, screenupdatespersecond = 7, j = time(0);
     while (1)
     {
         clearScreen();
         printmap(values, ispassed, x, y, x0, y0, m + 2, n + 2, 0, filecapacity);
         cout << "\nSum of the blocks: " << sum << "\nTime: "
              << time(0) - start_time;
-        ch = getch(); // get the first value
-        while (ch != 0 && ch != 224 && ch != 27)
-            ch = getch(); // get the first value
-        if (ch == 0 || ch == 224)
-        {                 // check if it is 0 or 224
-            ch = getch(); // get the second value
-            switch (ch)
-            {        // check the arrow key code
-            case 72: // UP
-                x2 = x - 1;
-                break; // up arrow
-            case 80:   // DOWN
-                x2 = x + 1;
-                break; // down arrow
-            case 75:   // LEFT
-                y2 = y - 1;
-                break; // left arrow
-            case 77:   // RIGHT
-                y2 = y + 1;
-                break; // right arrow
-            }
-        }
-        else if (ch == 27) // check if it is ESC
+        lastupdate = time(0);
+    dontupdatescreen:
+        if (kbhit())
         {
-            clearScreen();
-            printmap(values, ispassed, x, y, x0, y0, m + 2, n + 2, 0, filecapacity);
-            return -1; // exit the loop
+            ch = getch(); // get the first value
+            if (ch == 0 || ch == 224)
+            {                 // check if it is 0 or 224
+                ch = getch(); // get the second value
+                switch (ch)
+                {        // check the arrow key code
+                case 72: // UP
+                    x2 = x - 1;
+                    break; // up arrow
+                case 80:   // DOWN
+                    x2 = x + 1;
+                    break; // down arrow
+                case 75:   // LEFT
+                    y2 = y - 1;
+                    break; // left arrow
+                case 77:   // RIGHT
+                    y2 = y + 1;
+                    break; // right arrow
+                }
+            }
+            else if (ch == 27) // check if it is ESC
+            {
+                clearScreen();
+                printmap(values, ispassed, x, y, x0, y0, m + 2, n + 2, 0, filecapacity);
+                return -1; // exit the loop
+            }
+            else
+                goto dontupdatescreen;
+        }
+        else
+        {
+            if (time(0) - lastupdate >= 1)
+                continue;
+            else
+                goto dontupdatescreen;
         }
         if (x2 == x0 && y2 == y0)
             break;
@@ -400,7 +412,7 @@ int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int 
             y2 = y;
             continue;
         }
-        int flag = next(values, ispassed, m, n, x2, y2, x, y, sum + values[x2][y2], start_time, filecapacity);
+        int flag = next(values, ispassed, m, n, x2, y2, x, y, sum + values[x2][y2], start_time, filecapacity, lastupdate);
         if (flag)
             return flag;
         x2 = x;
@@ -410,7 +422,7 @@ int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int 
     return 0;
 }
 
-void playground() // more than 1 digit is not supported yet
+void playground()
 {
     while (1)
     {
@@ -430,12 +442,6 @@ void playground() // more than 1 digit is not supported yet
         case 0:
             return;
         case 1:
-            // while (allmaps >> name)
-            // {
-            //     list += "\n\t" + to_string(i) + ". " + name;
-            //     maps.push_back(name);
-            //     i++;
-            // }
             getinput(mapchoice, list + "\n\t0. Back", 0, maps.size());
             if (mapchoice == "0")
                 continue;
@@ -501,8 +507,8 @@ void playground() // more than 1 digit is not supported yet
             }
         mapfile.close();
         int start = time(0);
-        int sum = 0, ch, x2 = x, y2 = y, x0 = x, y0 = y;
-        bool won = next(values, ispassed, m, n, x, y, 1, 1, values[1][1], start, filecapacity) == 1;
+        int sum = 0, ch, x2 = x, y2 = y, x0 = x, y0 = y, lastupdate = time(0);
+        bool won = next(values, ispassed, m, n, x, y, 1, 1, values[1][1], start, filecapacity, lastupdate) == 1;
         int end = time(0);
 
         cout << endl;

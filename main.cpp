@@ -214,12 +214,12 @@ struct user
 
 vector<string> getnames(string filename = "Users/allusers.txt")
 {
-    ifstream usersfile(filename);
-    vector<string> users;
+    ifstream namesfile(filename);
+    vector<string> names;
     string name;
-    while (usersfile >> name)
-        users.push_back(name);
-    return users;
+    while (getline(namesfile, name))
+        names.push_back(name);
+    return names;
 }
 user formuser(string name)
 {
@@ -229,6 +229,7 @@ user formuser(string name)
     // getline(usersfile, line);
     userfile.ignore(7);
     userfile >> opened.games;
+    // getline(userfile, opened.games);
     userfile.ignore(6);
     userfile >> opened.wins;
     // getline(usersfile, line);

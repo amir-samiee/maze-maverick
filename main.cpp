@@ -24,7 +24,7 @@ const string reset("\033[0m");
 void mazepathmaker(int **&maze, int row, int column, int rowin, int columnin, int togo, int &flag);                                        // function to find a random path
 void mazefiller(int **&maze, int row, int column, int length, int lowV, int highV, int leastW, int mostW);                                 // function to fill the maze
 int randint(int floor, int ceil);                                                                                                          // function for generating random int excluding 0
-void getintinput(string interact, string &input, int &output);                                                                             // function for getting input util its a valid int input
+void getintinput(string interact, string &input, int &output,bool flag);                                                                             // function for getting input util its a valid int input
 void mazesolver(int **maze, int **&copymaze, string **&path, int row, int column, int rowin, int coulumnin, int togo, int &flag, int sum); // function that solves a map
 void clearScreen();                                                                                                                        // this function has been declared to clear the screen on both windows and linux
 bool isInteger(string s);                                                                                                                  // returns 1 if a string can be converted to an integer, otherwise 0
@@ -159,18 +159,26 @@ bool isvalidint(string &input, int &output)
     return true;
 }
 
-void getintinput(string interact, string &input, int &result)
+void getintinput(string interact, string &input, int &result ,bool flag)
 {
-    clearScreen();
+    if(!flag)
+        clearScreen();
     cout << interact;
+<<<<<<< Updated upstream
     cin >> input;
     while (!isvalidint(input, result))
+=======
+    // cin >> input;
+    getline(cin, input);
+    while (!isInteger(input))
+>>>>>>> Stashed changes
     {
         clearScreen();
         cout << interact << "\n"
-             << "Invalid entry. Please try again: \n";
+             << red << "Invalid entry. Please try again: \n" << reset;
         getline(cin, input);
     }
+    result = stoi(input);
 }
 void getinput(string &input, string options, int from, int to)
 {
@@ -234,7 +242,11 @@ vector<string> getnames(string filename = "Users/allusers.txt")
     ifstream usersfile(filename);
     vector<string> users;
     string name;
+<<<<<<< Updated upstream
     while (usersfile >> name)
+=======
+    while (getline(usersfile , name))
+>>>>>>> Stashed changes
         users.push_back(name);
     return users;
 }
@@ -559,21 +571,21 @@ reset_dif:
     string choice, Scolumn, Srow, Slength, reseter = "1";
     int mapdif, flag = 0, column, row, length, **maze;
     // gets map difficulty from user
-    getintinput("Create a new map: \n1. Easy\n2. Hard\n0. Back\nPlease enter your choice: ", choice, mapdif);
+    getintinput("Create a new map: \n1. Easy\n2. Hard\n0. Back\nPlease enter your choice: ", choice, mapdif , 0);
     while (mapdif > 2 || mapdif < 0)
-        getintinput("Please enter a valid choice: \n1. Easy\n2. Hard\n0. Back\nPlease enter your choice: ", choice, mapdif);
+        getintinput(yellow + "Please enter a valid choice: \n" + reset +"1. Easy\n2. Hard\n0. Back\nPlease enter your choice: ", choice, mapdif , 0);
     if (mapdif == 0)
         return;
     // gets maze height from user
-    getintinput("Please enter maze height or enter 0 to restart the process: \n", Srow, row);
+    getintinput("Please enter maze height or enter 0 to restart the process: \n", Srow, row , 0);
     while (row < 2 && row != 0)
-        getintinput("Please enter maze height (it cannot be less than 2) or enter 0 to restart the process: \n", Srow, row);
+        getintinput("Please enter maze height" + yellow + " (it cannot be less than 2)" + reset + " or enter 0 to restart the process: \n", Srow, row , 0);
     if (row == 0)
         goto reset_dif;
     // gets maze width from user
-    getintinput("Please enter maze width or enter 0 to restart the process: \n", Scolumn, column);
+    getintinput("Please enter maze width or enter 0 to restart the process: \n", Scolumn, column , 0);
     while (column < 2 && column != 0)
-        getintinput("Please enter maze width (it cannot be less than 2) or enter 0 to restart the process: \n", Scolumn, column);
+        getintinput("Please enter maze width" + yellow + " (it cannot be less than 2)" + reset + " or enter 0 to restart the process: \n", Scolumn, column , 0);
     if (column == 0)
         goto reset_dif;
     // length for basic maze
@@ -582,11 +594,12 @@ reset_dif:
     if (mapdif == 2)
     {
         // gets length of path for the maze from user
-        getintinput("Please enter the length of the path or enter 0 to restart the process:\n", Slength, length);
+        getintinput("Please enter the length of the path or enter 0 to restart the process:\n", Slength, length , 0);
         while (length < row + column - 2 || length > row * column - 1 || length % 2 != (row + column) % 2 && length != 0)
         {
-            cout << "Such a path cannot exist. \nTry again: \n";
-            getintinput("Please enter the length of the path or enter 0 to restart the process:\n", Slength, length);
+            clearScreen();
+            cout << yellow << "Such a path cannot exist. \nTry again: \n" << reset;
+            getintinput("Please enter the length of the path or enter 0 to restart the process:\n", Slength, length , 1);
         }
     }
     if (length == 0)
@@ -625,19 +638,19 @@ reset_dif:
     if (mapdif == 2)
     {
         // inputs the min value of blocks
-        getintinput("Please enter your choice of min value of block: ", SlowV, lowV);
+        getintinput("Please enter your choice of min value of block: ", SlowV, lowV , 0);
         // inputs the max value of blocks
-        getintinput("Please enter your choice of max value of block: ", ShighV, highV);
+        getintinput("Please enter your choice of max value of block: ", ShighV, highV , 0);
         while (lowV > highV || (lowV == highV && lowV == 0))
-            getintinput("Please enter your choice of max value of block (it can't be less than the min value): ", ShighV, highV);
+            getintinput("Please enter your choice of max value of block" + yellow + " (it can't be less than the min value): " + reset, ShighV, highV , 0);
         // inputs the least amount of walls
-        getintinput("Please enter your choice of min amount of walls: ", SleastW, leastW);
+        getintinput("Please enter your choice of min amount of walls: ", SleastW, leastW , 0);
         while (leastW < 0 || leastW > row * column - length - 1)
-            getintinput("Please enter your choice of min amount of walls \n(it can't be less than 0 or more than amount of block available): ", SleastW, leastW);
+            getintinput("Please enter your choice of min amount of walls \n" + yellow + "(it can't be less than 0 or more than amount of block available)" + reset + ": ", SleastW, leastW , 0);
         // inputs the most amount of walls
-        getintinput("Please enter your choice of max amount of walls: ", SleastW, mostW);
+        getintinput("Please enter your choice of max amount of walls: ", SleastW, mostW , 0);
         while (leastW > mostW)
-            getintinput("Please enter your choice of max amount of walls (it can't be less than the min amount of walls): ", SleastW, mostW);
+            getintinput("Please enter your choice of max amount of walls " + yellow + "(it can't be less than the min amount of walls): ", SleastW, mostW , 0);
     }
     for (int i = 1; i < row + 1; i++)
         for (int j = 1; j < column + 1; j++)
@@ -959,8 +972,6 @@ void mazesolving()
         string **path;
         mapfile >> row >> column;
         string input;
-        getintinput("Enter the length of path: ", input, length);
-        cout << yellow << "Calculating, please wait..." << reset << endl;
         // cin >> row >> column >> length;
         maze = new int *[row + 2];
         copymaze = new int *[row + 2];
@@ -999,24 +1010,31 @@ void mazesolving()
             }
         }
         mapfile.close();
-        mazesolver(maze, copymaze, path, row, column, 1, 1, length, flag, sum);
-        if (flag == 1)
-        {
-            for (int i = 1; i < row + 1; i++)
+        clearScreen();
+        for(int i = 1; i < row + 1; i++)
             {
-                for (int l = 1; l < column + 1; l++)
-                {
-                    if (copymaze[i][l] == 2)
-                        cout << green;
-                    cout << left << setw(filecapacity) << maze[i][l] << cyan << left << setw(filecapacity) << path[2 * i][l] << reset;
-                }
-                cout << endl;
-                for (int l = 1; l < column + 1; l++)
-                    cout << left << cyan << setw(2 * filecapacity) << path[2 * i + 1][l] << reset;
-                cout << endl;
+                for(int j = 1; j < column + 1; j++)
+                    cout << left << setw(filecapacity) << maze[i][j] << " ";
+                cout << "\n\n";
             }
+        getintinput("Enter the length of path: ", input, length, 1);
+        cout << yellow << "Calculating, please wait..." << reset << endl;
+
+        mazesolver(maze, copymaze, path, row, column, 1, 1, length, flag, sum);
+        for (int i = 1; i < row + 1; i++)
+        {
+            for (int l = 1; l < column + 1; l++)
+            {
+                if (copymaze[i][l] == 2)
+                    cout << green;
+                cout << left << setw(filecapacity) << maze[i][l] << cyan << left << setw(filecapacity) << path[2 * i][l] << reset;
+            }
+            cout << endl;
+            for (int l = 1; l < column + 1; l++)
+                cout << left << cyan << setw(2 * filecapacity) << path[2 * i + 1][l] << reset;
+            cout << endl;
         }
-        else
+        if(flag == 0)
             cout << yellow << "There's no path with the given length in this maze" << reset;
         cout << "\nPress any key to coninue: ";
         _getch();

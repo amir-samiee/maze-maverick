@@ -163,7 +163,8 @@ void getintinput(string interact, string &input, int &result)
 {
     clearScreen();
     cout << interact;
-    cin >> input;
+    // cin >> input;
+    getline(cin, input);
     while (!isvalidint(input, result))
     {
         clearScreen();
@@ -607,7 +608,8 @@ reset_dif:
     clearScreen();
     cout << yellow << "You won't be able to reset the settings for the maze from this point forward\n"
          << reset << "Enter 0 to restart the process or something else to continue:";
-    cin >> reseter;
+    // cin >> reseter;
+    getline(cin, reseter);
     if (reseter == "0")
         goto reset_dif;
     // setting the maze up
@@ -722,7 +724,8 @@ void showUsers()
                 cout << '\t' << users[i] << endl;
             cout << (nameerror ? red + "Invalid name!\nPlease enter a name included in the list\n" + reset : "\n\n")
                  << "Enter a name or enter 0 to go back: ";
-            cin >> name;
+            // cin >> name;
+            getline(cin, name);
             if (name == "0")
                 return;
             nameerror = 1;

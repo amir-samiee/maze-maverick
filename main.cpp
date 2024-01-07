@@ -174,7 +174,7 @@ void getintinput(string interact, string &input, int &result)
 }
 void getinput(string &input, string options, int from, int to)
 {
-    bool indexerror = 0, typeerror = 0;
+    bool indexerror = 0, typeerror = 0, emptystring = 0;
     do
     {
         clearScreen();
@@ -184,16 +184,23 @@ void getinput(string &input, string options, int from, int to)
              << string(2 * (1 - indexerror - typeerror), '\n')
              << "Enter your choice: ";
         indexerror = typeerror = 0;
-        cin >> input;
-        if (isInteger(input))
-        {
-            if (input.size() > 2 || stoi(input) > to || stoi(input) < from)
-                indexerror = 1;
-        }
+        // cin >> input;
+        getline(cin, input);
+        if (input == "")
+            emptystring = 1;
         else
-            typeerror = 1;
+        {
+            emptystring = 0;
+            if (isInteger(input))
+            {
+                if (input.size() > 2 || stoi(input) > to || stoi(input) < from)
+                    indexerror = 1;
+            }
+            else
+                typeerror = 1;
+        }
 
-    } while (indexerror || typeerror);
+    } while (indexerror || typeerror || emptystring);
 }
 
 void printmap(int **values, bool **ispassed, int currentx, int currenty, int lastx, int lasty, int m, int n, bool includezeros = 1, int filecapacity = 1)

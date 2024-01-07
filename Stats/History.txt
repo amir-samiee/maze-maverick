@@ -1,3 +1,9 @@
+Date: 01/07/2024
+User Name: Amir
+Map: Map3
+Time: 12
+Result: Win
+
 Date: 01/06/2024
 User Name: Amir
 Map: Maps/Map4.txt
@@ -51,10 +57,4 @@ User Name: Hesam
 Map: Map1
 Time: 3
 Result: Win
-
-Date: 01/05/2024
-User Name: Hesam
-Map: Map2
-Time: 1
-Result: Loose
 

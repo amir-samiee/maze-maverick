@@ -163,9 +163,9 @@ void getintinput(string interact, string &input, int &result ,bool flag)
 {
     if(!flag)
         clearScreen();
-    cout << interact;
+    cout << interact << '\n';
     // cin >> input;
-    getline(cin, input , '\r');
+    getline(cin, input);
     while (!isInteger(input))
     {
         

@@ -371,7 +371,7 @@ int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int 
         clearScreen();
         printmap(values, ispassed, x, y, x0, y0, m + 2, n + 2, 0, filecapacity);
         cout << "\nSum of the blocks: " << sum << "\nTime: "
-             << time(0) - start_time;
+             << time(0) - start_time << "\r";
         lastupdate = time(0);
     dontupdatescreen:
         if (kbhit())
@@ -408,9 +408,14 @@ int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int 
         else
         {
             if (time(0) - lastupdate >= 1)
-                continue;
-            else
-                goto dontupdatescreen;
+            {
+                cout << "Time: "
+                     << time(0) - start_time << "\r";
+                lastupdate = time(0);
+                // continue;
+            }
+            // else
+            goto dontupdatescreen;
         }
         if (x2 == x0 && y2 == y0)
             break;

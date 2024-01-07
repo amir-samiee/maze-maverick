@@ -1,4 +1,10 @@
 Date: 01/07/2024
+User Name: Ali
+Map: 99
+Time: 23
+Result: Loose
+
+Date: 01/07/2024
 User Name: Agha Amir
 Map: 99
 Time: 4
@@ -50,11 +56,5 @@ Date: 01/07/2024
 User Name: Amir
 Map: 88
 Time: 36
-Result: Loose
-
-Date: 01/07/2024
-User Name: Ali
-Map: 88
-Time: 16
 Result: Loose
 

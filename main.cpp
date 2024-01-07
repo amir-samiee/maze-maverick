@@ -164,14 +164,9 @@ void getintinput(string interact, string &input, int &result ,bool flag)
     if(!flag)
         clearScreen();
     cout << interact;
-<<<<<<< Updated upstream
-    cin >> input;
-    while (!isvalidint(input, result))
-=======
     // cin >> input;
     getline(cin, input);
     while (!isInteger(input))
->>>>>>> Stashed changes
     {
         clearScreen();
         cout << interact << "\n"
@@ -242,11 +237,7 @@ vector<string> getnames(string filename = "Users/allusers.txt")
     ifstream usersfile(filename);
     vector<string> users;
     string name;
-<<<<<<< Updated upstream
-    while (usersfile >> name)
-=======
     while (getline(usersfile , name))
->>>>>>> Stashed changes
         users.push_back(name);
     return users;
 }

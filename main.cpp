@@ -148,6 +148,7 @@ void getintinput(string interact, string &input, int &result)
         getline(cin, input);
     }
 }
+
 void getinput(string &input, string options, int from, int to)
 {
     bool indexerror = 0, typeerror = 0, emptystring = 0;
@@ -169,7 +170,7 @@ void getinput(string &input, string options, int from, int to)
             emptystring = 0;
             if (isInteger(input))
             {
-                if (input.size() > 2 || stoi(input) > to || stoi(input) < from)
+                if (input.size() > to_string(to).size() || stoi(input) > to || stoi(input) < from)
                     indexerror = 1;
             }
             else

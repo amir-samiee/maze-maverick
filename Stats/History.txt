@@ -1,5 +1,17 @@
 Date: 01/07/2024
 User Name: Ali
+Map: Map2
+Time: 7
+Result: Win
+
+Date: 01/07/2024
+User Name: Amir
+Map: 88
+Time: 14
+Result: Loose
+
+Date: 01/07/2024
+User Name: Ali
 Map: 99
 Time: 23
 Result: Loose
@@ -44,17 +56,5 @@ Date: 01/07/2024
 User Name: Amir
 Map: 88
 Time: 3
-Result: Loose
-
-Date: 01/07/2024
-User Name: Amir
-Map: 88
-Time: 12
-Result: Loose
-
-Date: 01/07/2024
-User Name: Amir
-Map: 88
-Time: 36
 Result: Loose
 

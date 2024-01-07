@@ -38,31 +38,6 @@ void showUsers();                            // shows the users (part 5)
 void leaderboard();                          // shows the leader users (part 6)
 void resetstats();                           // clears user and games history data but keeps the maps
 
-// this method for updating screen works but as a non-gui program this won't have a clean and satisfying output
-// updating the screen:
-// #include <windows.h>
-// #include <conio.h>
-// #include <ctime>
-// char ch;
-// int i = 0 while (true)
-// {
-//     if (kbhit())
-//     {
-//         ch = getch();
-//         if (ch == ' ')
-//             updateScreen();
-//     }
-//     else
-//     {
-//         Sleep(100);
-//         if (i++ ==9)
-//         {
-//             i = 0;
-//             updateScreen();
-//         }
-//     }
-// }
-
 string menu0 =
     cyan + "\n __  __            ______ ______   __  __       __      __ ______  _____   _____  _____  _  __"
            "\n|  \\/  |    /\\    |___  /|  ____| |  \\/  |    /\\\\ \\    / /|  ____||  __ \\ |_   _|/ ____|| |/ /" +

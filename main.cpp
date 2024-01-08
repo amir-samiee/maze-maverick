@@ -1060,7 +1060,7 @@ void mazesolving()
             cout << yellow << "There's no path with the given length in this maze" << reset;
         cout << "\nPress any key to coninue: ";
         _getch();
-        return;
+        // return;
     }
 }
 

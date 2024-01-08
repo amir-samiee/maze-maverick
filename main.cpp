@@ -274,8 +274,8 @@ void updateusers(user &player, bool won)
     else
     {
         ofstream usersfile("Users/allusers.txt", ios::app);
-        usersfile << endl
-                  << player.name;
+        usersfile << player.name
+                  << endl;
         usersfile.close();
     }
     player.totaltime += player.lastwintime;

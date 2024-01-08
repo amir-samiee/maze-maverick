@@ -26,12 +26,11 @@ void mazefiller(int **&maze, int row, int column, int length, int lowV, int high
 int randint(int floor, int ceil);                                                                                                          // function for generating random int excluding 0
 void getintinput(string interact, string &input, int &output, bool flag);                                                                  // function for getting input util its a valid int input
 void mazesolver(int **maze, int **&copymaze, string **&path, int row, int column, int rowin, int coulumnin, int togo, int &flag, int sum); // function that solves a map
-void clearScreen();                                                                                                                        // this function has been declared to clear the screen on both windows and linux
+void clearScreen();                                                                                                                        // this function has been declared to clear the screen on windows
 bool isInteger(string s);                                                                                                                  // returns 1 if a string can be converted to an integer, otherwise 0
 void getinput(string &input, string options, int from, int to);                                                                            // shows a list of options and gets input until user inputs a valid choice. the choice should be an integer from integer "from" to integer "to"
 void createNewMap();
 void mazesolving();
-bool isvalidint(string &input, int &output);                                              // checks if the input is integer
 void playground();                                                                        // the interactive game part (part 2)
 void showHistory();                                                                       // shows the history of the games (part 4)
 void showUsers();                                                                         // shows the users (part 5)
@@ -141,19 +140,6 @@ string mtos(int **maze, int row, int column, int filecapacity, bool removeEdges)
     return res;
 }
 
-bool isvalidint(string &input, int &output)
-{
-    try
-    {
-        output = stoi(input);
-    }
-    catch (invalid_argument)
-    {
-        return false;
-    }
-    return true;
-}
-
 void getintinput(string interact, string &input, int &result, bool flag)
 {
     if (!flag)
@@ -166,8 +152,7 @@ void getintinput(string interact, string &input, int &result, bool flag)
     {
         clearScreen();
         cout << interact << "\n"
-             << red << "Invalid entry. Please try again: \n"
-             << reset;
+             << red << "Invalid entry. Please try again: " << reset;
         getline(cin, input);
     }
     result = stoi(input);

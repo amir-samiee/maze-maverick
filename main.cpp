@@ -451,7 +451,7 @@ void playground()
         for (int i = 0; i < maps.size(); i++)
             list += "\n\t" + to_string(i + 1) + ". " + maps[i];
         allmaps.close();
-        getinput(choice, "Playground\n" + menu2, 0, 2);
+        getinput(choice, "Playground:\n" + menu2, 0, 2);
     choose_map:
         mapfile.close();
         bool valid = 1, brk = 0;
@@ -583,11 +583,15 @@ reset_dif:
     string choice, Scolumn, Srow, Slength, reseter = "1";
     int mapdif, flag = 0, column, row, length, **maze;
     // gets map difficulty from user
-    getintinput("Create a new map: \n1. Easy\n2. Hard\n0. Back\nPlease enter your choice: ", choice, mapdif, 0);
-    while (mapdif > 2 || mapdif < 0)
-        getintinput("Please enter a valid choice: \n1. Easy\n2. Hard\n0. Back\nPlease enter your choice: ", choice, mapdif, 0);
+
+    // getintinput("Create a new map: \n1. Easy\n2. Hard\n0. Back\nPlease enter your choice: ", choice, mapdif, 0);
+    // while (mapdif > 2 || mapdif < 0)
+    //     getintinput("Please enter a valid choice: \n1. Easy\n2. Hard\n0. Back\nPlease enter your choice: ", choice, mapdif, 0);
+    getinput(choice, "Creste a New Map:\n" + menu1, 0, 2);
+    mapdif = stoi(choice);
     if (mapdif == 0)
         return;
+
     // gets maze height from user
     getintinput("Please enter maze height or enter 0 to restart the process: \n", Srow, row, 0);
     while (row < 2 && row != 0)
@@ -720,6 +724,7 @@ void showHistory()
     clearScreen();
     ifstream historyfile("Stats/History.txt");
     string line;
+    cout << "History:\n\n";
     while (getline(historyfile, line))
         cout << line << endl;
     historyfile.close();
@@ -738,7 +743,7 @@ void showUsers()
         do
         {
             clearScreen();
-            cout << "List of users:\n\n";
+            cout << "Users:\n\n";
             for (int i = 0; i < users.size(); i++)
                 cout << '\t' << users[i] << endl;
             cout << (nameerror ? red + "Invalid name!\nPlease enter a name included in the list\n" + reset : "\n\n")
@@ -781,21 +786,22 @@ void leaderboard()
     // for (int i = 0; i < min(3, size); i++)
     // {
     //     user leader = players[i];
-    //     cout << string(4, ' ') << i + 1 << ". " << leader.name << endl;
-    //     cout << string(7, ' ') << "Wins: " << leader.wins << endl;
-    //     cout << string(7, ' ') << "Total time: " << leader.totaltime << endl;
+    //     cout << string(4, ' ') << i + 1 << ". " << leader.name << endl
+    //          << string(7, ' ') << "Wins: " << leader.wins << endl
+    //          << string(7, ' ') << "Total time: " << leader.totaltime << endl;
     // }
     // cout << "\nPress any key to coninue: ";
     // _getch();
+
     clearScreen();
     vector<string> leaders = getnames("Stats/Leaderboard.txt");
     cout << "Leaderboard:\n\n";
     for (int i = 0; i < leaders.size(); i++)
     {
         user leader = formuser(leaders[i]);
-        cout << string(4, ' ') << i + 1 << ". " << leader.name << endl;
-        cout << string(7, ' ') << "Wins: " << leader.wins << endl;
-        cout << string(7, ' ') << "Total time: " << leader.totaltime << endl;
+        cout << string(4, ' ') << i + 1 << ". " << leader.name << endl
+             << string(7, ' ') << "Wins: " << leader.wins << endl
+             << string(7, ' ') << "Total time: " << leader.totaltime << endl;
     }
     cout << "\nPress any key to coninue: ";
     _getch();
@@ -804,12 +810,11 @@ void leaderboard()
 void resetstats()
 {
     clearScreen();
-    cout << "This action clears any data related to users and games history but keeps the maps"
+    cout << "Reset Stats:\n\n"
+         << "This action clears any data related to users and games history but keeps the maps"
          << "\nEnter yes to confirm the action. Enter anything else to cancel and go back: ";
     string choice;
     getline(cin, choice);
-    if (choice == "")
-        getline(cin, choice);
     if (choice != "yes")
     {
         cout << red + "no changes applied" + reset;

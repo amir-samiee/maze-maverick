@@ -31,12 +31,13 @@ bool isInteger(string s);                                                       
 void getinput(string &input, string options, int from, int to);                                                                            // shows a list of options and gets input until user inputs a valid choice. the choice should be an integer from integer "from" to integer "to"
 void createNewMap();
 void mazesolving();
-bool isvalidint(string &input, int &output); // checks if the input is integer
-void playground();                           // the interactive game part (part 2)
-void showHistory();                          // shows the history of the games (part 4)
-void showUsers();                            // shows the users (part 5)
-void leaderboard();                          // shows the leader users (part 6)
-void resetstats();                           // clears user and games history data but keeps the maps
+bool isvalidint(string &input, int &output);                        // checks if the input is integer
+void playground();                                                  // the interactive game part (part 2)
+void showHistory();                                                 // shows the history of the games (part 4)
+void showUsers();                                                   // shows the users (part 5)
+void leaderboard();                                                 // shows the leader users (part 6)
+void resetstats();                                                  // clears user and games history data but keeps the maps
+string mtos(int **maze, int row, int column, int filecapacity = 1); // maze to string convertor so we can add it to string parameter of input functions
 
 string menu0 =
     cyan + "\n __  __            ______ ______   __  __       __      __ ______  _____   _____  _____  _  __"
@@ -119,6 +120,23 @@ bool isInteger(string s)
     if (!(isdigit(s[0]) || s[0] == '-'))
         return 0;
     return 1;
+}
+
+string mtos(int **maze, int row, int column, int filecapacity)
+{
+    string res = "";
+    for (int i = 1; i < row + 1; i++)
+    {
+        for (int j = 1; j < column + 1; j++)
+        {
+            string f = to_string(maze[i][j]);
+            res += string(filecapacity - f.size(), ' ') + f + ' ';
+        }
+        res += "\n";
+        // cout << right << setw(filecapacity) << maze[i][j] << ' ';
+        // cout << endl;
+    }
+    return res;
 }
 
 bool isvalidint(string &input, int &output)
@@ -651,7 +669,8 @@ reset_dif:
             if (digitscout > filecapacity)
                 filecapacity = digitscout;
         }
-
+    // filling the maze
+    mazefiller(maze, row, column, length, lowV, highV, leastW, mostW);
     string mapname = "";
     vector<string> allmapsnames = getnames("Maps/allmaps.txt");
     while (mapname == "" || mapname == "allmaps" || isin(mapname, allmapsnames))
@@ -661,6 +680,7 @@ reset_dif:
             cout << red << "You can't choose this name!!" << reset << endl;
         else
             cout << endl;
+        cout << mtos(maze, row, column, filecapacity);
         cout << "Maze has been made. Please enter a name for it or 0 to cancel: ";
         getline(cin, mapname);
         if (mapname == "0")
@@ -668,8 +688,6 @@ reset_dif:
     }
     ofstream mapfile("Maps/" + mapname + ".txt");
     mapfile << row << ' ' << column << endl;
-    // filling the maze
-    mazefiller(maze, row, column, length, lowV, highV, leastW, mostW);
     for (int i = 1; i <= row; i++)
     {
         for (int j = 1; j <= column; j++)
@@ -681,7 +699,7 @@ reset_dif:
     allmapsfile << mapname
                 << endl;
     allmapsfile.close();
-    cout << "\nDone! Press any key to continue: ";
+    cout << green << "\nDone! Press any key to continue: " << reset;
     _getch();
     return;
 }
@@ -1004,13 +1022,13 @@ void mazesolving()
         }
         mapfile.close();
         clearScreen();
-        for (int i = 1; i < row + 1; i++)
-        {
-            for (int j = 1; j < column + 1; j++)
-                cout << right << setw(filecapacity) << maze[i][j] << ' ';
-            cout << endl;
-        }
-        getintinput("Enter the length of path: ", input, length, 1);
+        // for (int i = 1; i < row + 1; i++)
+        // {
+        //     for (int j = 1; j < column + 1; j++)
+        //         cout << right << setw(filecapacity) << maze[i][j] << ' ';
+        //     cout << endl;
+        // }
+        getintinput(mtos(maze, row, column, filecapacity) + "Enter the length of path: ", input, length, 1);
         clearScreen();
         cout << yellow << "Calculating, please wait..." << reset << endl;
         mazesolver(maze, copymaze, path, row, column, 1, 1, length, flag, sum);
@@ -1020,11 +1038,11 @@ void mazesolving()
             {
                 if (copymaze[i][l] == 2)
                     cout << green;
-                cout << left << setw(filecapacity) << maze[i][l] << cyan << left << setw(filecapacity) << path[2 * i][l] << reset;
+                cout << right << setw(filecapacity) << maze[i][l] << cyan << right << setw(filecapacity) << path[2 * i][l] << reset;
             }
             cout << endl;
             for (int l = 1; l < column + 1; l++)
-                cout << left << cyan << setw(2 * filecapacity) << path[2 * i + 1][l] << reset;
+                cout << right << yellow << setw(2 * filecapacity - 2) << path[2 * i + 1][l] << "  " << reset;
             cout << endl;
         }
         cout << endl;

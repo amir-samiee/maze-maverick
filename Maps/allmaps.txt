@@ -5,3 +5,7 @@ Map3
 88
 absone
 zero
+newww
+old
+olddd
+A

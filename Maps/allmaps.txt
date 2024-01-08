@@ -9,3 +9,6 @@ newww
 old
 olddd
 A
+name
+ne
+cd "c:\Users\celmi\OneDrive\Desktop\vs code\C++\IUST\maze-maverick\" ; if ($?) { g++ main.cpp -o main } ; if ($?) { .\main }

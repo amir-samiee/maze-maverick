@@ -1,3 +1,21 @@
+Date: 01/09/2024
+User Name: ll
+Map: Map2
+Time: 9
+Result: Win
+
+Date: 01/09/2024
+User Name: Amir
+Map: Map2
+Time: 2
+Result: Loose
+
+Date: 01/09/2024
+User Name: ????
+Map: ne
+Time: 439
+Result: Loose
+
 Date: 01/08/2024
 User Name: Amir
 Map: zero
@@ -38,23 +56,5 @@ Date: 01/08/2024
 User Name: Amir
 Map: zero
 Time: 3
-Result: Win
-
-Date: 01/08/2024
-User Name: Agha Amir
-Map: Map3
-Time: 20
-Result: Win
-
-Date: 01/08/2024
-User Name: Agh Amir
-Map: Map3
-Time: 2
-Result: Loose
-
-Date: 01/08/2024
-User Name: Hesam
-Map: absone
-Time: 14
 Result: Win
 

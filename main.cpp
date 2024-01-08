@@ -692,7 +692,8 @@ reset_dif:
         cout << "Maze has been made. Please enter a name for it or 0 to cancel: ";
         getline(cin, mapname);
         if (mapname == "0")
-            return;
+            goto reset_dif;
+        // return;
     }
     ofstream mapfile("Maps/" + mapname + ".txt");
     mapfile << row << ' ' << column << endl;
@@ -710,7 +711,8 @@ reset_dif:
     allmapsfile.close();
     cout << green << "\nDone! Press any key to continue: " << reset;
     _getch();
-    return;
+    goto reset_dif;
+    // return;
 }
 
 void showHistory()
@@ -767,22 +769,34 @@ void showUsers()
 
 void leaderboard()
 {
+    // the following commented code can be used to reset the leaderboard from the start and not with updating after each game. it's not efficient but is useful for when we have lost the leaderboard's file or data.
     // clearScreen();
     // cout << "Finding best players...";
     // vector<user> players = getusersdata();
     // sort(players.begin(), players.end(), compare);
+    // reverse(players.begin(), players.end());
     // clearScreen();
     // cout << "Leaderboard:\n\n";
     // int size = players.size();
-    // for (int i = min(3, size) - 1; i >= 0; i--)
-    //     cout << min(3, size) - i << ". " << players[i].name << endl;
+    // for (int i = 0; i < min(3, size); i++)
+    // {
+    //     user leader = players[i];
+    //     cout << string(4, ' ') << i + 1 << ". " << leader.name << endl;
+    //     cout << string(7, ' ') << "Wins: " << leader.wins << endl;
+    //     cout << string(7, ' ') << "Total time: " << leader.totaltime << endl;
+    // }
     // cout << "\nPress any key to coninue: ";
     // _getch();
     clearScreen();
     vector<string> leaders = getnames("Stats/Leaderboard.txt");
     cout << "Leaderboard:\n\n";
     for (int i = 0; i < leaders.size(); i++)
-        cout << '\t' << i + 1 << ". " << leaders[i] << endl;
+    {
+        user leader = formuser(leaders[i]);
+        cout << string(4, ' ') << i + 1 << ". " << leader.name << endl;
+        cout << string(7, ' ') << "Wins: " << leader.wins << endl;
+        cout << string(7, ' ') << "Total time: " << leader.totaltime << endl;
+    }
     cout << "\nPress any key to coninue: ";
     _getch();
 }

@@ -1,5 +1,11 @@
 Date: 01/09/2024
 User Name: Amir
+Map: HellYeah
+Time: 68
+Result: Loose
+
+Date: 01/09/2024
+User Name: Amir
 Map: Map1
 Time: 82
 Result: Win
@@ -51,10 +57,4 @@ User Name: Ali
 Map: zero
 Time: 6
 Result: Win
-
-Date: 01/08/2024
-User Name: Ali
-Map: zero
-Time: 17
-Result: Loose
 

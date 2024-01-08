@@ -678,8 +678,8 @@ reset_dif:
     }
     mapfile.close();
     ofstream allmapsfile("Maps/allmaps.txt", ios::app);
-    allmapsfile << endl
-                << mapname;
+    allmapsfile << mapname
+                << endl;
     allmapsfile.close();
     cout << "\nDone! Press any key to continue: ";
     _getch();

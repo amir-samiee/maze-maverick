@@ -339,6 +339,8 @@ int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int 
         printmap(values, ispassed, x, y, x0, y0, m + 2, n + 2, 0, filecapacity);
         return 1;
     }
+    if (!values[x][y] || ispassed[x][y])
+        return 0;
     // if (values[x][y] == 0 || ispassed[x][y])
     //     return 0;
     ispassed[x][y] = 1;
@@ -396,12 +398,15 @@ int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int 
         }
         if (x2 == x0 && y2 == y0)
             break;
-        if (!values[x2][y2] || ispassed[x2][y2])
+
+        if (ispassed[x2][y2] || !(values[x2][y2] || (x2 == m && y2 == n)))
         {
             x2 = x;
             y2 = y;
-            continue;
+            goto dontupdatescreen;
+            // continue;
         }
+
         int flag = next(values, ispassed, m, n, x2, y2, x, y, sum + values[x2][y2], start_time, filecapacity, lastupdate);
         if (flag)
             return flag;

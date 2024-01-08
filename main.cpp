@@ -339,8 +339,8 @@ int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int 
         printmap(values, ispassed, x, y, x0, y0, m + 2, n + 2, 0, filecapacity);
         return 1;
     }
-    if (!values[x][y] || ispassed[x][y])
-        return 0;
+    // if (!values[x][y] || ispassed[x][y])
+    //     return 0;
     // if (values[x][y] == 0 || ispassed[x][y])
     //     return 0;
     ispassed[x][y] = 1;

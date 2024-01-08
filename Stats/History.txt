@@ -1,6 +1,12 @@
 Date: 01/08/2024
 User Name: Amir
 Map: zero
+Time: 20
+Result: Win
+
+Date: 01/08/2024
+User Name: Amir
+Map: zero
 Time: 7
 Result: Win
 
@@ -51,10 +57,4 @@ User Name: Hesam
 Map: absone
 Time: 14
 Result: Win
-
-Date: 01/08/2024
-User Name: Ali
-Map: Map3
-Time: 12
-Result: Loose
 

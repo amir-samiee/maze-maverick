@@ -673,7 +673,7 @@ reset_dif:
     for (int i = 1; i <= row; i++)
     {
         for (int j = 1; j <= column; j++)
-            mapfile << setw(4) << maze[i][j] << ' ';
+            mapfile << setw(filecapacity) << maze[i][j] << ' ';
         mapfile << endl;
     }
     mapfile.close();

@@ -938,6 +938,13 @@ void mazefiller(int **&maze, int row, int column, int length, int lowV, int high
     {
         int part;
         part = randint(lowV, highV);
+        finalblock += part;
+        while(i == length - 1 && finalblock == 0)   //not efficient
+        {
+            finalblock -= part;
+            part = randint(lowV, highV);
+            finalblock += part;
+        }
         mazepathparts.push_back(part);
     }
     // values for the blocks that are not walls and are not in the path
@@ -960,7 +967,6 @@ void mazefiller(int **&maze, int row, int column, int length, int lowV, int high
             if (maze[i][l] == 0 && i + l != row + column)
             {
                 maze[i][l] = mazepathparts[mazepathparts.size() - 1];
-                finalblock += mazepathparts[mazepathparts.size() - 1];
                 mazepathparts.pop_back();
             }
             else if (i + l == column + row)
@@ -1079,7 +1085,8 @@ void mazesolving()
         getintinput(mtos(maze, row, column, filecapacity) + "Enter the length of path: ", input, length, 1);
         clearScreen();
         cout << yellow << "Calculating, please wait..." << reset << endl;
-        mazesolver(maze, copymaze, path, row, column, 1, 1, length, flag, sum);
+        if(length % 2 == (row + column) % 2 && length <= row * column - 1 - !(row % 2 || column % 2))
+            mazesolver(maze, copymaze, path, row, column, 1, 1, length, flag, sum);
         clearScreen();
         for (int i = 1; i < row + 1; i++)
         {
@@ -1108,8 +1115,8 @@ void mazesolver(int **maze, int **&copymaze, string **&path, int row, int column
 {
     if (maze[rowin][columnin] == 0 || copymaze[rowin][columnin] == 2)
         return;
-    if (togo < 0 || togo > row * column - 1 - !(row % 2 || column % 2)) // samiee added
-        return;                                                         // samiee added
+    // if (togo < 0 || togo > row * column - 1 - !(row % 2 || column % 2)) // samiee added
+    //     return;                                                         // samiee added
     sum += maze[rowin][columnin];
     copymaze[rowin][columnin] = 2;
     if (togo == 0 && rowin == row && columnin == column && sum == 2 * maze[row][column])

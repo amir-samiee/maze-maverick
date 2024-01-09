@@ -10,8 +10,26 @@
 #include <stdio.h>
 #include <ctime>
 #include <cmath>
-#include <conio.h>
 #include <ctype.h>
+#ifdef _WIN32
+#include <conio.h>
+#else
+#include <termios.h>
+#include <unistd.h>
+#include <stdio.h>
+int getch(void)
+{
+    struct termios oldattr, newattr;
+    int ch;
+    tcgetattr(STDIN_FILENO, &oldattr);
+    newattr = oldattr;
+    newattr.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &newattr);
+    ch = getchar();
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldattr);
+    return ch;
+}
+#endif
 using namespace std;
 // COLORS
 const string red("\033[0;31m");

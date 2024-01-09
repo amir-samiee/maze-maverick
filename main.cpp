@@ -1108,6 +1108,8 @@ void mazesolver(int **maze, int **&copymaze, string **&path, int row, int column
 {
     if (maze[rowin][columnin] == 0 || copymaze[rowin][columnin] == 2)
         return;
+    if (togo < 0 || togo > row * column - 1 - !(row % 2 || column % 2)) // samiee added
+        return;                                                         // samiee added
     sum += maze[rowin][columnin];
     copymaze[rowin][columnin] = 2;
     if (togo == 0 && rowin == row && columnin == column && sum == 2 * maze[row][column])

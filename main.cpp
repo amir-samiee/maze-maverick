@@ -1,7 +1,8 @@
 #include <iostream>
 #include <algorithm>
 #include <random>
-#include <windows.h>
+// #include <windows.h>
+// #include <cstdlib>
 #include <fstream>
 #include <iomanip>
 #include <vector>

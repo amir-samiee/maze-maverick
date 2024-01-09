@@ -1,0 +1,4 @@
+Games: 1
+Wins: 1
+Last Win Time: 20
+Total Time: 20

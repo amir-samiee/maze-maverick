@@ -29,14 +29,14 @@ void mazesolver(int **maze, int **&copymaze, string **&path, int row, int column
 void clearScreen();                                                                                                                        // this function has been declared to clear the screen on windows
 bool isInteger(string s);                                                                                                                  // returns 1 if a string can be converted to an integer, otherwise 0
 void getinput(string &input, string options, int from, int to);                                                                            // shows a list of options and gets input until user inputs a valid choice. the choice should be an integer from integer "from" to integer "to"
-void createNewMap();
-void mazesolving();
-void playground();                                                                        // the interactive game part (part 2)
-void showHistory();                                                                       // shows the history of the games (part 4)
-void showUsers();                                                                         // shows the users (part 5)
-void leaderboard();                                                                       // shows the leader users (part 6)
-void resetstats();                                                                        // clears user and games history data but keeps the maps
-string mtos(int **maze, int row, int column, int filecapacity = 1, bool removeEdges = 1); // maze to string convertor so we can add it to string parameter of input functions
+void createNewMap();                                                                                                                       // creates a new map --maze-- (part 1)
+void mazesolving();                                                                                                                        // gets and solves a maze
+void playground();                                                                                                                         // the interactive game part (part 2)
+void showHistory();                                                                                                                        // shows the history of the games (part 4)
+void showUsers();                                                                                                                          // shows the users (part 5)
+void leaderboard();                                                                                                                        // shows the leader users (part 6)
+void resetstats();                                                                                                                         // clears user and games history data but keeps the maps
+string mtos(int **maze, int row, int column, int filecapacity = 1, bool removeEdges = 1);                                                  // maze to string convertor so we can add it to string parameter of input functions
 
 string menu0 =
     cyan + "\n __  __            ______ ______   __  __       __      __ ______  _____   _____  _____  _  __"
@@ -222,7 +222,7 @@ struct user
     int totaltime = 0;
 };
 
-vector<string> getnames(string filename = "Users/allusers.txt")
+vector<string> getnames(string filename = "Users/allusers.txt") // returns the stored names in the given file
 {
     ifstream namesfile(filename);
     vector<string> names;
@@ -231,7 +231,7 @@ vector<string> getnames(string filename = "Users/allusers.txt")
         names.push_back(name);
     return names;
 }
-user formuser(string name)
+user formuser(string name) // gets a username in string format and returns the user format
 {
     ifstream userfile("Users/" + name + ".txt");
     user opened;
@@ -250,7 +250,7 @@ user formuser(string name)
     userfile.close();
     return opened;
 }
-vector<user> getusersdata(string filename = "Users/allusers.txt")
+vector<user> getusersdata(string filename = "Users/allusers.txt") // returns a vector including the user format of all uses
 {
     vector<string> users = getnames(filename);
     vector<user> players;
@@ -259,7 +259,7 @@ vector<user> getusersdata(string filename = "Users/allusers.txt")
     return players;
 }
 
-void updateusers(user &player, bool won)
+void updateusers(user &player, bool won) // when a game ends, this function compares the player with the leader players and updates the leaderboard
 {
     vector<string> users = getnames();
     bool isin = 0;
@@ -341,7 +341,7 @@ string Date()
     return buffer;
 }
 
-int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int y0, int sum, int start_time, int filecapacity, int &lastupdate) // returns a code: 0 for continuing, 1 for "User won", -1 for "User lost"
+int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int y0, int sum, int start_time, int filecapacity, int &lastupdate) // this is the recursive function of motion in the playground. it returns a code: 0 for continuing, 1 for "User won", -1 for "User lost"
 {
     if (x == m && y == n && values[x][y] * 2 == sum)
     {
@@ -939,7 +939,7 @@ void mazefiller(int **&maze, int row, int column, int length, int lowV, int high
     }
 }
 
-int randint(int floor, int ceil)
+int randint(int floor, int ceil) // returns a random number between integers floor and ceil that will never be 0
 {
     bool zeroin = floor * ceil <= 0;
     int dif = ceil - floor + 1;

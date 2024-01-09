@@ -1080,6 +1080,7 @@ void mazesolving()
         clearScreen();
         cout << yellow << "Calculating, please wait..." << reset << endl;
         mazesolver(maze, copymaze, path, row, column, 1, 1, length, flag, sum);
+        clearScreen();
         for (int i = 1; i < row + 1; i++)
         {
             for (int l = 1; l < column + 1; l++)

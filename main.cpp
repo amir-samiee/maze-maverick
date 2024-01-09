@@ -21,23 +21,23 @@ const string magenta("\033[0;35m");
 const string reset("\033[0m");
 // FUNCTIONS
 
-void mazepathmaker(int **&maze, int row, int column, int rowin, int columnin, int togo, int &flag);                                        // function to find a random path
-void mazefiller(int **&maze, int row, int column, int length, int lowV, int highV, int leastW, int mostW);                                 // function to fill the maze
-int randint(int floor, int ceil);                                                                                                          // function for generating random int excluding 0
-void getintinput(string interact, string &input, int &output, bool flag);                                                                  // function for getting input util its a valid int input
-void mazesolver(int **maze, int **&copymaze, string **&path, int row, int column, int rowin, int coulumnin, int togo, int &flag, int sum); // function that solves a map
-void clearScreen();                                                                                                                        // this function has been declared to clear the screen on windows
-bool isInteger(string s);                                                                                                                  // returns 1 if a string can be converted to an integer, otherwise 0
-void getinput(string &input, string options, int from, int to);                                                                            // shows a list of options and gets input until user inputs a valid choice. the choice should be an integer from integer "from" to integer "to"
-void createNewMap();                                                                                                                       // creates a new map --maze-- (part 1)
-void mazesolving();                                                                                                                        // gets and solves a maze
-void playground();                                                                                                                         // the interactive game part (part 2)
-void showHistory();                                                                                                                        // shows the history of the games (part 4)
-void showUsers();                                                                                                                          // shows the users (part 5)
-void leaderboard();                                                                                                                        // shows the leader users (part 6)
-void resetstats();                                                                                                                         // clears user and games history data but keeps the maps
-void clearmaps();                                                                                                                          // clears all maps
-string mtos(int **maze, int row, int column, int filecapacity = 1, bool removeEdges = 1);                                                  // maze to string convertor so we can add it to string parameter of input functions
+void mazepathmaker(int **&maze, int row, int column, int rowin, int columnin, int togo, int &flag);                                      // function to find a random path
+void mazefiller(int **&maze, int row, int column, int length, int lowV, int highV, int leastW, int mostW);                               // function to fill the maze
+int randint(int floor, int ceil);                                                                                                        // function for generating random int excluding 0
+void getintinput(string interact, string &input, int &output, bool flag);                                                                // function for getting input util its a valid int input
+void mazesolver(int **maze, int **&copymaze, char **&path, int row, int column, int rowin, int coulumnin, int togo, int &flag, int sum); // function that solves a map
+void clearScreen();                                                                                                                      // this function has been declared to clear the screen on windows
+bool isInteger(string s);                                                                                                                // returns 1 if a string can be converted to an integer, otherwise 0
+void getinput(string &input, string options, int from, int to);                                                                          // shows a list of options and gets input until user inputs a valid choice. the choice should be an integer from integer "from" to integer "to"
+void createNewMap();                                                                                                                     // creates a new map --maze-- (part 1)
+void mazesolving();                                                                                                                      // gets and solves a maze
+void playground();                                                                                                                       // the interactive game part (part 2)
+void showHistory();                                                                                                                      // shows the history of the games (part 4)
+void showUsers();                                                                                                                        // shows the users (part 5)
+void leaderboard();                                                                                                                      // shows the leader users (part 6)
+void resetstats();                                                                                                                       // clears user and games history data but keeps the maps
+void clearmaps();                                                                                                                        // clears all maps
+string mtos(int **maze, int row, int column, int filecapacity = 1, bool removeEdges = 1);                                                // maze to string convertor so we can add it to string parameter of input functions
 
 string menu0 =
     cyan + "\n __  __            ______ ______   __  __       __      __ ______  _____   _____  _____  _  __"
@@ -939,7 +939,7 @@ void mazefiller(int **&maze, int row, int column, int length, int lowV, int high
         int part;
         part = randint(lowV, highV);
         finalblock += part;
-        while(i == length - 1 && finalblock == 0)   //not efficient
+        while (i == length - 1 && finalblock == 0) // not efficient
         {
             finalblock -= part;
             part = randint(lowV, highV);
@@ -1000,6 +1000,7 @@ void mazesolving()
             list += "\n\t" + to_string(i + 1) + ". " + maps[i];
         allmaps.close();
         getinput(choice, "Solve a maze:\n" + menu2, 0, 2);
+    dontcontinue:
         mapfile.close();
         bool valid = 1, brk = 0;
         switch (stoi(choice))
@@ -1034,19 +1035,19 @@ void mazesolving()
         }
         allmaps.close();
         int row, column, length, mapdif, sum = 0, flag = 0, **maze, **copymaze, filecapacity = 2;
-        string **path;
+        char **path;
         mapfile >> row >> column;
         string input;
         // cin >> row >> column >> length;
         maze = new int *[row + 2];
         copymaze = new int *[row + 2];
-        path = new string *[2 * (row + 2)];
+        path = new char *[2 * (row + 2)];
         for (int i = 0; i < row + 2; i++)
         {
             maze[i] = new int[column + 2];
             copymaze[i] = new int[column + 2];
-            path[2 * i] = new string[column + 2];
-            path[2 * i + 1] = new string[column + 2];
+            path[2 * i] = new char[column + 2];
+            path[2 * i + 1] = new char[column + 2];
         }
         for (int i = 0; i < row + 2; i++)
         {
@@ -1056,8 +1057,8 @@ void mazesolving()
                 {
                     maze[i][l] = 0;
                     copymaze[i][l] = 0;
-                    path[2 * i][l] = "";
-                    path[2 * i + 1][l] = "";
+                    path[2 * i][l] = '\0';
+                    path[2 * i + 1][l] = '\0';
                 }
                 else
                 {
@@ -1069,8 +1070,8 @@ void mazesolving()
                         copymaze[i][l] = 0;
                     else
                         copymaze[i][l] = 1;
-                    path[2 * i][l] = " ";
-                    path[2 * i + 1][l] = " ";
+                    path[2 * i][l] = ' ';
+                    path[2 * i + 1][l] = ' ';
                 }
             }
         }
@@ -1085,7 +1086,7 @@ void mazesolving()
         getintinput(mtos(maze, row, column, filecapacity) + "Enter the length of path: ", input, length, 1);
         clearScreen();
         cout << yellow << "Calculating, please wait..." << reset << endl;
-        if(length % 2 == (row + column) % 2 && length <= row * column - 1 - !(row % 2 || column % 2))
+        if (length % 2 == (row + column) % 2 && length <= row * column - 1 - !(row % 2 || column % 2))
             mazesolver(maze, copymaze, path, row, column, 1, 1, length, flag, sum);
         clearScreen();
         for (int i = 1; i < row + 1; i++)
@@ -1094,7 +1095,7 @@ void mazesolving()
             {
                 if (copymaze[i][l] == 2)
                     cout << green;
-                cout << right << setw(filecapacity) << maze[i][l] << cyan << right << setw(filecapacity) << path[2 * i][l] << reset;
+                cout << right << setw(filecapacity) << maze[i][l] << cyan << right << setw(filecapacity) << string((filecapacity == 1 ? 1 : filecapacity - 1), path[2 * i][l]) << reset;
             }
             cout << endl;
             for (int l = 1; l < column + 1; l++)
@@ -1107,11 +1108,12 @@ void mazesolving()
             cout << yellow << "There's no path with the given length in this maze" << reset;
         cout << "\nPress any key to coninue: ";
         _getch();
+        goto dontcontinue;
         // return;
     }
 }
 
-void mazesolver(int **maze, int **&copymaze, string **&path, int row, int column, int rowin, int columnin, int togo, int &flag, int sum)
+void mazesolver(int **maze, int **&copymaze, char **&path, int row, int column, int rowin, int columnin, int togo, int &flag, int sum)
 {
     if (maze[rowin][columnin] == 0 || copymaze[rowin][columnin] == 2)
         return;
@@ -1131,36 +1133,36 @@ void mazesolver(int **maze, int **&copymaze, string **&path, int row, int column
     }
     if (copymaze[rowin - 1][columnin] != 0 && copymaze[rowin - 1][columnin] != 2)
     {
-        path[2 * rowin - 1][columnin] = "|";
+        path[2 * rowin - 1][columnin] = '|';
         mazesolver(maze, copymaze, path, row, column, rowin - 1, columnin, togo - 1, flag, sum);
         if (flag == 1)
             return;
-        path[2 * rowin - 1][columnin] = " ";
+        path[2 * rowin - 1][columnin] = ' ';
     }
     if (copymaze[rowin][columnin + 1] != 0 && copymaze[rowin][columnin + 1] != 2)
     {
-        path[2 * rowin][columnin] = "_";
+        path[2 * rowin][columnin] = '_';
         mazesolver(maze, copymaze, path, row, column, rowin, columnin + 1, togo - 1, flag, sum);
         if (flag == 1)
             return;
-        path[2 * rowin][columnin] = " ";
+        path[2 * rowin][columnin] = ' ';
     }
     if (copymaze[rowin + 1][columnin] != 0 && copymaze[rowin + 1][columnin] != 2)
     {
-        path[2 * rowin + 1][columnin] = "|";
+        path[2 * rowin + 1][columnin] = '|';
         if (copymaze[rowin + 1][columnin] != 0 && copymaze[rowin + 1][columnin] != 2)
             mazesolver(maze, copymaze, path, row, column, rowin + 1, columnin, togo - 1, flag, sum);
         if (flag == 1)
             return;
-        path[2 * rowin + 1][columnin] = " ";
+        path[2 * rowin + 1][columnin] = ' ';
     }
     if (copymaze[rowin][columnin - 1] != 0 && copymaze[rowin][columnin - 1] != 2)
     {
-        path[rowin * 2][columnin - 1] = "_";
+        path[rowin * 2][columnin - 1] = '_';
         mazesolver(maze, copymaze, path, row, column, rowin, columnin - 1, togo - 1, flag, sum);
         if (flag == 1)
             return;
-        path[rowin * 2][columnin - 1] = " ";
+        path[rowin * 2][columnin - 1] = ' ';
     }
     sum -= maze[rowin][columnin];
     copymaze[rowin][columnin] = 1;

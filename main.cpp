@@ -14,9 +14,11 @@
 #ifdef _WIN32
 #include <conio.h>
 #else
-#include <termios.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <sys/select.h>
+#include <termios.h>
+#include <sys/ioctl.h>
 int getch(void)
 {
     struct termios oldattr, newattr;
@@ -28,6 +30,26 @@ int getch(void)
     ch = getchar();
     tcsetattr(STDIN_FILENO, TCSANOW, &oldattr);
     return ch;
+}
+int kbhit()
+{
+    static const int STDIN = 0;
+    static bool initialized = false;
+
+    if (!initialized)
+    {
+        // Use termios to turn off line buffering
+        termios term;
+        tcgetattr(STDIN, &term);
+        term.c_lflag &= ~ICANON;
+        tcsetattr(STDIN, TCSANOW, &term);
+        setbuf(stdin, NULL);
+        initialized = true;
+    }
+
+    int bytesWaiting;
+    ioctl(STDIN, FIONREAD, &bytesWaiting);
+    return bytesWaiting;
 }
 #endif
 using namespace std;
@@ -132,7 +154,7 @@ int main()
 
 void clearScreen()
 {
-    system("cls");
+    system("clear||cls");
 }
 
 bool isInteger(string s)
@@ -572,7 +594,7 @@ void playground()
         delete[] values;
         delete[] ispassed;
         cout << "\nPress any key to coninue: ";
-        _getch();
+        getch();
         // return;
     }
 }
@@ -689,7 +711,7 @@ reset_dif:
             if (digitscout > filecapacity)
                 filecapacity = digitscout;
         }
-    // _getch();
+    // getch();
 
     string mapname = "";
     vector<string> allmapsnames = getnames("Maps/allmaps.txt");
@@ -723,7 +745,7 @@ reset_dif:
                 << endl;
     allmapsfile.close();
     cout << green << "\nDone! Press any key to continue: " << reset;
-    _getch();
+    getch();
     goto reset_dif;
     // return;
 }
@@ -738,7 +760,7 @@ void showHistory()
         cout << line << endl;
     historyfile.close();
     cout << "\nPress any key to coninue: ";
-    _getch();
+    getch();
 }
 
 void showUsers()
@@ -777,7 +799,7 @@ void showUsers()
         while (getline(userfile, line))
             cout << line << endl;
         cout << "\nPress any key to coninue: ";
-        _getch();
+        getch();
     }
 }
 
@@ -800,7 +822,7 @@ void leaderboard()
     //          << string(7, ' ') << "Total time: " << leader.totaltime << endl;
     // }
     // cout << "\nPress any key to coninue: ";
-    // _getch();
+    // getch();
 
     clearScreen();
     vector<string> leaders = getnames("Stats/Leaderboard.txt");
@@ -813,7 +835,7 @@ void leaderboard()
              << string(7, ' ') << "Total time: " << leader.totaltime << endl;
     }
     cout << "\nPress any key to coninue: ";
-    _getch();
+    getch();
 }
 
 void resetstats()
@@ -828,7 +850,7 @@ void resetstats()
     {
         cout << red + "no changes applied" + reset;
         cout << "\nPress any key to coninue: ";
-        _getch();
+        getch();
         return;
     }
     vector<string> users = getnames();
@@ -846,7 +868,7 @@ void resetstats()
     file.close();
     cout << green << "Cleared successfully!!" << reset;
     cout << "\nPress any key to coninue: ";
-    _getch();
+    getch();
 }
 
 void clearmaps()
@@ -861,7 +883,7 @@ void clearmaps()
     {
         cout << red + "no changes applied" + reset;
         cout << "\nPress any key to coninue: ";
-        _getch();
+        getch();
         return;
     }
     vector<string> maps = getnames("Maps/allmaps.txt");
@@ -875,7 +897,7 @@ void clearmaps()
     file.close();
     cout << green << "Cleared successfully!!" << reset;
     cout << "\nPress any key to coninue: ";
-    _getch();
+    getch();
 }
 
 void mazepathmaker(int **&maze, int row, int column, int rowin, int columnin, int togo, int &flag)
@@ -1126,7 +1148,7 @@ void mazesolving()
         if (flag == 0)
             cout << yellow << "There's no path with the given length in this maze" << reset;
         cout << "\nPress any key to coninue: ";
-        _getch();
+        getch();
         goto dontcontinue;
         // return;
     }

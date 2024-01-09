@@ -36,6 +36,7 @@ void showHistory();                                                             
 void showUsers();                                                                                                                          // shows the users (part 5)
 void leaderboard();                                                                                                                        // shows the leader users (part 6)
 void resetstats();                                                                                                                         // clears user and games history data but keeps the maps
+void clearmaps();                                                                                                                          // clears all maps
 string mtos(int **maze, int row, int column, int filecapacity = 1, bool removeEdges = 1);                                                  // maze to string convertor so we can add it to string parameter of input functions
 
 string menu0 =
@@ -59,6 +60,7 @@ string menu0 =
     "\n5. Users"
     "\n6. Leaderboard"
     "\n7. Reset stats"
+    "\n8. Clear Maps"
     "\n0. Exit";
 string menu1 =
     "\n1. Easy"
@@ -74,7 +76,7 @@ int main()
     while (1)
     {
         string choice1;
-        getinput(choice1, menu0, 0, 7);
+        getinput(choice1, menu0, 0, 8);
         switch (stoi(choice1))
         {
         case 1:
@@ -97,6 +99,9 @@ int main()
             break;
         case 7:
             resetstats();
+            break;
+        case 8:
+            clearmaps();
             break;
         default:
             cout << endl
@@ -824,6 +829,36 @@ void resetstats()
     cout << "\nPress any key to coninue: ";
     _getch();
 }
+
+void clearmaps()
+{
+    clearScreen();
+    cout << "Clear Maps:\n\n"
+         << "This action clears all the maps"
+         << "\nEnter yes to confirm the action. Enter anything else to cancel and go back: ";
+    string choice;
+    getline(cin, choice);
+    if (choice != "yes")
+    {
+        cout << red + "no changes applied" + reset;
+        cout << "\nPress any key to coninue: ";
+        _getch();
+        return;
+    }
+    vector<string> maps = getnames("Maps/allmaps.txt");
+    for (string map : maps)
+    {
+        string filename = "Maps/" + map + ".txt";
+        remove(filename.c_str());
+    }
+    ofstream file;
+    file.open("Maps/allmaps.txt");
+    file.close();
+    cout << green << "Cleared successfully!!" << reset;
+    cout << "\nPress any key to coninue: ";
+    _getch();
+}
+
 void mazepathmaker(int **&maze, int row, int column, int rowin, int columnin, int togo, int &flag)
 {
     // checks if there is a wall in the way of advancing

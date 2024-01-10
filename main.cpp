@@ -164,7 +164,38 @@ bool isInteger(string s)
             return 0;
     if (!(isdigit(s[0]) || s[0] == '-'))
         return 0;
+    if (s == "-")
+        return 0;
     return 1;
+}
+
+bool isZero(string s)
+{
+    for (int i = 1; i < s.size(); i++)
+        if (s[i] != '0')
+            return 0;
+    if (!(s[0] == '0' || s[0] == '-'))
+        return 0;
+    return 1;
+}
+
+void cleanintstring(string &s)
+{
+    if (isZero(s))
+    {
+        s = "0";
+        return;
+    }
+    while (1)
+    {
+        int size = s.size();
+        if (s[0] == '0')
+            s = s.substr(1, size);
+        else if (s[0] == '-' && size >= 2 && s[1] == '0')
+            s = '-' + s.substr(2, size);
+        else
+            break;
+    }
 }
 
 string mtos(int **maze, int row, int column, int filecapacity, bool removeEdges)
@@ -225,8 +256,9 @@ void getinput(string &input, string options, int from, int to, string indexerror
             emptystring = 0;
             if (isInteger(input))
             {
+                cleanintstring(input);
                 if (input.size() > to_string(to).size() || stoi(input) > to || stoi(input) < from)
-                    if (input != "0" && input != "-0")
+                    if (input != "0")
                         indexerror = 1;
             }
             else
@@ -309,6 +341,7 @@ vector<user> getusersdata(string filename = "Users/allusers.txt") // returns a v
 void updateusers(user &player, bool won) // when a game ends, this function compares the player with the leader players and updates the leaderboard
 {
     vector<string> users = getnames();
+    player.totaltime += player.lastwintime;
     bool isin = 0;
     for (int i = 0; i < users.size(); i++)
         if (player.name == users[i])
@@ -330,9 +363,10 @@ void updateusers(user &player, bool won) // when a game ends, this function comp
         ofstream usersfile("Users/allusers.txt", ios::app);
         usersfile << player.name
                   << endl;
+        if (!won)
+            player.lastwintime = 0;
         usersfile.close();
     }
-    player.totaltime += player.lastwintime;
     player.wins += won;
     player.games++;
     ofstream userfile("Users/" + player.name + ".txt");
@@ -567,6 +601,7 @@ void playground()
         else
             cout << red << "YOU LOST" << green << "!!!" << reset << endl;
         cout << "Time: " << end - start << endl;
+        // if (won)
         player.lastwintime = end - start;
         updateusers(player, won);
         // update history

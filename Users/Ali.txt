@@ -1,4 +1,0 @@
-Games: 3
-Wins: 0
-Last Win Time: 1
-Total Time: 3

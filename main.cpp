@@ -69,7 +69,7 @@ void getintinput(string interact, string &input, int &output, bool flag);       
 void mazesolver(int **maze, int **&copymaze, char **&path, int row, int column, int rowin, int coulumnin, int togo, int &flag, int sum); // function that solves a map
 void clearScreen();                                                                                                                      // this function has been declared to clear the screen on windows
 bool isInteger(string s);                                                                                                                // returns 1 if a string can be converted to an integer, otherwise 0
-void getinput(string &input, string options, int from, int to);                                                                          // shows a list of options and gets input until user inputs a valid choice. the choice should be an integer from integer "from" to integer "to"
+void getinput(string &input, string options, int from, int to, string indexerrormessage = "Out of Index!");                              // shows a list of options and gets input until user inputs a valid choice. the choice should be an integer from integer "from" to integer "to"
 void createNewMap();                                                                                                                     // creates a new map --maze-- (part 1)
 void mazesolving();                                                                                                                      // gets and solves a maze
 void playground();                                                                                                                       // the interactive game part (part 2)
@@ -204,14 +204,14 @@ void getintinput(string interact, string &input, int &result, bool flag)
     result = stoi(input);
 }
 
-void getinput(string &input, string options, int from, int to)
+void getinput(string &input, string options, int from, int to, string indexerrormessage)
 {
     bool indexerror = 0, typeerror = 0, emptystring = 0;
     do
     {
         clearScreen();
         cout << options << endl
-             << ((indexerror) ? red + "Out of Index!\nPlease enetr a number between " + to_string(from) + " and " + to_string(to) + reset + "\n" : "")
+             << ((indexerror) ? red + indexerrormessage + "\nPlease enetr a number between " + to_string(from) + " and " + to_string(to) + reset + "\n" : "")
              << ((typeerror) ? red + "Input wasn't a number!\nPlease enetr a number between " + to_string(from) + " and " + to_string(to) + reset + "\n" : "")
              << string(2 * (1 - indexerror - typeerror), '\n')
              << "Enter your choice: ";
@@ -226,7 +226,8 @@ void getinput(string &input, string options, int from, int to)
             if (isInteger(input))
             {
                 if (input.size() > to_string(to).size() || stoi(input) > to || stoi(input) < from)
-                    indexerror = 1;
+                    if (input != "0" && input != "-0")
+                        indexerror = 1;
             }
             else
                 typeerror = 1;
@@ -624,15 +625,19 @@ reset_dif:
         return;
 
     // gets maze height from user
-    getintinput("Please enter maze height or enter 0 to restart the process: \n", Srow, row, 0);
-    while (row < 2 && row != 0)
-        getintinput("Please enter maze height (it cannot be less than 2) or enter 0 to restart the process: \n", Srow, row, 0);
+    // getintinput("Please enter maze height or enter 0 to restart the process: \n", Srow, row, 0);
+    // while (row < 2 && row != 0)
+    //     getintinput("Please enter maze height (it cannot be less than 2) or enter 0 to restart the process: \n", Srow, row, 0);
+    getinput(Srow, "Please enter maze height or enter 0 to restart the process: ", 2, 2000000000, "Not Accepted");
+    row = stoi(Srow);
     if (row == 0)
         goto reset_dif;
     // gets maze width from user
-    getintinput("Please enter maze width or enter 0 to restart the process: \n", Scolumn, column, 0);
-    while (column < 2 && column != 0)
-        getintinput("Please enter maze width (it cannot be less than 2) or enter 0 to restart the process: \n", Scolumn, column, 0);
+    // getintinput("Please enter maze width or enter 0 to restart the process: \n", Scolumn, column, 0);
+    // while (column < 2 && column != 0)
+    //     getintinput("Please enter maze width (it cannot be less than 2) or enter 0 to restart the process: \n", Scolumn, column, 0);
+    getinput(Scolumn, "Please enter maze width or enter 0 to restart the process: ", 2, 2000000000, "Not Accepted");
+    column = stoi(Scolumn);
     if (column == 0)
         goto reset_dif;
     // length for basic maze

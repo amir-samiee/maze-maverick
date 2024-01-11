@@ -1,60 +1,60 @@
 Date: 01/11/2024
-User Name: Ali
+User Name: Sam
+Map: negative
+Time: 5
+Result: Win
+
+Date: 01/11/2024
+User Name: Sam
+Map: negative
+Time: 7
+Result: Win
+
+Date: 01/11/2024
+User Name: Sam
 Map: negative
 Time: 4
 Result: Win
 
 Date: 01/11/2024
-User Name: Erfan Gheshgheregh be pa kon
-Map: Map6
-Time: 5
-Result: Loose
+User Name: Sam
+Map: negative
+Time: 4
+Result: Win
 
 Date: 01/11/2024
 User Name: Sam
-Map: Map6
-Time: 10
-Result: Win
-
-Date: 01/11/2024
-User Name: Amir
-Map: Map7
-Time: 55
-Result: Loose
-
-Date: 01/11/2024
-User Name: Amir
-Map: Map7
-Time: 56
-Result: Win
-
-Date: 01/10/2024
-User Name: aa
-Map: Map1
-Time: 108
-Result: Win
-
-Date: 01/10/2024
-User Name: Sana
-Map: Map1
-Time: 57
-Result: Win
-
-Date: 01/10/2024
-User Name: Sana
-Map: Map4
-Time: 25
-Result: Loose
-
-Date: 01/10/2024
-User Name: Sana
-Map: Map5
-Time: 7
-Result: Loose
-
-Date: 01/10/2024
-User Name: Ali
 Map: negative
-Time: 10
+Time: 4
+Result: Win
+
+Date: 01/11/2024
+User Name: Sam
+Map: negative
+Time: 4
+Result: Win
+
+Date: 01/11/2024
+User Name: Amir
+Map: negative
+Time: 4
+Result: Win
+
+Date: 01/11/2024
+User Name: Sam
+Map: negative
+Time: 4
+Result: Win
+
+Date: 01/11/2024
+User Name: Sam
+Map: negative
+Time: 6
+Result: Win
+
+Date: 01/11/2024
+User Name: Sam
+Map: negative
+Time: 7
 Result: Win
 

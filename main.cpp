@@ -1,7 +1,6 @@
 #include <iostream>
 #include <algorithm>
 #include <random>
-// #include <windows.h>
 // #include <cstdlib>
 #include <fstream>
 #include <iomanip>
@@ -12,6 +11,7 @@
 #include <cmath>
 #include <ctype.h>
 #ifdef _WIN32
+#include <windows.h>
 #include <conio.h>
 #else
 #include <unistd.h>

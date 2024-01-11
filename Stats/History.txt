@@ -1,6 +1,30 @@
 Date: 01/11/2024
 User Name: Sam
 Map: negative
+Time: 6
+Result: Win
+
+Date: 01/11/2024
+User Name: Sam
+Map: negative
+Time: 5
+Result: Win
+
+Date: 01/11/2024
+User Name: Sam
+Map: negative
+Time: 3
+Result: Win
+
+Date: 01/11/2024
+User Name: Sam
+Map: negative
+Time: 4
+Result: Win
+
+Date: 01/11/2024
+User Name: Sam
+Map: negative
 Time: 5
 Result: Win
 
@@ -32,29 +56,5 @@ Date: 01/11/2024
 User Name: Sam
 Map: negative
 Time: 4
-Result: Win
-
-Date: 01/11/2024
-User Name: Amir
-Map: negative
-Time: 4
-Result: Win
-
-Date: 01/11/2024
-User Name: Sam
-Map: negative
-Time: 4
-Result: Win
-
-Date: 01/11/2024
-User Name: Sam
-Map: negative
-Time: 6
-Result: Win
-
-Date: 01/11/2024
-User Name: Sam
-Map: negative
-Time: 7
 Result: Win
 

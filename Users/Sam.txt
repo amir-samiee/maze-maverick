@@ -1,4 +1,4 @@
-Games: 10
-Wins: 10
-Last Win Time: 5
-Total Time: 55
+Games: 14
+Wins: 14
+Last Win Time: 6
+Total Time: 73

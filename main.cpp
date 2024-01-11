@@ -846,6 +846,7 @@ void showUsers()
 void leaderboard()
 {
     // the following commented code can be used to reset the leaderboard from the start and not with updating after each game. it's not efficient but is useful for when we have lost the leaderboard's file or data.
+
     // clearScreen();
     // cout << "Finding best players...";
     // vector<user> players = getusersdata();

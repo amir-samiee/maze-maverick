@@ -151,6 +151,12 @@ int main()
         }
     }
 }
+void getchtocontinue() // arrowkeys are considered 2 characters so in getch() they ruin the next call
+{
+    int ch = getch();
+    if (ch == 0 || ch == 224)
+        getch();
+}
 
 void clearScreen()
 {
@@ -630,7 +636,7 @@ void playground()
         delete[] values;
         delete[] ispassed;
         cout << "\nPress any key to coninue: ";
-        getch();
+        getchtocontinue();
         // return;
     }
 }
@@ -785,7 +791,7 @@ reset_dif:
                 << endl;
     allmapsfile.close();
     cout << green << "\nDone! Press any key to continue: " << reset;
-    getch();
+    getchtocontinue();
     goto reset_dif;
     // return;
 }
@@ -800,7 +806,7 @@ void showHistory()
         cout << line << endl;
     historyfile.close();
     cout << "\nPress any key to coninue: ";
-    getch();
+    getchtocontinue();
 }
 
 void showUsers()
@@ -839,7 +845,7 @@ void showUsers()
         while (getline(userfile, line))
             cout << line << endl;
         cout << "\nPress any key to coninue: ";
-        getch();
+        getchtocontinue();
     }
 }
 
@@ -876,7 +882,7 @@ void leaderboard()
              << string(7, ' ') << "Total time: " << leader.totaltime << endl;
     }
     cout << "\nPress any key to coninue: ";
-    getch();
+    getchtocontinue();
 }
 
 void resetstats()
@@ -891,7 +897,7 @@ void resetstats()
     {
         cout << red + "no changes applied" + reset;
         cout << "\nPress any key to coninue: ";
-        getch();
+        getchtocontinue();
         return;
     }
     vector<string> users = getnames();
@@ -909,7 +915,7 @@ void resetstats()
     file.close();
     cout << green << "Cleared successfully!!" << reset;
     cout << "\nPress any key to coninue: ";
-    getch();
+    getchtocontinue();
 }
 
 void clearmaps()
@@ -924,7 +930,7 @@ void clearmaps()
     {
         cout << red + "no changes applied" + reset;
         cout << "\nPress any key to coninue: ";
-        getch();
+        getchtocontinue();
         return;
     }
     vector<string> maps = getnames("Maps/allmaps.txt");
@@ -938,7 +944,7 @@ void clearmaps()
     file.close();
     cout << green << "Cleared successfully!!" << reset;
     cout << "\nPress any key to coninue: ";
-    getch();
+    getchtocontinue();
 }
 
 void mazepathmaker(int **&maze, int row, int column, int rowin, int columnin, int togo, int &flag)
@@ -1191,7 +1197,7 @@ void mazesolving()
         if (flag == 0)
             cout << yellow << "There's no path with the given length in this maze" << reset;
         cout << "\nPress any key to coninue: ";
-        getch();
+        getchtocontinue();
         goto dontcontinue;
         // return;
     }

@@ -1166,6 +1166,7 @@ void mazesolving()
         // }
         // getintinput(mtos(maze, row, column, filecapacity) + "Enter the length of path: ", input, length, 1);
         getinput(input, mtos(maze, row, column, filecapacity) + "Enter the length of path: ", 0, 2000000000, "Not Accepted!");
+        length = stoi(input);
         clearScreen();
         cout << yellow << "Calculating, please wait..." << reset << endl;
         if (length % 2 == (row + column) % 2 && length <= row * column - 1 - !(row % 2 || column % 2))

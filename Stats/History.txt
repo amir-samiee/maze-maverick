@@ -1,4 +1,10 @@
 Date: 01/11/2024
+User Name: Ali
+Map: negative
+Time: 4
+Result: Win
+
+Date: 01/11/2024
 User Name: Erfan Gheshgheregh be pa kon
 Map: Map6
 Time: 5
@@ -50,11 +56,5 @@ Date: 01/10/2024
 User Name: Ali
 Map: negative
 Time: 10
-Result: Win
-
-Date: 01/10/2024
-User Name: Amir
-Map: Map2
-Time: 4
 Result: Win
 

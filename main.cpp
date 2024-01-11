@@ -144,7 +144,7 @@ int main()
         case 8:
             clearmaps();
             break;
-        default:
+        case 0:
             cout << endl
                  << yellow + "Exiting program...\n\n" + reset;
             return 0;

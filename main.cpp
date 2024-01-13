@@ -69,7 +69,7 @@ void getintinput(string interact, string &input, int &output, bool flag);       
 void mazesolver(int **maze, int **&copymaze, char **&path, int row, int column, int rowin, int coulumnin, int togo, int &flag, int sum); // function that solves a map
 void clearScreen();                                                                                                                      // this function has been declared to clear the screen on windows
 bool isInteger(string s);                                                                                                                // returns 1 if a string can be converted to an integer, otherwise 0
-void getinput(string &input, string options, int from, int to, string indexerrormessage = "Out of Index!");                              // shows a list of options and gets input until user inputs a valid choice. the choice should be an integer from integer "from" to integer "to"
+void getinput(string &input, string options, int from, int to, string indexerrormessage = "Out of Index!", bool exceptzero = 1);         // shows a list of options and gets input until user inputs a valid choice. the choice should be an integer from integer "from" to integer "to"
 void createNewMap();                                                                                                                     // creates a new map --maze-- (part 1)
 void mazesolving();                                                                                                                      // gets and solves a maze
 void playground();                                                                                                                       // the interactive game part (part 2)
@@ -241,7 +241,7 @@ void getintinput(string interact, string &input, int &result, bool flag)
     result = stoi(input);
 }
 
-void getinput(string &input, string options, int from, int to, string indexerrormessage)
+void getinput(string &input, string options, int from, int to, string indexerrormessage, bool exceptzero)
 {
     bool indexerror = 0, typeerror = 0, emptystring = 0;
     do
@@ -263,9 +263,12 @@ void getinput(string &input, string options, int from, int to, string indexerror
             if (isInteger(input))
             {
                 cleanintstring(input);
-                if (input.size() > to_string(to).size() || stoi(input) > to || stoi(input) < from)
-                    if (input != "0")
-                        indexerror = 1;
+                // cout << input;
+                if (input.size() > max(to_string(to).size(), to_string(from).size()) || stoi(input) > to || stoi(input) < from)
+                    // if (!exceptzero || input != "0")
+                    indexerror = 1;
+                if (exceptzero && input == "0")
+                    indexerror = 0;
             }
             else
                 typeerror = 1;
@@ -669,7 +672,7 @@ reset_dif:
     // getintinput("Please enter maze height or enter 0 to restart the process: \n", Srow, row, 0);
     // while (row < 2 && row != 0)
     //     getintinput("Please enter maze height (it cannot be less than 2) or enter 0 to restart the process: \n", Srow, row, 0);
-    getinput(Srow, "Please enter maze height or enter 0 to restart the process: ", 2, 2000000000, "Not Accepted");
+    getinput(Srow, "Please enter maze height or enter 0 to restart the process: ", 2, 200, "Not Accepted");
     row = stoi(Srow);
     if (row == 0)
         goto reset_dif;
@@ -677,7 +680,7 @@ reset_dif:
     // getintinput("Please enter maze width or enter 0 to restart the process: \n", Scolumn, column, 0);
     // while (column < 2 && column != 0)
     //     getintinput("Please enter maze width (it cannot be less than 2) or enter 0 to restart the process: \n", Scolumn, column, 0);
-    getinput(Scolumn, "Please enter maze width or enter 0 to restart the process: ", 2, 2000000000, "Not Accepted");
+    getinput(Scolumn, "Please enter maze width or enter 0 to restart the process: ", 2, 200, "Not Accepted");
     column = stoi(Scolumn);
     if (column == 0)
         goto reset_dif;
@@ -688,6 +691,8 @@ reset_dif:
     {
         // gets length of path for the maze from user
         getintinput("Please enter the length of the path or enter 0 to restart the process:\n", Slength, length, 0);
+        // getinput(Slength, "Please enter the length of the path or enter 0 to restart the process:\n",0,);
+        length = stoi(Slength);
         if (Slength == "0")
             goto reset_dif;
 
@@ -735,19 +740,31 @@ reset_dif:
     if (mapdif == 2)
     {
         // inputs the min value of blocks
-        getintinput("Please enter your choice of min value of block: ", SlowV, lowV, 0);
+        // getintinput("Please enter your choice of min value of block: ", SlowV, lowV, 0);
+        getinput(SlowV, "Please enter your choice of min value of block:", -50000, 50000, "Not Accepted!", 0);
+        lowV = stoi(SlowV);
+
         // inputs the max value of blocks
-        getintinput("Please enter your choice of max value of block: ", ShighV, highV, 0);
-        while (lowV > highV || (lowV == highV && lowV == 0))
-            getintinput("Please enter your choice of max value of block (it can't be less than the min value): ", ShighV, highV, 0);
+        // getintinput("Please enter your choice of max value of block: ", ShighV, highV, 0);
+        // while (lowV > highV || (lowV == highV && lowV == 0))
+        //     getintinput("Please enter your choice of max value of block (it can't be less than the min value): ", ShighV, highV, 0);
+        getinput(ShighV, "Please enter your choice of max value of block:", lowV, 50000, "Not Acceepted! (Notice that max value has to be more than or equal to min value)", 0);
+        highV = stoi(ShighV);
+
         // inputs the least amount of walls
-        getintinput("Please enter your choice of min amount of walls: ", SleastW, leastW, 0);
-        while (leastW < 0 || leastW > row * column - length - 1)
-            getintinput("Please enter your choice of min amount of walls \n(it can't be less than 0 or more than amount of block available): ", SleastW, leastW, 0);
+        // getintinput("Please enter your choice of min amount of walls: ", SleastW, leastW, 0);
+        // while (leastW < 0 || leastW > row * column - length - 1)
+        //     getintinput("Please enter your choice of min amount of walls \n(it can't be less than 0 or more than amount of block available): ", SleastW, leastW, 0);
+        getinput(SleastW, "Please enter your choice of min amount of walls:", 0, row * column - (length + 1), "Not Accepted");
+        leastW = stoi(SleastW);
+
         // inputs the most amount of walls
-        getintinput("Please enter your choice of max amount of walls: ", SleastW, mostW, 0);
-        while (leastW > mostW)
-            getintinput("Please enter your choice of max amount of walls (it can't be less than the min amount of walls): ", SleastW, mostW, 0);
+        // getintinput("Please enter your choice of max amount of walls: ", SleastW, mostW, 0);
+        // while (leastW > mostW)
+        //     getintinput("Please enter your choice of max amount of walls (it can't be less than the min amount of walls): ", SleastW, mostW, 0);
+
+        getinput(SmostW, "Please enter your choice of max amount of walls:", leastW, row * column - (length + 1), "Not Accepted!  (Notice that max amount has to be more than or equal to min amount)", 0);
+        mostW = stoi(SmostW);
     }
     // filling the maze
     mazefiller(maze, row, column, length, lowV, highV, leastW, mostW);

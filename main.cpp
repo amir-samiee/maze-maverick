@@ -810,6 +810,7 @@ reset_dif:
     allmapsfile << mapname
                 << endl;
     allmapsfile.close();
+    delete[] maze;
     cout << green << "\nDone! Press any key to continue: " << reset;
     getchtocontinue();
     goto reset_dif;
@@ -1216,6 +1217,9 @@ void mazesolving()
         cout << endl;
         if (flag == 0)
             cout << yellow << "There's no path with the given length in this maze" << reset;
+        delete[] maze;
+        delete[] copymaze;
+        delete[] path;
         cout << "\nPress any key to coninue: ";
         getchtocontinue();
         goto dontcontinue;

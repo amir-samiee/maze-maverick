@@ -427,7 +427,7 @@ string Date()
     time_t now = time(0);
     tm *ltm = localtime(&now);
     char buffer[256];
-    strftime(buffer, sizeof(buffer), "%m/%d/%Y", ltm);
+    strftime(buffer, sizeof(buffer), "%Y/%m/%d", ltm);
     return buffer;
 }
 
@@ -1200,23 +1200,27 @@ void mazesolving()
         if (length % 2 == (row + column) % 2 && length <= row * column - 1 - !(row % 2 || column % 2))
             mazesolver(maze, copymaze, path, row, column, 1, 1, length, flag, sum);
         clearScreen();
-        for (int i = 1; i < row + 1; i++)
-        {
-            for (int l = 1; l < column + 1; l++)
+        if(flag == 1){
+            for (int i = 1; i < row + 1; i++)
             {
-                if (copymaze[i][l] == 2)
-                    cout << green;
-                cout << right << setw(filecapacity) << maze[i][l] << cyan << right << setw(filecapacity) << string((filecapacity == 1 ? 1 : filecapacity - 1), path[2 * i][l]) << reset;
+                for (int l = 1; l < column + 1; l++)
+                {
+                    if (copymaze[i][l] == 2)
+                        cout << green;
+                    cout << right << setw(filecapacity) << maze[i][l] << cyan << right << setw(filecapacity) << string((filecapacity == 1 ? 1 : filecapacity - 1), path[2 * i][l]) << reset;
+                }
+                cout << endl;
+                for (int l = 1; l < column + 1; l++)
+                    cout << right << cyan << setw(filecapacity) << path[2 * i + 1][l] << string(filecapacity, ' ') << reset;
+                cout << endl;
             }
-            cout << endl;
-            for (int l = 1; l < column + 1; l++)
-                cout << right << cyan << setw(filecapacity) << path[2 * i + 1][l] << string(filecapacity, ' ') << reset;
+            // cout << filecapacity << endl;
             cout << endl;
         }
-        // cout << filecapacity << endl;
-        cout << endl;
-        if (flag == 0)
+        else{
+            cout << mtos(maze, row, column, filecapacity);
             cout << yellow << "There's no path with the given length in this maze" << reset;
+        }
         delete[] maze;
         delete[] copymaze;
         delete[] path;

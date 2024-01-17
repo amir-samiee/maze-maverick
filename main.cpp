@@ -1200,7 +1200,8 @@ void mazesolving()
         if (length % 2 == (row + column) % 2 && length <= row * column - 1 - !(row % 2 || column % 2))
             mazesolver(maze, copymaze, path, row, column, 1, 1, length, flag, sum);
         clearScreen();
-        if(flag == 1){
+        if (flag == 1)
+        {
             for (int i = 1; i < row + 1; i++)
             {
                 for (int l = 1; l < column + 1; l++)
@@ -1217,7 +1218,8 @@ void mazesolving()
             // cout << filecapacity << endl;
             cout << endl;
         }
-        else{
+        else
+        {
             cout << mtos(maze, row, column, filecapacity);
             cout << yellow << "There's no path with the given length in this maze" << reset;
         }

@@ -1221,7 +1221,7 @@ void mazesolving()
         else
         {
             cout << mtos(maze, row, column, filecapacity);
-            cout << yellow << "There's no path with the given length in this maze" << reset;
+            cout << yellow << "There's no path with length " << length << " in this maze" << reset;
         }
         delete[] maze;
         delete[] copymaze;

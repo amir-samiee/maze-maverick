@@ -911,13 +911,13 @@ void resetstats()
     clearScreen();
     cout << "Reset Stats:\n\n"
          << "This action clears any data related to users and games history but keeps the maps"
-         << "\nEnter yes to confirm the action. Enter anything else to cancel and go back: ";
+         << "\nEnter yes to confirm the action. Enter anything else to cancel: ";
     string choice;
     getline(cin, choice);
     if (choice != "yes")
     {
         cout << red + "no changes applied" + reset;
-        cout << "\nPress any key to coninue: ";
+        cout << "\nPress any key to go back: ";
         getchtocontinue();
         return;
     }
@@ -944,13 +944,13 @@ void clearmaps()
     clearScreen();
     cout << "Clear Maps:\n\n"
          << "This action clears all the maps"
-         << "\nEnter yes to confirm the action. Enter anything else to cancel and go back: ";
+         << "\nEnter yes to confirm the action. Enter anything else to cancel: ";
     string choice;
     getline(cin, choice);
     if (choice != "yes")
     {
         cout << red + "no changes applied" + reset;
-        cout << "\nPress any key to coninue: ";
+        cout << "\nPress any key to go back: ";
         getchtocontinue();
         return;
     }

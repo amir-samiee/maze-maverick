@@ -1092,8 +1092,8 @@ void mazefiller(int **&maze, int row, int column, int length, int lowV, int high
 int randint(int floor, int ceil) // returns a random number between integers floor and ceil that will never be 0
 {
     bool zeroin = floor * ceil <= 0;
-    int dif = ceil - floor + 1;
-    int res = rand() % dif + floor - zeroin;
+    int dif = ceil - floor + 1 - zeroin;
+    int res = rand() % dif + floor;
     return res + (res >= 0) * zeroin;
 }
 

@@ -1,0 +1,18 @@
+Date: 20/01/2024
+User Name: SampleUser
+Map: SampleHard
+Time: 12
+Result: Loose
+
+Date: 20/01/2024
+User Name: SampleUser
+Map: SampleEasy
+Time: 17
+Result: Loose
+
+Date: 20/01/2024
+User Name: SampleUser
+Map: SampleHard
+Time: 38
+Result: Win
+

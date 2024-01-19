@@ -691,11 +691,11 @@ reset_dif:
     // checks the difficulty option for advanced path making
     if (mapdif == 2)
     {
-        getinput(Srow, "Please enter maze height or enter 0 to restart the process: ", 1, 200, "Not Accepted");
+        getinput(Srow, "Please enter maze height or enter 0 to restart the process: ", 1, 365, "Not Accepted");
         row = stoi(Srow);
         if (row == 0)
             goto reset_dif;
-        getinput(Scolumn, "Please enter maze width or enter 0 to restart the process: ", (row == 1) + 1, 200, "Not Accepted");
+        getinput(Scolumn, "Please enter maze width or enter 0 to restart the process: ", (row == 1) + 1, 365, "Not Accepted");
         column = stoi(Scolumn);
         if (column == 0)
             goto reset_dif;
@@ -748,14 +748,14 @@ reset_dif:
     {
         // inputs the min value of blocks
         // getintinput("Please enter your choice of min value of block: ", SlowV, lowV, 0);
-        getinput(SlowV, "Please enter your choice of min value of block:", -50000, 50000, "Not Accepted!", 0);
+        getinput(SlowV, "Please enter your choice of min value of block:", -15000, 15000, "Not Accepted!", 0);
         lowV = stoi(SlowV);
 
         // inputs the max value of blocks
         // getintinput("Please enter your choice of max value of block: ", ShighV, highV, 0);
         // while (lowV > highV || (lowV == highV && lowV == 0))
         //     getintinput("Please enter your choice of max value of block (it can't be less than the min value): ", ShighV, highV, 0);
-        getinput(ShighV, "Please enter your choice of max value of block:", lowV, 50000, "Not Acceepted! (Notice that max value has to be more than or equal to min value)", 0);
+        getinput(ShighV, "Please enter your choice of max value of block:", lowV, 15000, "Not Acceepted! (Notice that max value has to be more than or equal to min value)", 0);
         highV = stoi(ShighV);
 
         // inputs the least amount of walls

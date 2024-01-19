@@ -1,57 +1,15 @@
 #include <iostream>
 #include <algorithm>
 #include <random>
-// #include <cstdlib>
 #include <fstream>
 #include <iomanip>
 #include <vector>
-// #include <cstdio>
 #include <stdio.h>
 #include <ctime>
 #include <cmath>
 #include <ctype.h>
-#ifdef _WIN32
 #include <windows.h>
 #include <conio.h>
-#else
-#include <unistd.h>
-#include <stdio.h>
-#include <sys/select.h>
-#include <termios.h>
-#include <sys/ioctl.h>
-int getch(void)
-{
-    struct termios oldattr, newattr;
-    int ch;
-    tcgetattr(STDIN_FILENO, &oldattr);
-    newattr = oldattr;
-    newattr.c_lflag &= ~(ICANON | ECHO);
-    tcsetattr(STDIN_FILENO, TCSANOW, &newattr);
-    ch = getchar();
-    tcsetattr(STDIN_FILENO, TCSANOW, &oldattr);
-    return ch;
-}
-int kbhit()
-{
-    static const int STDIN = 0;
-    static bool initialized = false;
-
-    if (!initialized)
-    {
-        // Use termios to turn off line buffering
-        termios term;
-        tcgetattr(STDIN, &term);
-        term.c_lflag &= ~ICANON;
-        tcsetattr(STDIN, TCSANOW, &term);
-        setbuf(stdin, NULL);
-        initialized = true;
-    }
-
-    int bytesWaiting;
-    ioctl(STDIN, FIONREAD, &bytesWaiting);
-    return bytesWaiting;
-}
-#endif
 using namespace std;
 // COLORS
 const string red("\033[0;31m");
@@ -160,7 +118,7 @@ void getchtocontinue() // arrowkeys are considered 2 characters so in getch() th
 
 void clearScreen()
 {
-    system("clear||cls");
+    system("cls");
 }
 
 bool isInteger(string s)

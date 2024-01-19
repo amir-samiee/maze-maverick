@@ -20,7 +20,7 @@ Maze Maverick is an interactive C++ console-based game that involves creating, s
    - View user information and statistics.
    
 6. **Leaderboard:**
-   - Showcase top-performing users based on game scores.
+   - Showcase the 3 top-performing users based on game scores.
    
 7. **Reset Stats:**
    - Clear user and game history data while preserving maps.

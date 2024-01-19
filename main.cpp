@@ -231,7 +231,7 @@ void getintinput(string interact, string &input, int &result, bool flag)
     // cin >> input;
     getline(cin, input);
     // while (!isvalidint(input, result))
-    while (!isInteger(input) || (input[0] == '-' && input.length() > 11) || (input[0] != '-' && input.length() > 10))
+    while (!isInteger(input) || (input[0] == '-' && input.length() > 10) || (input[0] != '-' && input.length() > 9))
     {
         clearScreen();
         cout << interact << "\n"

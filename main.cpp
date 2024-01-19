@@ -672,7 +672,7 @@ reset_dif:
     // getintinput("Please enter maze height or enter 0 to restart the process: \n", Srow, row, 0);
     // while (row < 2 && row != 0)
     //     getintinput("Please enter maze height (it cannot be less than 2) or enter 0 to restart the process: \n", Srow, row, 0);
-    getinput(Srow, "Please enter maze height or enter 0 to restart the process: ", 2, 200, "Not Accepted");
+    getinput(Srow, "Please enter maze height or enter 0 to restart the process: ", 3, 200, "Not Accepted");
     row = stoi(Srow);
     if (row == 0)
         goto reset_dif;
@@ -680,7 +680,7 @@ reset_dif:
     // getintinput("Please enter maze width or enter 0 to restart the process: \n", Scolumn, column, 0);
     // while (column < 2 && column != 0)
     //     getintinput("Please enter maze width (it cannot be less than 2) or enter 0 to restart the process: \n", Scolumn, column, 0);
-    getinput(Scolumn, "Please enter maze width or enter 0 to restart the process: ", 2, 200, "Not Accepted");
+    getinput(Scolumn, "Please enter maze width or enter 0 to restart the process: ", 3, 200, "Not Accepted");
     column = stoi(Scolumn);
     if (column == 0)
         goto reset_dif;

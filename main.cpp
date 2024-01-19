@@ -1,7 +1,7 @@
 #include <iostream>
 #include <algorithm>
 #include <random>
-#include <windows.h>
+// #include <cstdlib>
 #include <fstream>
 #include <iomanip>
 #include <vector>
@@ -9,8 +9,49 @@
 #include <stdio.h>
 #include <ctime>
 #include <cmath>
-#include <conio.h>
 #include <ctype.h>
+#ifdef _WIN32
+#include <windows.h>
+#include <conio.h>
+#else
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/select.h>
+#include <termios.h>
+#include <sys/ioctl.h>
+int getch(void)
+{
+    struct termios oldattr, newattr;
+    int ch;
+    tcgetattr(STDIN_FILENO, &oldattr);
+    newattr = oldattr;
+    newattr.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &newattr);
+    ch = getchar();
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldattr);
+    return ch;
+}
+int kbhit()
+{
+    static const int STDIN = 0;
+    static bool initialized = false;
+
+    if (!initialized)
+    {
+        // Use termios to turn off line buffering
+        termios term;
+        tcgetattr(STDIN, &term);
+        term.c_lflag &= ~ICANON;
+        tcsetattr(STDIN, TCSANOW, &term);
+        setbuf(stdin, NULL);
+        initialized = true;
+    }
+
+    int bytesWaiting;
+    ioctl(STDIN, FIONREAD, &bytesWaiting);
+    return bytesWaiting;
+}
+#endif
 using namespace std;
 // COLORS
 const string red("\033[0;31m");
@@ -21,47 +62,23 @@ const string magenta("\033[0;35m");
 const string reset("\033[0m");
 // FUNCTIONS
 
-void mazepathmaker(int **&maze, int row, int column, int rowin, int columnin, int togo, int &flag);                                        // function to find a random path
-void mazefiller(int **&maze, int row, int column, int length, int lowV, int highV, int leastW, int mostW);                                 // function to fill the maze
-int randint(int floor, int ceil);                                                                                                          // function for generating random int excluding 0
-void getintinput(string interact, string &input, int &output);                                                                             // function for getting input util its a valid int input
-void mazesolver(int **maze, int **&copymaze, string **&path, int row, int column, int rowin, int coulumnin, int togo, int &flag, int sum); // function that solves a map
-void clearScreen();                                                                                                                        // this function has been declared to clear the screen on both windows and linux
-bool isInteger(string s);                                                                                                                  // returns 1 if a string can be converted to an integer, otherwise 0
-void getinput(string &input, string options, int from, int to);                                                                            // shows a list of options and gets input until user inputs a valid choice. the choice should be an integer from integer "from" to integer "to"
-void createNewMap();
-void mazesolving();
-bool isvalidint(string &input, int &output); // checks if the input is integer
-void playground();                           // the interactive game part (part 2)
-void showHistory();                          // shows the history of the games (part 4)
-void showUsers();                            // shows the users (part 5)
-void leaderboard();                          // shows the leader users (part 6)
-void resetstats();                           // clears user and games history data but keeps the maps
-
-// this method for updating screen works but as a non-gui program this won't have a clean and satisfying output
-// updating the screen:
-// #include <windows.h>
-// #include <conio.h>
-// #include <ctime>
-// char ch;
-// int i = 0 while (true)
-// {
-//     if (kbhit())
-//     {
-//         ch = getch();
-//         if (ch == ' ')
-//             updateScreen();
-//     }
-//     else
-//     {
-//         Sleep(100);
-//         if (i++ --9)
-//         {
-//             i = 0;
-//             updateScreen();
-//         }
-//     }
-// }
+void mazepathmaker(int **&maze, int row, int column, int rowin, int columnin, int togo, int &flag);                                      // function to find a random path
+void mazefiller(int **&maze, int row, int column, int length, int lowV, int highV, int leastW, int mostW);                               // function to fill the maze
+int randint(int floor, int ceil);                                                                                                        // function for generating random int excluding 0
+void getintinput(string interact, string &input, int &output, bool flag);                                                                // function for getting input util its a valid int input
+void mazesolver(int **maze, int **&copymaze, char **&path, int row, int column, int rowin, int coulumnin, int togo, int &flag, int sum); // function that solves a map
+void clearScreen();                                                                                                                      // this function has been declared to clear the screen on windows
+bool isInteger(string s);                                                                                                                // returns 1 if a string can be converted to an integer, otherwise 0
+void getinput(string &input, string options, int from, int to, string indexerrormessage = "Out of Index!", bool exceptzero = 1);         // shows a list of options and gets input until user inputs a valid choice. the choice should be an integer from integer "from" to integer "to"
+void createNewMap();                                                                                                                     // creates a new map --maze-- (part 1)
+void mazesolving();                                                                                                                      // gets and solves a maze
+void playground();                                                                                                                       // the interactive game part (part 2)
+void showHistory();                                                                                                                      // shows the history of the games (part 4)
+void showUsers();                                                                                                                        // shows the users (part 5)
+void leaderboard();                                                                                                                      // shows the leader users (part 6)
+void resetstats();                                                                                                                       // clears user and games history data but keeps the maps
+void clearmaps();                                                                                                                        // clears all maps
+string mtos(int **maze, int row, int column, int filecapacity = 1, bool removeEdges = 1);                                                // maze to string convertor so we can add it to string parameter of input functions
 
 string menu0 =
     cyan + "\n __  __            ______ ______   __  __       __      __ ______  _____   _____  _____  _  __"
@@ -84,6 +101,7 @@ string menu0 =
     "\n5. Users"
     "\n6. Leaderboard"
     "\n7. Reset stats"
+    "\n8. Clear Maps"
     "\n0. Exit";
 string menu1 =
     "\n1. Easy"
@@ -99,7 +117,7 @@ int main()
     while (1)
     {
         string choice1;
-        getinput(choice1, menu0, 0, 7);
+        getinput(choice1, menu0, 0, 8);
         switch (stoi(choice1))
         {
         case 1:
@@ -123,17 +141,26 @@ int main()
         case 7:
             resetstats();
             break;
-        default:
+        case 8:
+            clearmaps();
+            break;
+        case 0:
             cout << endl
                  << yellow + "Exiting program...\n\n" + reset;
             return 0;
         }
     }
 }
+void getchtocontinue() // arrowkeys are considered 2 characters so in getch() they ruin the next call
+{
+    int ch = getch();
+    if (ch == 0 || ch == 224)
+        getch();
+}
 
 void clearScreen()
 {
-    system("cls");
+    system("clear||cls");
 }
 
 bool isInteger(string s)
@@ -143,57 +170,111 @@ bool isInteger(string s)
             return 0;
     if (!(isdigit(s[0]) || s[0] == '-'))
         return 0;
+    if (s == "-")
+        return 0;
     return 1;
 }
 
-bool isvalidint(string &input, int &output)
+bool isZero(string s)
 {
-    try
-    {
-        output = stoi(input);
-    }
-    catch (invalid_argument)
-    {
-        return false;
-    }
-    return true;
+    for (int i = 1; i < s.size(); i++)
+        if (s[i] != '0')
+            return 0;
+    if (!(s[0] == '0' || s[0] == '-'))
+        return 0;
+    return 1;
 }
 
-void getintinput(string interact, string &input, int &result)
+void cleanintstring(string &s)
 {
-    clearScreen();
+    if (isZero(s))
+    {
+        s = "0";
+        return;
+    }
+    while (1)
+    {
+        int size = s.size();
+        if (s[0] == '0')
+            s = s.substr(1, size);
+        else if (s[0] == '-' && size >= 2 && s[1] == '0')
+            s = '-' + s.substr(2, size);
+        else
+            break;
+    }
+}
+
+string mtos(int **maze, int row, int column, int filecapacity, bool removeEdges)
+{
+    string res = "";
+    for (int i = removeEdges; i < row + removeEdges; i++)
+    {
+        for (int j = removeEdges; j < column + removeEdges; j++)
+        {
+            string f = to_string(maze[i][j]);
+            int cap = filecapacity - f.size();
+            // cout << filecapacity << ' ' << cap << endl;
+            res += string((cap > 0 ? cap : 0), ' ') + f + ' ';
+        }
+        res += "\n";
+        // cout << right << setw(filecapacity) << maze[i][j] << ' ';
+        // cout << endl;
+    }
+    return res;
+}
+
+void getintinput(string interact, string &input, int &result, bool flag)
+{
+    if (!flag)
+        clearScreen();
     cout << interact;
-    cin >> input;
-    while (!isvalidint(input, result))
+    // cin >> input;
+    getline(cin, input);
+    // while (!isvalidint(input, result))
+    while (!isInteger(input) || (input[0] == '-' && input.length() > 10) || (input[0] != '-' && input.length() > 9))
     {
         clearScreen();
         cout << interact << "\n"
-             << "Invalid entry. Please try again: \n";
+             << red << "Invalid entry. Please try again: " << reset;
         getline(cin, input);
     }
+    result = stoi(input);
 }
-void getinput(string &input, string options, int from, int to)
+
+void getinput(string &input, string options, int from, int to, string indexerrormessage, bool exceptzero)
 {
-    bool indexerror = 0, typeerror = 0;
+    bool indexerror = 0, typeerror = 0, emptystring = 0;
     do
     {
         clearScreen();
         cout << options << endl
-             << ((indexerror) ? red + "Out of Index!\nPlease enetr a number between " + to_string(from) + " and " + to_string(to) + reset + "\n" : "")
+             << ((indexerror) ? red + indexerrormessage + "\nPlease enetr a number between " + to_string(from) + " and " + to_string(to) + reset + "\n" : "")
              << ((typeerror) ? red + "Input wasn't a number!\nPlease enetr a number between " + to_string(from) + " and " + to_string(to) + reset + "\n" : "")
              << string(2 * (1 - indexerror - typeerror), '\n')
              << "Enter your choice: ";
         indexerror = typeerror = 0;
-        cin >> input;
-        if (isInteger(input))
-        {
-            if (input.size() > 2 || stoi(input) > to || stoi(input) < from)
-                indexerror = 1;
-        }
+        // cin >> input;
+        getline(cin, input);
+        if (input == "")
+            emptystring = 1;
         else
-            typeerror = 1;
+        {
+            emptystring = 0;
+            if (isInteger(input))
+            {
+                cleanintstring(input);
+                // cout << input;
+                if (input.size() > max(to_string(to).size(), to_string(from).size()) || stoi(input) > to || stoi(input) < from)
+                    // if (!exceptzero || input != "0")
+                    indexerror = 1;
+                if (exceptzero && input == "0")
+                    indexerror = 0;
+            }
+            else
+                typeerror = 1;
+        }
 
-    } while (indexerror || typeerror);
+    } while (indexerror || typeerror || emptystring);
 }
 
 void printmap(int **values, bool **ispassed, int currentx, int currenty, int lastx, int lasty, int m, int n, bool includezeros = 1, int filecapacity = 1)
@@ -229,16 +310,16 @@ struct user
     int totaltime = 0;
 };
 
-vector<string> getnames(string filename = "Users/allusers.txt")
+vector<string> getnames(string filename = "Users/allusers.txt") // returns the stored names in the given file
 {
-    ifstream usersfile(filename);
-    vector<string> users;
+    ifstream namesfile(filename);
+    vector<string> names;
     string name;
-    while (usersfile >> name)
-        users.push_back(name);
-    return users;
+    while (getline(namesfile, name))
+        names.push_back(name);
+    return names;
 }
-user formuser(string name)
+user formuser(string name) // gets a username in string format and returns the user format
 {
     ifstream userfile("Users/" + name + ".txt");
     user opened;
@@ -246,6 +327,7 @@ user formuser(string name)
     // getline(usersfile, line);
     userfile.ignore(7);
     userfile >> opened.games;
+    // getline(userfile, opened.games);
     userfile.ignore(6);
     userfile >> opened.wins;
     // getline(usersfile, line);
@@ -256,7 +338,7 @@ user formuser(string name)
     userfile.close();
     return opened;
 }
-vector<user> getusersdata(string filename = "Users/allusers.txt")
+vector<user> getusersdata(string filename = "Users/allusers.txt") // returns a vector including the user format of all uses
 {
     vector<string> users = getnames(filename);
     vector<user> players;
@@ -265,9 +347,10 @@ vector<user> getusersdata(string filename = "Users/allusers.txt")
     return players;
 }
 
-void updateusers(user &player, bool won)
+void updateusers(user &player, bool won) // when a game ends, this function compares the player with the leader players and updates the leaderboard
 {
     vector<string> users = getnames();
+    player.totaltime += player.lastwintime;
     bool isin = 0;
     for (int i = 0; i < users.size(); i++)
         if (player.name == users[i])
@@ -287,11 +370,12 @@ void updateusers(user &player, bool won)
     else
     {
         ofstream usersfile("Users/allusers.txt", ios::app);
-        usersfile << endl
-                  << player.name;
+        usersfile << player.name
+                  << endl;
+        if (!won)
+            player.lastwintime = 0;
         usersfile.close();
     }
-    player.totaltime += player.lastwintime;
     player.wins += won;
     player.games++;
     ofstream userfile("Users/" + player.name + ".txt");
@@ -343,64 +427,85 @@ string Date()
     time_t now = time(0);
     tm *ltm = localtime(&now);
     char buffer[256];
-    strftime(buffer, sizeof(buffer), "%m/%d/%Y", ltm);
+    strftime(buffer, sizeof(buffer), "%d/%m/%Y", ltm);
     return buffer;
 }
 
-int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int y0, int sum, int start_time, int filecapacity) // returns a code: 0 for continuing, 1 for "User won", -1 for "User lost"
+int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int y0, int sum, int start_time, int filecapacity, int &lastupdate) // this is the recursive function of motion in the playground. it returns a code: 0 for continuing, 1 for "User won", -1 for "User lost"
 {
     if (x == m && y == n && values[x][y] * 2 == sum)
     {
         printmap(values, ispassed, x, y, x0, y0, m + 2, n + 2, 0, filecapacity);
         return 1;
     }
+    // if (!values[x][y] || ispassed[x][y])
+    //     return 0;
     // if (values[x][y] == 0 || ispassed[x][y])
     //     return 0;
     ispassed[x][y] = 1;
-    int x2 = x, y2 = y, ch, i = 0, screenupdatespersecond = 7;
+    int x2 = x, y2 = y, ch, i = 0, screenupdatespersecond = 7, j = time(0);
     while (1)
     {
         clearScreen();
         printmap(values, ispassed, x, y, x0, y0, m + 2, n + 2, 0, filecapacity);
         cout << "\nSum of the blocks: " << sum << "\nTime: "
-             << time(0) - start_time;
-        ch = getch(); // get the first value
-        while (ch != 0 && ch != 224 && ch != 27)
-            ch = getch(); // get the first value
-        if (ch == 0 || ch == 224)
-        {                 // check if it is 0 or 224
-            ch = getch(); // get the second value
-            switch (ch)
-            {        // check the arrow key code
-            case 72: // UP
-                x2 = x - 1;
-                break; // up arrow
-            case 80:   // DOWN
-                x2 = x + 1;
-                break; // down arrow
-            case 75:   // LEFT
-                y2 = y - 1;
-                break; // left arrow
-            case 77:   // RIGHT
-                y2 = y + 1;
-                break; // right arrow
-            }
-        }
-        else if (ch == 27) // check if it is ESC
+             << time(0) - start_time << "\r";
+        lastupdate = time(0);
+    dontupdatescreen:
+        if (kbhit())
         {
-            clearScreen();
-            printmap(values, ispassed, x, y, x0, y0, m + 2, n + 2, 0, filecapacity);
-            return -1; // exit the loop
+            ch = getch(); // get the first value
+            if (ch == 0 || ch == 224)
+            {                 // check if it is 0 or 224
+                ch = getch(); // get the second value
+                switch (ch)
+                {        // check the arrow key code
+                case 72: // UP
+                    x2 = x - 1;
+                    break; // up arrow
+                case 80:   // DOWN
+                    x2 = x + 1;
+                    break; // down arrow
+                case 75:   // LEFT
+                    y2 = y - 1;
+                    break; // left arrow
+                case 77:   // RIGHT
+                    y2 = y + 1;
+                    break; // right arrow
+                }
+            }
+            else if (ch == 27) // check if it is ESC
+            {
+                clearScreen();
+                printmap(values, ispassed, x, y, x0, y0, m + 2, n + 2, 0, filecapacity);
+                return -1; // exit the loop
+            }
+            else
+                goto dontupdatescreen;
+        }
+        else
+        {
+            if (time(0) - lastupdate >= 1)
+            {
+                cout << "Time: "
+                     << time(0) - start_time << "\r";
+                lastupdate = time(0);
+                // continue;
+            }
+            // else
+            goto dontupdatescreen;
         }
         if (x2 == x0 && y2 == y0)
             break;
-        if (!values[x2][y2] || ispassed[x2][y2])
+
+        if (ispassed[x2][y2] || !(values[x2][y2] || (x2 == m && y2 == n)))
         {
             x2 = x;
             y2 = y;
-            continue;
+            goto dontupdatescreen;
+            // continue;
         }
-        int flag = next(values, ispassed, m, n, x2, y2, x, y, sum + values[x2][y2], start_time, filecapacity);
+        int flag = next(values, ispassed, m, n, x2, y2, x, y, sum + values[x2][y2], start_time, filecapacity, lastupdate);
         if (flag)
             return flag;
         x2 = x;
@@ -410,7 +515,7 @@ int next(int **values, bool **ispassed, int m, int n, int x, int y, int x0, int 
     return 0;
 }
 
-void playground() // more than 1 digit is not supported yet
+void playground()
 {
     while (1)
     {
@@ -421,7 +526,7 @@ void playground() // more than 1 digit is not supported yet
         for (int i = 0; i < maps.size(); i++)
             list += "\n\t" + to_string(i + 1) + ". " + maps[i];
         allmaps.close();
-        getinput(choice, "Playground\n" + menu2, 0, 2);
+        getinput(choice, "Playground:\n" + menu2, 0, 2);
     choose_map:
         mapfile.close();
         bool valid = 1, brk = 0;
@@ -430,12 +535,6 @@ void playground() // more than 1 digit is not supported yet
         case 0:
             return;
         case 1:
-            // while (allmaps >> name)
-            // {
-            //     list += "\n\t" + to_string(i) + ". " + name;
-            //     maps.push_back(name);
-            //     i++;
-            // }
             getinput(mapchoice, list + "\n\t0. Back", 0, maps.size());
             if (mapchoice == "0")
                 continue;
@@ -501,8 +600,8 @@ void playground() // more than 1 digit is not supported yet
             }
         mapfile.close();
         int start = time(0);
-        int sum = 0, ch, x2 = x, y2 = y, x0 = x, y0 = y;
-        bool won = next(values, ispassed, m, n, x, y, 1, 1, values[1][1], start, filecapacity) == 1;
+        int sum = 0, ch, x2 = x, y2 = y, x0 = x, y0 = y, lastupdate = time(0);
+        bool won = next(values, ispassed, m, n, x, y, 1, 1, values[1][1], start, filecapacity, lastupdate) == 1;
         int end = time(0);
 
         cout << endl;
@@ -511,6 +610,7 @@ void playground() // more than 1 digit is not supported yet
         else
             cout << red << "YOU LOST" << green << "!!!" << reset << endl;
         cout << "Time: " << end - start << endl;
+        // if (won)
         player.lastwintime = end - start;
         updateusers(player, won);
         // update history
@@ -539,8 +639,8 @@ void playground() // more than 1 digit is not supported yet
         delete[] values;
         delete[] ispassed;
         cout << "\nPress any key to coninue: ";
-        _getch();
-        return;
+        getchtocontinue();
+        // return;
     }
 }
 
@@ -559,42 +659,65 @@ reset_dif:
     string choice, Scolumn, Srow, Slength, reseter = "1";
     int mapdif, flag = 0, column, row, length, **maze;
     // gets map difficulty from user
-    getintinput("Create a new map: \n1. Easy\n2. Hard\n0. Back\nPlease enter your choice: ", choice, mapdif);
-    while (mapdif > 2 || mapdif < 0)
-        getintinput("Please enter a valid choice: \n1. Easy\n2. Hard\n0. Back\nPlease enter your choice: ", choice, mapdif);
+
+    // getintinput("Create a new map: \n1. Easy\n2. Hard\n0. Back\nPlease enter your choice: ", choice, mapdif, 0);
+    // while (mapdif > 2 || mapdif < 0)
+    //     getintinput("Please enter a valid choice: \n1. Easy\n2. Hard\n0. Back\nPlease enter your choice: ", choice, mapdif, 0);
+    getinput(choice, "Creste a New Map:\n" + menu1, 0, 2);
+    mapdif = stoi(choice);
     if (mapdif == 0)
         return;
+
     // gets maze height from user
-    getintinput("Please enter maze height or enter 0 to restart the process: \n", Srow, row);
-    while (row < 2 && row != 0)
-        getintinput("Please enter maze height (it cannot be less than 2) or enter 0 to restart the process: \n", Srow, row);
-    if (row == 0)
-        goto reset_dif;
-    // gets maze width from user
-    getintinput("Please enter maze width or enter 0 to restart the process: \n", Scolumn, column);
-    while (column < 2 && column != 0)
-        getintinput("Please enter maze width (it cannot be less than 2) or enter 0 to restart the process: \n", Scolumn, column);
-    if (column == 0)
-        goto reset_dif;
-    // length for basic maze
-    length = column + row - 2;
+    // getintinput("Please enter maze height or enter 0 to restart the process: \n", Srow, row, 0);
+    // while (row < 2 && row != 0)
+    //     getintinput("Please enter maze height (it cannot be less than 2) or enter 0 to restart the process: \n", Srow, row, 0);
+    if(mapdif ==  1){
+        getinput(Srow, "Please enter maze height or enter 0 to restart the process: ", 2, 200, "Not Accepted");
+        row = stoi(Srow);
+        if (row == 0)
+            goto reset_dif;
+        // gets maze width from user
+        // getintinput("Please enter maze width or enter 0 to restart the process: \n", Scolumn, column, 0);
+        // while (column < 2 && column != 0)
+        //     getintinput("Please enter maze width (it cannot be less than 2) or enter 0 to restart the process: \n", Scolumn, column, 0);
+        getinput(Scolumn, "Please enter maze width or enter 0 to restart the process: ", (row == 2) + 2, 200, "Not Accepted");
+        column = stoi(Scolumn);
+        if (column == 0)
+            goto reset_dif;
+        // length for basic maze
+        length = column + row - 2;
+    }
     // checks the difficulty option for advanced path making
     if (mapdif == 2)
     {
+        getinput(Srow, "Please enter maze height or enter 0 to restart the process: ", 1, 365, "Not Accepted");
+        row = stoi(Srow);
+        if (row == 0)
+            goto reset_dif;
+        getinput(Scolumn, "Please enter maze width or enter 0 to restart the process: ", (row == 1) + 1, 365, "Not Accepted");
+        column = stoi(Scolumn);
+        if (column == 0)
+            goto reset_dif;
         // gets length of path for the maze from user
-        getintinput("Please enter the length of the path or enter 0 to restart the process:\n", Slength, length);
-        while (length < row + column - 2 || length > row * column - 1 || length % 2 != (row + column) % 2 && length != 0)
+        getintinput("Please enter the length of the path or enter 0 to restart the process:\n", Slength, length, 0);
+        // getinput(Slength, "Please enter the length of the path or enter 0 to restart the process:\n",0,);
+
+        while ((length < row + column - 2 || length > row * column - 1 || length % 2 != (row + column) % 2) && length != 0)
         {
-            cout << "Such a path cannot exist. \nTry again: \n";
-            getintinput("Please enter the length of the path or enter 0 to restart the process:\n", Slength, length);
+            clearScreen();
+            cout << red << "Such a path cannot exist. \nTry again: \n"
+                 << reset;
+            getintinput("Please enter the length of the path or enter 0 to restart the process:\n", Slength, length, 1);
         }
+        if(length == 0)
+            goto reset_dif;
     }
-    if (length == 0)
-        goto reset_dif;
     clearScreen();
     cout << yellow << "You won't be able to reset the settings for the maze from this point forward\n"
          << reset << "Enter 0 to restart the process or something else to continue:";
-    cin >> reseter;
+    // cin >> reseter;
+    getline(cin, reseter);
     if (reseter == "0")
         goto reset_dif;
     // setting the maze up
@@ -619,33 +742,49 @@ reset_dif:
     }
     // finding a random path for maze
     mazepathmaker(maze, row, column, 1, 1, length, flag);
-
     string SlowV, ShighV, SleastW, SmostW;
     int lowV = -3, highV = 3, leastW = 2, mostW = 5, filecapacity = 2;
     if (mapdif == 2)
     {
         // inputs the min value of blocks
-        getintinput("Please enter your choice of min value of block: ", SlowV, lowV);
+        // getintinput("Please enter your choice of min value of block: ", SlowV, lowV, 0);
+        getinput(SlowV, "Please enter your choice of min value of block:", -15000, 15000, "Not Accepted!", 0);
+        lowV = stoi(SlowV);
+
         // inputs the max value of blocks
-        getintinput("Please enter your choice of max value of block: ", ShighV, highV);
-        while (lowV > highV || (lowV == highV && lowV == 0))
-            getintinput("Please enter your choice of max value of block (it can't be less than the min value): ", ShighV, highV);
+        // getintinput("Please enter your choice of max value of block: ", ShighV, highV, 0);
+        // while (lowV > highV || (lowV == highV && lowV == 0))
+        //     getintinput("Please enter your choice of max value of block (it can't be less than the min value): ", ShighV, highV, 0);
+        getinput(ShighV, "Please enter your choice of max value of block:", lowV, 15000, "Not Acceepted! (Notice that max value has to be more than or equal to min value)", 0);
+        highV = stoi(ShighV);
+
         // inputs the least amount of walls
-        getintinput("Please enter your choice of min amount of walls: ", SleastW, leastW);
-        while (leastW < 0 || leastW > row * column - length - 1)
-            getintinput("Please enter your choice of min amount of walls \n(it can't be less than 0 or more than amount of block available): ", SleastW, leastW);
+        // getintinput("Please enter your choice of min amount of walls: ", SleastW, leastW, 0);
+        // while (leastW < 0 || leastW > row * column - length - 1)
+        //     getintinput("Please enter your choice of min amount of walls \n(it can't be less than 0 or more than amount of block available): ", SleastW, leastW, 0);
+        getinput(SleastW, "Please enter your choice of min amount of walls:", 0, row * column - (length + 1), "Not Accepted");
+        leastW = stoi(SleastW);
+
         // inputs the most amount of walls
-        getintinput("Please enter your choice of max amount of walls: ", SleastW, mostW);
-        while (leastW > mostW)
-            getintinput("Please enter your choice of max amount of walls (it can't be less than the min amount of walls): ", SleastW, mostW);
+        // getintinput("Please enter your choice of max amount of walls: ", SleastW, mostW, 0);
+        // while (leastW > mostW)
+        //     getintinput("Please enter your choice of max amount of walls (it can't be less than the min amount of walls): ", SleastW, mostW, 0);
+
+        getinput(SmostW, "Please enter your choice of max amount of walls:", leastW, row * column - (length + 1), "Not Accepted!  (Notice that max amount has to be more than or equal to min amount)", 0);
+        mostW = stoi(SmostW);
     }
+    // filling the maze
+    mazefiller(maze, row, column, length, lowV, highV, leastW, mostW);
     for (int i = 1; i < row + 1; i++)
         for (int j = 1; j < column + 1; j++)
         {
-            int digitscout = log10(fabs(maze[i][j])) + (maze[i][j] < 0) + (maze[i][j] < 0) + 1;
+            // int digitscout = log10(abs(maze[i][j])) + 2;
+            int digitscout = to_string(maze[i][j]).size();
+            // cout << maze[i][j] << ' ' << digitscout << endl;
             if (digitscout > filecapacity)
                 filecapacity = digitscout;
         }
+    // getch();
 
     string mapname = "";
     vector<string> allmapsnames = getnames("Maps/allmaps.txt");
@@ -656,29 +795,33 @@ reset_dif:
             cout << red << "You can't choose this name!!" << reset << endl;
         else
             cout << endl;
+        cout << mtos(maze, row, column, filecapacity);
+        // cout << filecapacity << endl;
         cout << "Maze has been made. Please enter a name for it or 0 to cancel: ";
         getline(cin, mapname);
         if (mapname == "0")
-            return;
+            goto reset_dif;
+        // return;
     }
     ofstream mapfile("Maps/" + mapname + ".txt");
     mapfile << row << ' ' << column << endl;
-    // filling the maze
-    mazefiller(maze, row, column, length, lowV, highV, leastW, mostW);
-    for (int i = 1; i <= row; i++)
-    {
-        for (int j = 1; j <= column; j++)
-            mapfile << setw(4) << maze[i][j] << ' ';
-        mapfile << endl;
-    }
+    mapfile << mtos(maze, row, column, filecapacity);
+    // for (int i = 1; i <= row; i++)
+    // {
+    //     for (int j = 1; j <= column; j++)
+    //         mapfile << setw(filecapacity) << maze[i][j] << ' ';
+    //     mapfile << endl;
+    // }
     mapfile.close();
     ofstream allmapsfile("Maps/allmaps.txt", ios::app);
-    allmapsfile << endl
-                << mapname;
+    allmapsfile << mapname
+                << endl;
     allmapsfile.close();
-    cout << "\nDone! Press any key to continue: ";
-    _getch();
-    return;
+    delete[] maze;
+    cout << green << "\nDone! Press any key to continue: " << reset;
+    getchtocontinue();
+    goto reset_dif;
+    // return;
 }
 
 void showHistory()
@@ -686,11 +829,12 @@ void showHistory()
     clearScreen();
     ifstream historyfile("Stats/History.txt");
     string line;
+    cout << "History:\n\n";
     while (getline(historyfile, line))
         cout << line << endl;
     historyfile.close();
     cout << "\nPress any key to coninue: ";
-    _getch();
+    getchtocontinue();
 }
 
 void showUsers()
@@ -704,12 +848,13 @@ void showUsers()
         do
         {
             clearScreen();
-            cout << "List of users:\n\n";
+            cout << "Users:\n\n";
             for (int i = 0; i < users.size(); i++)
                 cout << '\t' << users[i] << endl;
             cout << (nameerror ? red + "Invalid name!\nPlease enter a name included in the list\n" + reset : "\n\n")
                  << "Enter a name or enter 0 to go back: ";
-            cin >> name;
+            // cin >> name;
+            getline(cin, name);
             if (name == "0")
                 return;
             nameerror = 1;
@@ -728,46 +873,59 @@ void showUsers()
         while (getline(userfile, line))
             cout << line << endl;
         cout << "\nPress any key to coninue: ";
-        _getch();
+        getchtocontinue();
     }
 }
 
 void leaderboard()
 {
+    // the following commented code can be used to reset the leaderboard from the start and not with updating after each game. it's not efficient but is useful for when we have lost the leaderboard's file or data.
+
     // clearScreen();
     // cout << "Finding best players...";
     // vector<user> players = getusersdata();
     // sort(players.begin(), players.end(), compare);
+    // reverse(players.begin(), players.end());
     // clearScreen();
     // cout << "Leaderboard:\n\n";
     // int size = players.size();
-    // for (int i = min(3, size) - 1; i >= 0; i--)
-    //     cout << min(3, size) - i << ". " << players[i].name << endl;
+    // for (int i = 0; i < min(3, size); i++)
+    // {
+    //     user leader = players[i];
+    //     cout << string(4, ' ') << i + 1 << ". " << leader.name << endl
+    //          << string(7, ' ') << "Wins: " << leader.wins << endl
+    //          << string(7, ' ') << "Total time: " << leader.totaltime << endl;
+    // }
     // cout << "\nPress any key to coninue: ";
-    // _getch();
+    // getch();
+
     clearScreen();
     vector<string> leaders = getnames("Stats/Leaderboard.txt");
     cout << "Leaderboard:\n\n";
     for (int i = 0; i < leaders.size(); i++)
-        cout << '\t' << i + 1 << ". " << leaders[i] << endl;
+    {
+        user leader = formuser(leaders[i]);
+        cout << string(4, ' ') << i + 1 << ". " << leader.name << endl
+             << string(7, ' ') << "Wins: " << leader.wins << endl
+             << string(7, ' ') << "Total time: " << leader.totaltime << endl;
+    }
     cout << "\nPress any key to coninue: ";
-    _getch();
+    getchtocontinue();
 }
 
 void resetstats()
 {
     clearScreen();
-    cout << "This action clears any data related to users and games history but keeps the maps"
-         << "\nEnter yes to confirm the action. Enter anything else to cancel and go back: ";
+    cout << "Reset Stats:\n\n"
+         << "This action clears any data related to users and games history but keeps the maps"
+         << "\nEnter yes to confirm the action. Enter anything else to cancel: ";
     string choice;
     getline(cin, choice);
-    if (choice == "")
-        getline(cin, choice);
     if (choice != "yes")
     {
         cout << red + "no changes applied" + reset;
-        cout << "\nPress any key to coninue: ";
-        _getch();
+        cout << "\nPress any key to go back: ";
+        getchtocontinue();
         return;
     }
     vector<string> users = getnames();
@@ -785,8 +943,38 @@ void resetstats()
     file.close();
     cout << green << "Cleared successfully!!" << reset;
     cout << "\nPress any key to coninue: ";
-    _getch();
+    getchtocontinue();
 }
+
+void clearmaps()
+{
+    clearScreen();
+    cout << "Clear Maps:\n\n"
+         << "This action clears all the maps"
+         << "\nEnter yes to confirm the action. Enter anything else to cancel: ";
+    string choice;
+    getline(cin, choice);
+    if (choice != "yes")
+    {
+        cout << red + "no changes applied" + reset;
+        cout << "\nPress any key to go back: ";
+        getchtocontinue();
+        return;
+    }
+    vector<string> maps = getnames("Maps/allmaps.txt");
+    for (string map : maps)
+    {
+        string filename = "Maps/" + map + ".txt";
+        remove(filename.c_str());
+    }
+    ofstream file;
+    file.open("Maps/allmaps.txt");
+    file.close();
+    cout << green << "Cleared successfully!!" << reset;
+    cout << "\nPress any key to coninue: ";
+    getchtocontinue();
+}
+
 void mazepathmaker(int **&maze, int row, int column, int rowin, int columnin, int togo, int &flag)
 {
     // checks if there is a wall in the way of advancing
@@ -866,6 +1054,13 @@ void mazefiller(int **&maze, int row, int column, int length, int lowV, int high
     {
         int part;
         part = randint(lowV, highV);
+        finalblock += part;
+        while (i == length - 1 && finalblock == 0) // not efficient
+        {
+            finalblock -= part;
+            part = randint(lowV, highV);
+            finalblock += part;
+        }
         mazepathparts.push_back(part);
     }
     // values for the blocks that are not walls and are not in the path
@@ -888,7 +1083,6 @@ void mazefiller(int **&maze, int row, int column, int length, int lowV, int high
             if (maze[i][l] == 0 && i + l != row + column)
             {
                 maze[i][l] = mazepathparts[mazepathparts.size() - 1];
-                finalblock += mazepathparts[mazepathparts.size() - 1];
                 mazepathparts.pop_back();
             }
             else if (i + l == column + row)
@@ -902,11 +1096,11 @@ void mazefiller(int **&maze, int row, int column, int length, int lowV, int high
     }
 }
 
-int randint(int floor, int ceil)
+int randint(int floor, int ceil) // returns a random number between integers floor and ceil that will never be 0
 {
     bool zeroin = floor * ceil <= 0;
-    int dif = ceil - floor + 1;
-    int res = rand() % dif + floor - zeroin;
+    int dif = ceil - floor + 1 - zeroin;
+    int res = rand() % dif + floor;
     return res + (res >= 0) * zeroin;
 }
 
@@ -922,6 +1116,7 @@ void mazesolving()
             list += "\n\t" + to_string(i + 1) + ". " + maps[i];
         allmaps.close();
         getinput(choice, "Solve a maze:\n" + menu2, 0, 2);
+    dontcontinue:
         mapfile.close();
         bool valid = 1, brk = 0;
         switch (stoi(choice))
@@ -956,21 +1151,19 @@ void mazesolving()
         }
         allmaps.close();
         int row, column, length, mapdif, sum = 0, flag = 0, **maze, **copymaze, filecapacity = 2;
-        string **path;
+        char **path;
         mapfile >> row >> column;
         string input;
-        getintinput("Enter the length of path: ", input, length);
-        cout << yellow << "Calculating, please wait..." << reset << endl;
         // cin >> row >> column >> length;
         maze = new int *[row + 2];
         copymaze = new int *[row + 2];
-        path = new string *[2 * (row + 2)];
+        path = new char *[2 * (row + 2)];
         for (int i = 0; i < row + 2; i++)
         {
             maze[i] = new int[column + 2];
             copymaze[i] = new int[column + 2];
-            path[2 * i] = new string[column + 2];
-            path[2 * i + 1] = new string[column + 2];
+            path[2 * i] = new char[column + 2];
+            path[2 * i + 1] = new char[column + 2];
         }
         for (int i = 0; i < row + 2; i++)
         {
@@ -980,8 +1173,8 @@ void mazesolving()
                 {
                     maze[i][l] = 0;
                     copymaze[i][l] = 0;
-                    path[2 * i][l] = "";
-                    path[2 * i + 1][l] = "";
+                    path[2 * i][l] = '\0';
+                    path[2 * i + 1][l] = '\0';
                 }
                 else
                 {
@@ -993,13 +1186,27 @@ void mazesolving()
                         copymaze[i][l] = 0;
                     else
                         copymaze[i][l] = 1;
-                    path[2 * i][l] = " ";
-                    path[2 * i + 1][l] = " ";
+                    path[2 * i][l] = ' ';
+                    path[2 * i + 1][l] = ' ';
                 }
             }
         }
         mapfile.close();
-        mazesolver(maze, copymaze, path, row, column, 1, 1, length, flag, sum);
+        clearScreen();
+        // for (int i = 1; i < row + 1; i++)
+        // {
+        //     for (int j = 1; j < column + 1; j++)
+        //         cout << right << setw(filecapacity) << maze[i][j] << ' ';
+        //     cout << endl;
+        // }
+        // getintinput(mtos(maze, row, column, filecapacity) + "Enter the length of path: ", input, length, 1);
+        getinput(input, mtos(maze, row, column, filecapacity) + "Enter the length of path: ", 0, 2000000000, "Not Accepted!");
+        length = stoi(input);
+        clearScreen();
+        cout << yellow << "Calculating, please wait..." << reset << endl;
+        if (length % 2 == (row + column) % 2 && length <= row * column - 1 - !(row % 2 || column % 2))
+            mazesolver(maze, copymaze, path, row, column, 1, 1, length, flag, sum);
+        clearScreen();
         if (flag == 1)
         {
             for (int i = 1; i < row + 1; i++)
@@ -1008,26 +1215,37 @@ void mazesolving()
                 {
                     if (copymaze[i][l] == 2)
                         cout << green;
-                    cout << left << setw(filecapacity) << maze[i][l] << cyan << left << setw(filecapacity) << path[2 * i][l] << reset;
+                    cout << right << setw(filecapacity) << maze[i][l] << cyan << right << setw(filecapacity) << string((filecapacity == 1 ? 1 : filecapacity - 1), path[2 * i][l]) << reset;
                 }
                 cout << endl;
                 for (int l = 1; l < column + 1; l++)
-                    cout << left << cyan << setw(2 * filecapacity) << path[2 * i + 1][l] << reset;
+                    cout << right << cyan << setw(filecapacity) << path[2 * i + 1][l] << string(filecapacity, ' ') << reset;
                 cout << endl;
             }
+            // cout << filecapacity << endl;
+            cout << endl;
         }
         else
-            cout << yellow << "There's no path with the given length in this maze" << reset;
+        {
+            cout << mtos(maze, row, column, filecapacity);
+            cout << yellow << "There's no path with length " << length << " in this maze" << reset;
+        }
+        delete[] maze;
+        delete[] copymaze;
+        delete[] path;
         cout << "\nPress any key to coninue: ";
-        _getch();
-        return;
+        getchtocontinue();
+        goto dontcontinue;
+        // return;
     }
 }
 
-void mazesolver(int **maze, int **&copymaze, string **&path, int row, int column, int rowin, int columnin, int togo, int &flag, int sum)
+void mazesolver(int **maze, int **&copymaze, char **&path, int row, int column, int rowin, int columnin, int togo, int &flag, int sum)
 {
     if (maze[rowin][columnin] == 0 || copymaze[rowin][columnin] == 2)
         return;
+    // if (togo < 0 || togo > row * column - 1 - !(row % 2 || column % 2)) // samiee added
+    //     return;                                                         // samiee added
     sum += maze[rowin][columnin];
     copymaze[rowin][columnin] = 2;
     if (togo == 0 && rowin == row && columnin == column && sum == 2 * maze[row][column])
@@ -1042,36 +1260,36 @@ void mazesolver(int **maze, int **&copymaze, string **&path, int row, int column
     }
     if (copymaze[rowin - 1][columnin] != 0 && copymaze[rowin - 1][columnin] != 2)
     {
-        path[2 * rowin - 1][columnin] = "|";
+        path[2 * rowin - 1][columnin] = '|';
         mazesolver(maze, copymaze, path, row, column, rowin - 1, columnin, togo - 1, flag, sum);
         if (flag == 1)
             return;
-        path[2 * rowin - 1][columnin] = " ";
+        path[2 * rowin - 1][columnin] = ' ';
     }
     if (copymaze[rowin][columnin + 1] != 0 && copymaze[rowin][columnin + 1] != 2)
     {
-        path[2 * rowin][columnin] = "_";
+        path[2 * rowin][columnin] = '_';
         mazesolver(maze, copymaze, path, row, column, rowin, columnin + 1, togo - 1, flag, sum);
         if (flag == 1)
             return;
-        path[2 * rowin][columnin] = " ";
+        path[2 * rowin][columnin] = ' ';
     }
     if (copymaze[rowin + 1][columnin] != 0 && copymaze[rowin + 1][columnin] != 2)
     {
-        path[2 * rowin + 1][columnin] = "|";
+        path[2 * rowin + 1][columnin] = '|';
         if (copymaze[rowin + 1][columnin] != 0 && copymaze[rowin + 1][columnin] != 2)
             mazesolver(maze, copymaze, path, row, column, rowin + 1, columnin, togo - 1, flag, sum);
         if (flag == 1)
             return;
-        path[2 * rowin + 1][columnin] = " ";
+        path[2 * rowin + 1][columnin] = ' ';
     }
     if (copymaze[rowin][columnin - 1] != 0 && copymaze[rowin][columnin - 1] != 2)
     {
-        path[rowin * 2][columnin - 1] = "_";
+        path[rowin * 2][columnin - 1] = '_';
         mazesolver(maze, copymaze, path, row, column, rowin, columnin - 1, togo - 1, flag, sum);
         if (flag == 1)
             return;
-        path[rowin * 2][columnin - 1] = " ";
+        path[rowin * 2][columnin - 1] = ' ';
     }
     sum -= maze[rowin][columnin];
     copymaze[rowin][columnin] = 1;

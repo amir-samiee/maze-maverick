@@ -1,3 +1,1 @@
-Amir
-Hesam
-Hasan
+SampleUser

@@ -714,8 +714,6 @@ reset_dif:
             getintinput("Please enter the length of the path or enter 0 to restart the process:\n", Slength, length, 1);
         }
     }
-    if (length == 0)
-        goto reset_dif;
     clearScreen();
     cout << yellow << "You won't be able to reset the settings for the maze from this point forward\n"
          << reset << "Enter 0 to restart the process or something else to continue:";

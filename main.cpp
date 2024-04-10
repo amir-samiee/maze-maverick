@@ -776,7 +776,7 @@ reset_dif:
                 << endl;
     allmapsfile.close();
     delete[] maze;
-    cout << green << "\nDone! Press any key to continue: " << reset;
+    cout << green << "\nDone! Press any key to continue... " << reset;
     getchtocontinue();
     goto reset_dif;
     // return;
